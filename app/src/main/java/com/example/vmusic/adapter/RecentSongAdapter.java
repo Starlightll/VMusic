@@ -45,9 +45,9 @@ public class RecentSongAdapter extends RecyclerView.Adapter<RecentSongAdapter.Re
     @Override
     public void onBindViewHolder(@NonNull RecentViewHolder holder, int position) {
         Song song = songList.get(position);
-        holder.imgRecent.setImageResource(song.getImageResId());
-        holder.tvTitle.setText(song.getTitle());
-        holder.txArtist.setText(song.getArtist());
+        holder.imgRecent.setImageResource(song.getImageUrl());
+        holder.tvTitle.setText(song.getName());
+        holder.txArtist.setText(song.getArtist().getName());
     }
 
     @Override

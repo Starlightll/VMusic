@@ -30,9 +30,9 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Playlist playlist = playlists.get(position);
-        holder.title.setText(playlist.title);
-        holder.description.setText(playlist.description);
-        holder.image.setImageResource(playlist.imageResId);
+        holder.title.setText(playlist.getName());
+//        holder.description.setText(playlist.description);
+        holder.image.setImageResource(playlist.getImageUrl());
     }
 
     @Override

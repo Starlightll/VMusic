@@ -7,12 +7,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.vmusic.adapter.PlaylistAdapter;
 import com.example.vmusic.model.Playlist;
+import com.example.vmusic.model.dbContext;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PlaylistActivity extends AppCompatActivity {
 
+    dbContext db = new dbContext();
     RecyclerView recyclerView;
     PlaylistAdapter adapter;
     List<Playlist> playlistList;
@@ -26,10 +28,10 @@ public class PlaylistActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        playlistList = new ArrayList<>();
-        playlistList.add(new Playlist("Mind Tides", "LMR Records", R.drawable.ic_playlist_placeholder));
-        playlistList.add(new Playlist("Chill Hits", "Spotify", R.drawable.ic_playlist_placeholder));
-        playlistList.add(new Playlist("Lofi Relax", "Lofi World", R.drawable.ic_playlist_placeholder));
+        playlistList = db.getPlaylists(12);
+//        playlistList.add(new Playlist("Mind Tides", "LMR Records", R.drawable.ic_playlist_placeholder));
+//        playlistList.add(new Playlist("Chill Hits", "Spotify", R.drawable.ic_playlist_placeholder));
+//        playlistList.add(new Playlist("Lofi Relax", "Lofi World", R.drawable.ic_playlist_placeholder));
 
         adapter = new PlaylistAdapter(playlistList);
         recyclerView.setAdapter(adapter);

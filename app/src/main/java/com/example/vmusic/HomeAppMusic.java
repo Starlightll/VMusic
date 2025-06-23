@@ -12,12 +12,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.vmusic.adapter.RecentSongAdapter;
+import com.example.vmusic.model.Artist;
 import com.example.vmusic.model.Song;
+import com.example.vmusic.model.dbContext;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class HomeAppMusic extends AppCompatActivity {
+
+    dbContext dbContext = new dbContext();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,17 +37,19 @@ public class HomeAppMusic extends AppCompatActivity {
 
         RecyclerView recyclerView = findViewById(R.id.recyclerRecent);
         recyclerView.setLayoutManager(new LinearLayoutManager(this , LinearLayoutManager.HORIZONTAL , false));
+        
+        Artist artist = new Artist("Sơn Tùng M-TP", R.drawable.nhac);
 
-        List<Song> recentSong = new ArrayList<>();
-        recentSong.add(new Song("Lạc Trôi", "Sơn Tùng M-TP", R.drawable.nhac));
-        recentSong.add(new Song("Lạc Trôi", "Sơn Tùng M-TP", R.drawable.ip14));
-        recentSong.add(new Song("Lạc Trôi", "Sơn Tùng M-TP", R.drawable.ip14));
-        recentSong.add(new Song("Lạc Trôi", "Sơn Tùng M-TP", R.drawable.ip14));
-        recentSong.add(new Song("Lạc Trôi", "Sơn Tùng M-TP", R.drawable.ip14));
-        recentSong.add(new Song("Lạc Trôi", "Sơn Tùng M-TP", R.drawable.ip14));
-        recentSong.add(new Song("Lạc Trôi", "Sơn Tùng M-TP", R.drawable.ip14));
-        recentSong.add(new Song("Lạc Trôi", "Sơn Tùng M-TP", R.drawable.ip14));
-        recentSong.add(new Song("Lạc Trôi", "Sơn Tùng M-TP", R.drawable.ip14));
+        List<Song> recentSong = dbContext.getSongs(12);
+//        recentSong.add(new Song("Lạc Trôi", artist, R.drawable.circle_background, R.drawable.circle_background));
+//        recentSong.add(new Song("Lạc Trôi", artist, R.drawable.circle_background, R.drawable.circle_background));
+//        recentSong.add(new Song("Lạc Trôi", artist, R.drawable.circle_background, R.drawable.circle_background));
+//        recentSong.add(new Song("Lạc Trôi", artist, R.drawable.circle_background, R.drawable.circle_background));
+//        recentSong.add(new Song("Lạc Trôi", artist, R.drawable.circle_background, R.drawable.circle_background));
+//        recentSong.add(new Song("Lạc Trôi", artist, R.drawable.circle_background, R.drawable.circle_background));
+//        recentSong.add(new Song("Lạc Trôi", artist, R.drawable.circle_background, R.drawable.circle_background));
+//        recentSong.add(new Song("Lạc Trôi", artist, R.drawable.circle_background, R.drawable.circle_background));
+//        recentSong.add(new Song("Lạc Trôi", artist, R.drawable.circle_background, R.drawable.circle_background));
 
         RecentSongAdapter adapter = new RecentSongAdapter(this , recentSong);
         recyclerView.setAdapter(adapter);
@@ -51,19 +57,19 @@ public class HomeAppMusic extends AppCompatActivity {
         RecyclerView recyclerView1 = findViewById(R.id.recyclerPopular);
         recyclerView1.setLayoutManager(new GridLayoutManager(this , 3));
 
-        List<Song> popularSong = new ArrayList<>();
-        popularSong.add(new Song("Lạc Trôi", "Sơn Tùng M-TP", R.drawable.nhac));
-        popularSong.add(new Song("Lạc Trôi", "Sơn Tùng M-TP", R.drawable.ip14));
-        popularSong.add(new Song("Lạc Trôi", "Sơn Tùng M-TP", R.drawable.ip14));
-        popularSong.add(new Song("Lạc Trôi", "Sơn Tùng M-TP", R.drawable.ip14));
-        popularSong.add(new Song("Lạc Trôi", "Sơn Tùng M-TP", R.drawable.ip14));
-        popularSong.add(new Song("Lạc Trôi", "Sơn Tùng M-TP", R.drawable.ip14));
-        popularSong.add(new Song("Lạc Trôi", "Sơn Tùng M-TP", R.drawable.ip14));
-        popularSong.add(new Song("Lạc Trôi", "Sơn Tùng M-TP", R.drawable.ip14));
-        popularSong.add(new Song("Lạc Trôi", "Sơn Tùng M-TP", R.drawable.ip14));
-        popularSong.add(new Song("Lạc Trôi", "Sơn Tùng M-TP", R.drawable.ip14));
-        popularSong.add(new Song("Lạc Trôi", "Sơn Tùng M-TP", R.drawable.ip14));
-        popularSong.add(new Song("Lạc Trôi", "Sơn Tùng M-TP", R.drawable.ip14));
+        List<Song> popularSong = dbContext.getSongs(12);
+//        popularSong.add(new Song("Lạc Trôi", artist, R.drawable.nhac, R.drawable.nhac));
+//        popularSong.add(new Song("Lạc Trôi", artist, R.drawable.circle_background, R.drawable.circle_background));
+//        popularSong.add(new Song("Lạc Trôi", artist, R.drawable.circle_background, R.drawable.circle_background));
+//        popularSong.add(new Song("Lạc Trôi", artist, R.drawable.circle_background, R.drawable.circle_background));
+//        popularSong.add(new Song("Lạc Trôi", artist, R.drawable.circle_background, R.drawable.circle_background));
+//        popularSong.add(new Song("Lạc Trôi", artist, R.drawable.circle_background, R.drawable.circle_background));
+//        popularSong.add(new Song("Lạc Trôi", artist, R.drawable.circle_background, R.drawable.circle_background));
+//        popularSong.add(new Song("Lạc Trôi", artist, R.drawable.circle_background, R.drawable.circle_background));
+//        popularSong.add(new Song("Lạc Trôi", artist, R.drawable.circle_background, R.drawable.circle_background));
+//        popularSong.add(new Song("Lạc Trôi", artist, R.drawable.circle_background, R.drawable.circle_background));
+//        popularSong.add(new Song("Lạc Trôi", artist, R.drawable.circle_background, R.drawable.circle_background));
+//        popularSong.add(new Song("Lạc Trôi", artist, R.drawable.circle_background, R.drawable.circle_background));
 
         RecentSongAdapter adapter1 = new RecentSongAdapter(this , popularSong);
         recyclerView1.setAdapter(adapter1);

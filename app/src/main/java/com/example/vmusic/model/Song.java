@@ -1,37 +1,50 @@
 package com.example.vmusic.model;
 
+import java.util.List;
+
 public class Song {
-    private String title;
-    private String artist;
-    private int imageResId;
+    private String name;
+    private Artist artist;
+    private int imageUrl;
+    private int url;
+    private List<Genres> genres;
 
-    public Song(String title, String artist, int imageResId) {
-        this.title = title;
+    public Song(String name, Artist artist, int imageUrl, int url) {
+        this.name = name;
         this.artist = artist;
-        this.imageResId = imageResId;
+        this.imageUrl = imageUrl;
+        this.url = url;
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getArtist() {
+    public Artist getArtist() {
         return artist;
     }
 
-    public void setArtist(String artist) {
+    public void setArtist(Artist artist) {
         this.artist = artist;
     }
 
-    public int getImageResId() {
-        return imageResId;
+    public int getImageUrl() {
+        return imageUrl;
     }
 
-    public void setImageResId(int imageResId) {
-        this.imageResId = imageResId;
+    public void setImageUrl(int imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public int getUrl() {
+        return url;
+    }
+
+    public void setUrl(int url) {
+        this.url = url;
     }
 }
