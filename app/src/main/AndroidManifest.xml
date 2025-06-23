@@ -13,7 +13,7 @@
         android:theme="@style/Theme.VMusic"
         tools:targetApi="31">
         <activity
-            android:name=".PlaySongActivity"
+            android:name=".PlaylistActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
