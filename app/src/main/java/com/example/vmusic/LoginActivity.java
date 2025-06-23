@@ -2,6 +2,7 @@ package com.example.vmusic;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
@@ -25,5 +26,12 @@ public class LoginActivity extends AppCompatActivity {
             Intent intent = new Intent(this, RegisterActivity.class);
             startActivity(intent);
         });
+    }
+
+    public void continueWithoutAccount(View view) {
+        // Handle continue without account button click
+        // For example, navigate to the main screen or show a guest mode dialog
+        Intent intent = new Intent(this, HomeAppMusic.class);
+        startActivity(intent);
     }
 }

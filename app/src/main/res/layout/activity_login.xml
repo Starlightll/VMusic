@@ -111,6 +111,7 @@
         android:layout_marginBottom="44dp"
         android:text="@string/continue_without_account"
         android:textColor="@android:color/darker_gray"
+        android:onClick="continueWithoutAccount"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
