@@ -70,7 +70,7 @@ public class SongDetailsActivity extends AppCompatActivity {
         Chip chip = new Chip(this);
         chip.setText(artistName);
         chip.setCloseIconVisible(true); // Hiển thị icon 'x' để xóa
-        chip.setChipBackgroundColorResource(R.color.chip_background_color); // Cần tạo màu này
+//        chip.setChipBackgroundColorResource(R.color.chip_background_color); // Cần tạo màu này
         chip.setTextColor(getResources().getColor(android.R.color.white, getTheme()));
         chip.setCloseIconTintResource(android.R.color.white);
 

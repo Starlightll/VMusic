@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="genre_array">
+        <item>Pop</item>
+        <item>Rock</item>
+        <item>Hip Hop</item>
+        <item>Jazz</item>
+        <item>Classical</item>
+        <item>Electronic</item>
+        <item>Country</item>
+    </string-array>
+</resources>
