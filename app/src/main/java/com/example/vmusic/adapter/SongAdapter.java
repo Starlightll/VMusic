@@ -30,7 +30,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ChapterHolder>
 
     @Override
     public void onBindViewHolder(@NonNull ChapterHolder holder, int position) {
-        holder.imv.setImageResource(songs.get(position).getImageUrl());
+        holder.imv.setImageResource(Integer.parseInt(songs.get(position).getImageUrl()));
         holder.tv_title.setText(songs.get(position).getName());
         holder.tv_des.setText(songs.get(position).getArtist().getName());
     }

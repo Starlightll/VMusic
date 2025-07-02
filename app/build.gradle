@@ -1,10 +1,17 @@
+// File: build.gradle (Cú pháp Groovy)
+
 plugins {
-    alias(libs.plugins.android.application)
+    id 'com.android.application'
 }
 
 android {
     namespace 'com.example.vmusic'
     compileSdk 35
+
+    buildFeatures {
+        buildConfig true
+        viewBinding true
+    }
 
     defaultConfig {
         applicationId "com.example.vmusic"
@@ -14,6 +21,19 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // --- ĐOẠN CODE ĐỌC PROPERTIES ĐÚNG CÚ PHÁP GROOVY ---
+        def localProperties = new Properties()
+        def localPropertiesFile = rootProject.file('local.properties')
+        if (localPropertiesFile.exists()) {
+            localPropertiesFile.withReader('UTF-8') { reader ->
+                localProperties.load(reader)
+            }
+        }
+
+        buildConfigField "String", "CLOUDINARY_CLOUD_NAME", localProperties.getProperty('CLOUDINARY_CLOUD_NAME')
+        buildConfigField "String", "CLOUDINARY_API_KEY", localProperties.getProperty('CLOUDINARY_API_KEY')
+        buildConfigField "String", "CLOUDINARY_API_SECRET", localProperties.getProperty('CLOUDINARY_API_SECRET')
     }
 
     buildTypes {
@@ -26,19 +46,38 @@ android {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
-    buildFeatures {
-        viewBinding true
-    }
 }
 
 dependencies {
+    // --- BUỘC TẤT CẢ CÁC THƯ VIỆN KOTLIN SỬ DỤNG CÙNG MỘT PHIÊN BẢN ---
+    constraints {
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22") {
+            because("kotlin-stdlib-jdk7 is now a part of kotlin-stdlib")
+        }
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22") {
+            because("kotlin-stdlib-jdk8 is now a part of kotlin-stdlib")
+        }
+    }
 
-    implementation libs.appcompat
-    implementation libs.material
-    implementation libs.activity
-    implementation libs.constraintlayout
-    testImplementation libs.junit
-    androidTestImplementation libs.ext.junit
-    androidTestImplementation libs.espresso.core
+    // Khai báo phiên bản Kotlin chính
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.22"
+
+    // Các thư viện khác của bạn
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.activity:activity:1.8.0'
+
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+
     implementation 'de.hdodenhof:circleimageview:3.1.0'
+
+    // Cloudinary SDK cho Android
+    implementation 'com.cloudinary:cloudinary-android:2.4.0'
+
+    // Thư viện Glide để hiển thị ảnh từ URL
+    implementation 'com.github.bumptech.glide:glide:4.15.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.15.1'
 }

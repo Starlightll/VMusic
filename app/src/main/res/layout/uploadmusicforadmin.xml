@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#121212"
-    >
+    tools:context=".SongDetailsActivity"> <!-- Nên đặt tên Activity cụ thể -->
 
     <ScrollView
         android:id="@+id/scrollView"
@@ -40,7 +40,9 @@
                 android:hint="Enter song title"
                 android:paddingStart="12dp"
                 android:textColor="#FFFFFF"
-                android:textColorHint="#AAAAAA" />
+                android:textColorHint="#AAAAAA"
+                android:maxLines="1"
+                android:inputType="text" />
 
             <!-- Main Artist -->
             <TextView
@@ -57,28 +59,84 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:background="@drawable/edit_text_background"
-                android:hint="Enter artist name"
+                android:hint="Enter main artist's name"
                 android:paddingStart="12dp"
                 android:textColor="#FFFFFF"
-                android:textColorHint="#AAAAAA" />
+                android:textColorHint="#AAAAAA"
+                android:maxLines="1"
+                android:inputType="text" />
 
-            <Button
-                android:id="@+id/btnAddMainArtist"
-
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:backgroundTint="#1DB954"
-                android:paddingHorizontal="16dp"
-                android:text="ADD MAIN ARTIST"
-                android:textColor="#FFFFFF"
-                android:textSize="14sp"
-                app:cornerRadius="24dp" />
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chip_group_artists"
+            <!-- Cover Artwork -->
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp" />
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="Cover Artwork*"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/imageCoverArt"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center_horizontal"
+                android:background="#333333"
+                android:scaleType="centerCrop"
+                android:src="@android:drawable/ic_menu_upload"
+                android:contentDescription="Cover Artwork Preview" />
+
+            <Button
+                android:id="@+id/btnUploadArtwork"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="12dp"
+                android:backgroundTint="#535353"
+                android:paddingHorizontal="16dp"
+                android:text="CHOOSE IMAGE"
+                android:textColor="#FFFFFF"
+                app:cornerRadius="24dp" />
+
+
+            <!-- Audio File -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="Audio File*"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textAudioFileName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="No file selected."
+                    android:textColor="#AAAAAA"
+                    android:textSize="14sp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:paddingEnd="12dp"/>
+
+                <Button
+                    android:id="@+id/btnUploadAudio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:backgroundTint="#535353"
+                    android:text="CHOOSE FILE"
+                    android:textColor="#FFFFFF"
+                    app:cornerRadius="20dp" />
+            </LinearLayout>
+
 
             <!-- Explicit Lyrics -->
             <TextView
@@ -93,21 +151,22 @@
             <RadioGroup
                 android:id="@+id/radioGroupExplicit"
                 android:layout_width="match_parent"
-                android:layout_height="47dp"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
                 <RadioButton
                     android:id="@+id/radioExplicitYes"
-                    android:layout_width="67dp"
-                    android:layout_height="47dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
                     android:text="Yes"
                     android:textColor="#FFFFFF" />
 
                 <RadioButton
                     android:id="@+id/radioExplicitNo"
-                    android:layout_width="63dp"
-                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
                     android:text="No"
                     android:textColor="#FFFFFF" />
             </RadioGroup>
@@ -122,15 +181,14 @@
                 android:textColor="#FFFFFF"
                 android:textSize="16sp" />
 
-            <EditText
-                android:id="@+id/editLanguage"
+            <!-- ĐÃ THAY THẾ EditText BẰNG Spinner -->
+            <Spinner
+                android:id="@+id/spinnerLanguage"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:background="@drawable/edit_text_background"
-                android:hint="Enter language"
-                android:paddingStart="12dp"
-                android:textColor="#FFFFFF"
-                android:textColorHint="#AAAAAA" />
+                android:background="@drawable/spinner_background"
+                android:popupBackground="#222222"
+                android:spinnerMode="dropdown" />
 
             <!-- Primary Genre -->
             <TextView
@@ -142,13 +200,13 @@
                 android:textColor="#FFFFFF"
                 android:textSize="16sp" />
 
+            <!-- XÓA android:entries VÀ android:theme ĐI -->
             <Spinner
                 android:id="@+id/spinnerPrimaryGenre"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:background="@drawable/spinner_background"
-                android:entries="@array/genre_array"
-                android:popupBackground="#ebe8e8"
+                android:popupBackground="#222222"
                 android:spinnerMode="dropdown" />
 
             <!-- Secondary Genre -->
@@ -161,13 +219,13 @@
                 android:textColor="#FFFFFF"
                 android:textSize="16sp" />
 
+            <!-- XÓA android:entries VÀ android:theme ĐI -->
             <Spinner
                 android:id="@+id/spinnerSecondaryGenre"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:background="@drawable/spinner_background"
-                android:entries="@array/genre_array"
-                android:popupBackground="#ebe8e8"
+                android:popupBackground="#222222"
                 android:spinnerMode="dropdown" />
 
             <!-- Release Date -->
@@ -212,6 +270,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
                     android:text="No"
+                    android:checked="true"
                     android:textColor="#fcfcfc" />
                 <RadioButton
                     android:id="@+id/radioReleasedYes"
@@ -226,7 +285,8 @@
                 android:id="@+id/savereleaseandaddsong"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="32dp"
                 android:backgroundTint="#1DB954"
                 android:text="SAVE RELEASE AND ADD SONG"
                 android:textColor="#FFFFFF"
@@ -235,5 +295,16 @@
 
         </LinearLayout>
     </ScrollView>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

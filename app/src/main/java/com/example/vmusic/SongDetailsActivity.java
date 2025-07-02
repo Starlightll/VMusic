@@ -1,163 +1,326 @@
 package com.example.vmusic;
-
-
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.ContentValues;
+import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.provider.OpenableColumns;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.RadioButton;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RadioGroup;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
-
-import com.example.vmusic.databinding.UploadmusicforadminBinding;
-import com.google.android.material.chip.Chip;
+import com.cloudinary.android.MediaManager;
+import com.cloudinary.android.callback.ErrorInfo;
+import com.cloudinary.android.callback.UploadCallback;
 
 import java.util.Calendar;
-import java.util.Locale;
+import java.util.Map; // Đảm bảo có import này
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.vmusic.model.Song;
+import com.example.vmusic.model.SongDBHelper;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 
 public class SongDetailsActivity extends AppCompatActivity {
 
     private static final String TAG = "SongDetailsActivity";
-    private  UploadmusicforadminBinding binding;
+
+    // --- UI Views ---
+    private EditText editTitle, editArtist, editReleaseDate;
+    private Button btnUploadArtwork, btnUploadAudio, btnSave;
+    private ImageView imageCoverArt;
+    private TextView textAudioFileName;
+    private RadioGroup radioGroupExplicit, radioGroupReleased;
+    private ProgressBar progressBar;
+    private Spinner spinnerLanguage, spinnerPrimaryGenre, spinnerSecondaryGenre; // <-- SỬA LẠI KHAI BÁO GỌN GÀNG
+
+    // --- Data Variables ---
+    private Uri imageUri;
+    private Uri audioUri;
+    private String uploadedImageUrl;
+    private String uploadedAudioUrl;
+
+    // --- ActivityResultLaunchers for picking files ---
+    private final ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null && result.getData().getData() != null) {
+                    imageUri = result.getData().getData();
+                    imageCoverArt.setImageURI(imageUri);
+                    Log.d(TAG, "Image selected: " + imageUri.toString());
+                }
+            });
+
+    private final ActivityResultLauncher<Intent> audioPickerLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null && result.getData().getData() != null) {
+                    audioUri = result.getData().getData();
+                    String fileName = getFileName(audioUri);
+                    textAudioFileName.setText(fileName);
+                    Log.d(TAG, "Audio selected: " + audioUri.toString());
+                }
+            });
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = UploadmusicforadminBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        setContentView(R.layout.uploadmusicforadmin);
 
-        // Gọi hàm để cài đặt tất cả các sự kiện
-        setupEventListeners();
+        initViews();
+        setupSpinners();
+        setupClickListeners();
     }
 
-    /**
-     * Nơi tập trung cài đặt tất cả các sự kiện cho các View trên màn hình.
-     */
-    private void setupEventListeners() {
+    private void initViews() {
+        editTitle = findViewById(R.id.editTitle);
+        editArtist = findViewById(R.id.editArtist);
+        editReleaseDate = findViewById(R.id.editReleaseDate);
+        btnUploadArtwork = findViewById(R.id.btnUploadArtwork);
+        btnUploadAudio = findViewById(R.id.btnUploadAudio);
+        btnSave = findViewById(R.id.savereleaseandaddsong);
+        imageCoverArt = findViewById(R.id.imageCoverArt);
+        textAudioFileName = findViewById(R.id.textAudioFileName);
+        radioGroupExplicit = findViewById(R.id.radioGroupExplicit);
+        radioGroupReleased = findViewById(R.id.radioGroupReleased);
+        progressBar = findViewById(R.id.progressBar);
 
-        // 1. Sự kiện cho nút "ADD MAIN ARTIST"
-        binding.btnAddMainArtist.setOnClickListener(v -> {
-            String artistName = binding.editArtist.getText().toString().trim();
-            if (!TextUtils.isEmpty(artistName)) {
-                addArtistChip(artistName);
-                binding.editArtist.setText(""); // Xóa chữ trong ô input sau khi thêm
-            } else {
-                Toast.makeText(this, "Please enter an artist name", Toast.LENGTH_SHORT).show();
+        // Ánh xạ các Spinner
+        spinnerLanguage = findViewById(R.id.spinnerLanguage); // <-- SỬA LẠI ÁNH XẠ ĐÚNG
+        spinnerPrimaryGenre = findViewById(R.id.spinnerPrimaryGenre);
+        spinnerSecondaryGenre = findViewById(R.id.spinnerSecondaryGenre);
+    }
+
+    private void setupSpinners() {
+        // --- Thiết lập Spinner Ngôn ngữ ---
+        ArrayAdapter<CharSequence> languageAdapter = ArrayAdapter.createFromResource(this,
+                R.array.language_array, R.layout.custom_spinner_item);
+        languageAdapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
+        spinnerLanguage.setAdapter(languageAdapter);
+
+        // --- Thiết lập Spinner Thể loại chính ---
+        ArrayAdapter<CharSequence> genreAdapter = ArrayAdapter.createFromResource(this,
+                R.array.genre_array, R.layout.custom_spinner_item);
+        genreAdapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
+        spinnerPrimaryGenre.setAdapter(genreAdapter);
+
+        // --- Thiết lập Spinner Thể loại phụ ---
+        spinnerSecondaryGenre.setAdapter(genreAdapter);
+    }
+
+    private void setupClickListeners() {
+        btnUploadArtwork.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT).setType("image/*");
+            imagePickerLauncher.launch(intent);
+        });
+
+        btnUploadAudio.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT).setType("audio/*");
+            audioPickerLauncher.launch(intent);
+        });
+
+        btnSave.setOnClickListener(v -> {
+            if (validateInput()) {
+                startUploadProcess();
             }
         });
 
-        // 2. Sự kiện khi nhấn vào ô "Release Date"
-        binding.savereleaseandaddsong.setOnClickListener(v -> {
-            showDatePickerDialog();
-        });
+        editReleaseDate.setOnClickListener(v -> showDatePickerDialog());
+        editReleaseDate.setFocusable(false);
+        editReleaseDate.setClickable(true);
+    }
 
-        // 3. Sự kiện cho nút "SAVE RELEASE AND ADD SONG"
-        binding.savereleaseandaddsong.setOnClickListener(v -> {
-            collectAndShowData();
+    private boolean validateInput() {
+        if (editTitle.getText().toString().trim().isEmpty()) {
+            Toast.makeText(this, "Please enter a song title.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (editArtist.getText().toString().trim().isEmpty()) {
+            Toast.makeText(this, "Please enter the artist's name.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (spinnerLanguage.getSelectedItemPosition() == 0) { // Kiểm tra nếu mục mặc định được chọn
+            Toast.makeText(this, "Please select a language.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (imageUri == null) {
+            Toast.makeText(this, "Please select a cover artwork.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (audioUri == null) {
+            Toast.makeText(this, "Please select an audio file.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
+    private void startUploadProcess() {
+        Log.d(TAG, "Starting upload process...");
+        progressBar.setVisibility(View.VISIBLE);
+        btnSave.setEnabled(false);
+        uploadImageToCloudinary();
+    }
+
+    private void uploadImageToCloudinary() {
+        Log.d(TAG, "Uploading image to Cloudinary...");
+        final String uploadPreset = "vmusic_upload"; // Đảm bảo tên này đúng
+
+        MediaManager.get().upload(imageUri)
+                .option("upload_preset", uploadPreset)
+                .option("resource_type", "image")
+                .callback(new UploadCallback() {
+                    @Override
+                    public void onSuccess(String requestId, Map resultData) {
+                        uploadedImageUrl = (String) resultData.get("secure_url");
+                        Log.d(TAG, "Image uploaded successfully. URL: " + uploadedImageUrl);
+                        uploadAudioToCloudinary();
+                    }
+
+                    @Override
+                    public void onError(String requestId, ErrorInfo error) {
+                        handleUploadFailure("Image upload failed: " + error.getDescription());
+                    }
+
+                    @Override
+                    public void onStart(String requestId) {}
+                    @Override
+                    public void onProgress(String requestId, long bytes, long totalBytes) {}
+                    @Override
+                    public void onReschedule(String requestId, ErrorInfo error) {}
+                }).dispatch();
+    }
+
+    private void uploadAudioToCloudinary() {
+        Log.d(TAG, "Uploading audio to Cloudinary...");
+        final String uploadPreset = "vmusic_upload"; // Đồng bộ tên preset
+
+        MediaManager.get().upload(audioUri)
+                .option("upload_preset", uploadPreset)
+                .option("resource_type", "video")
+                .callback(new UploadCallback() {
+                    @Override
+                    public void onSuccess(String requestId, Map resultData) {
+                        uploadedAudioUrl = (String) resultData.get("secure_url");
+                        Log.d(TAG, "Audio uploaded successfully. URL: " + uploadedAudioUrl);
+                        saveAllDataToDatabase();
+                    }
+
+                    @Override
+                    public void onError(String requestId, ErrorInfo error) {
+                        handleUploadFailure("Audio upload failed: " + error.getDescription());
+                    }
+
+                    @Override
+                    public void onStart(String requestId) {}
+                    @Override
+                    public void onProgress(String requestId, long bytes, long totalBytes) {}
+                    @Override
+                    public void onReschedule(String requestId, ErrorInfo error) {}
+                }).dispatch();
+    }
+
+    private void saveAllDataToDatabase() {
+        Log.d(TAG, "Saving all data to SQLite database...");
+
+        Song newSong = new Song();
+        newSong.setName(editTitle.getText().toString().trim());
+        newSong.setMainArtist(editArtist.getText().toString().trim());
+        newSong.setReleaseDate(editReleaseDate.getText().toString().trim());
+        newSong.setImageUrl(uploadedImageUrl);
+        newSong.setUrl(uploadedAudioUrl);
+        newSong.setExplicit(radioGroupExplicit.getCheckedRadioButtonId() == R.id.radioExplicitYes);
+        newSong.setPreviouslyReleased(radioGroupReleased.getCheckedRadioButtonId() == R.id.radioReleasedYes);
+
+        // SỬA LẠI CÁCH LẤY DỮ LIỆU TỪ CÁC SPINNER
+        newSong.setLanguage(spinnerLanguage.getSelectedItem().toString());
+        newSong.setPrimaryGenre(spinnerPrimaryGenre.getSelectedItem().toString());
+        newSong.setSecondaryGenre(spinnerSecondaryGenre.getSelectedItem().toString());
+
+        // Lưu vào SQLite
+        SongDBHelper dbHelper = new SongDBHelper(this);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put("title", newSong.getName());
+        values.put("mainArtist", newSong.getMainArtist());
+        values.put("language", newSong.getLanguage());
+        values.put("releaseDate", newSong.getReleaseDate());
+        values.put("primaryGenre", newSong.getPrimaryGenre());
+        values.put("secondaryGenre", newSong.getSecondaryGenre());
+        values.put("isExplicit", newSong.isExplicit() ? 1 : 0);
+        values.put("isReleased", newSong.isPreviouslyReleased() ? 1 : 0);
+        values.put("urlImage", newSong.getImageUrl());
+        values.put("urlAudio", newSong.getUrl());
+
+        long rowId = db.insert("Songs", null, values);
+        db.close();
+
+        progressBar.setVisibility(View.GONE);
+        btnSave.setEnabled(true);
+
+        if (rowId != -1) {
+            Log.i(TAG, "Song saved to SQLite with row ID: " + rowId); // Đổi sang Log.i cho dễ thấy
+            Toast.makeText(this, "Song '" + newSong.getName() + "' saved successfully!", Toast.LENGTH_LONG).show();
+            finish();
+        } else {
+            Log.e(TAG, "Failed to save song to SQLite.");
+            Toast.makeText(this, "Error saving song to database.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void handleUploadFailure(String message) {
+        Log.e(TAG, message);
+        runOnUiThread(() -> {
+            Toast.makeText(SongDetailsActivity.this, message, Toast.LENGTH_LONG).show();
+            progressBar.setVisibility(View.GONE);
+            btnSave.setEnabled(true);
         });
     }
 
-    /**
-     * Tạo và thêm một Chip nghệ sĩ vào ChipGroup.
-     * @param artistName Tên của nghệ sĩ để hiển thị trên Chip.
-     */
-    private void addArtistChip(String artistName) {
-        Chip chip = new Chip(this);
-        chip.setText(artistName);
-        chip.setCloseIconVisible(true); // Hiển thị icon 'x' để xóa
-//        chip.setChipBackgroundColorResource(R.color.chip_background_color); // Cần tạo màu này
-        chip.setTextColor(getResources().getColor(android.R.color.white, getTheme()));
-        chip.setCloseIconTintResource(android.R.color.white);
-
-        // Sự kiện khi nhấn vào icon 'x' trên Chip để xóa nó
-        chip.setOnCloseIconClickListener(v -> {
-            binding.chipGroupArtists.removeView(chip);
-        });
-
-        binding.chipGroupArtists.addView(chip);
-    }
-
-    /**
-     * Hiển thị một DatePickerDialog để người dùng chọn ngày.
-     */
     private void showDatePickerDialog() {
         Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-        DatePickerDialog datePickerDialog = new DatePickerDialog(
-                this,
-                (view, selectedYear, selectedMonth, selectedDayOfMonth) -> {
-                    // Lưu ý: selectedMonth bắt đầu từ 0 (tháng 1 là 0)
-                    String selectedDate = String.format(Locale.US, "%02d/%02d/%d", selectedMonth + 1, selectedDayOfMonth, selectedYear);
-                    binding.savereleaseandaddsong.setText(selectedDate);
-                },
-                year, month, day);
-
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
+                (view, year, month, dayOfMonth) -> {
+                    String selectedDate = String.format("%02d/%02d/%d", month + 1, dayOfMonth, year);
+                    editReleaseDate.setText(selectedDate);
+                }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
         datePickerDialog.show();
     }
 
-    /**
-     * Thu thập tất cả dữ liệu từ các trường input và hiển thị chúng.
-     */
-    private void collectAndShowData() {
-        StringBuilder summary = new StringBuilder();
-        summary.append("--- SONG DETAILS ---").append("\n");
-
-        // Title
-        summary.append("Title: ").append(binding.editTitle.getText().toString()).append("\n");
-
-        // Artists
-        summary.append("Artists: ");
-        for (int i = 0; i < binding.chipGroupArtists.getChildCount(); i++) {
-            Chip chip = (Chip) binding.chipGroupArtists.getChildAt(i);
-            summary.append(chip.getText().toString());
-            if (i < binding.chipGroupArtists.getChildCount() - 1) {
-                summary.append(", ");
+    @SuppressLint("Range")
+    private String getFileName(Uri uri) {
+        String result = null;
+        if (uri.getScheme() != null && uri.getScheme().equals("content")) {
+            try (Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error getting file name from URI", e);
             }
         }
-        summary.append("\n");
-
-        // Explicit Lyrics
-        // Lấy ID của RadioButton được chọn từ RadioGroup
-        int selectedExplicitId = binding.radioGroupExplicit.getCheckedRadioButtonId();
-        if (selectedExplicitId != -1) { // -1 nghĩa là không có nút nào được chọn
-            RadioButton explicitRadio = findViewById(selectedExplicitId);
-            summary.append("Explicit Lyrics: ").append(explicitRadio.getText()).append("\n");
-        } else {
-            summary.append("Explicit Lyrics: Not selected").append("\n");
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
         }
-
-        // Language
-        summary.append("Language: ").append(binding.editLanguage.getText().toString()).append("\n");
-
-        // Genres
-        summary.append("Primary Genre: ").append(binding.spinnerPrimaryGenre.getSelectedItem().toString()).append("\n");
-        summary.append("Secondary Genre: ").append(binding.spinnerSecondaryGenre.getSelectedItem().toString()).append("\n");
-
-        // Release Date
-        summary.append("Release Date: ").append(binding.editReleaseDate.getText().toString()).append("\n");
-
-        // Previously Released
-        // Lấy ID của RadioButton được chọn từ RadioGroup
-        int selectedReleasedId = binding.radioGroupReleased.getCheckedRadioButtonId();
-        if (selectedReleasedId != -1) {
-            RadioButton releasedRadio = findViewById(selectedReleasedId);
-            summary.append("Previously Released: ").append(releasedRadio.getText()).append("\n");
-        } else {
-            summary.append("Previously Released: Not selected").append("\n");
-        }
-
-        // Hiển thị kết quả ra Logcat (Dễ xem hơn Toast nếu text dài)
-        Log.d(TAG, summary.toString());
-
-        // Hiển thị một Toast ngắn để báo hiệu đã lưu
-        Toast.makeText(this, "Data collected! Check Logcat for details.", Toast.LENGTH_LONG).show();
+        return result != null ? result : "Unknown file";
     }
 }

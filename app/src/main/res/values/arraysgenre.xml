@@ -1,12 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string-array name="language_array">
+        <item>-- Select Language --</item>
+        <item>English</item>
+        <item>Vietnamese</item>
+        <item>Spanish</item>
+        <item>French</item>
+        <item>Japanese</item>
+        <item>Korean</item>
+        <item>Chinese</item>
+    </string-array>
+
     <string-array name="genre_array">
-        <item>Pop</item>
-        <item>Rock</item>
-        <item>Hip Hop</item>
-        <item>Jazz</item>
+        <item>-- Select Genre --</item>
+        <item>Acoustic</item>
+        <item>Alternative</item>
+        <item>Blues</item>
         <item>Classical</item>
-        <item>Electronic</item>
         <item>Country</item>
+        <item>Dance</item>
+        <item>EDM</item>
+        <item>Electronic</item>
+        <item>Folk</item>
+        <item>Funk</item>
+        <item>Hip Hop</item>
+        <item>Indie</item>
+        <item>Jazz</item>
+        <item>K-Pop</item>
+        <item>Latin</item>
+        <item>Metal</item>
+        <item>Pop</item>
+        <item>Punk</item>
+        <item>R&amp;B</item> <!-- Dùng & để thay cho ký tự & -->
+        <item>Reggae</item>
+        <item>Rock</item>
+        <item>Soul</item>
+        <item>Soundtrack</item>
+        <item>V-Pop</item>
+        <item>World Music</item>
     </string-array>
 </resources>
