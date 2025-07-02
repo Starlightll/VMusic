@@ -12,10 +12,12 @@ public class CloudinaryActivity extends Application { // Bạn nên đổi tên 
         super.onCreate();
 
         Map<String, String> config = new HashMap<>();
-        config.put("cloud_name", BuildConfig.CLOUDINARY_CLOUD_NAME);
-        config.put("api_key", BuildConfig.CLOUDINARY_API_KEY);
-        config.put("api_secret", BuildConfig.CLOUDINARY_API_SECRET);
 
+        config.put("cloud_name", "dkujns7st");
+        config.put("api_key", "581427787878588");
+        config.put("api_secret", "zGIuMzo-kvWlNM6AjbA6leI5idM");
+
+        // Khởi tạo MediaManager với cấu hình trên
         MediaManager.init(this, config);
     }
 }
