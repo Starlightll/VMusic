@@ -35,5 +35,12 @@ public class SongViewModel extends AndroidViewModel{
     public LiveData<SongWithGenres> getSongWithGenre(int id){
         return  repository.getSongWithGenres(id);
     }
+    public void deleteSong(int id) {
+        repository.delete(id);
+    }
 
+
+    public LiveData<Song> getSong(int id){
+        return repository.getSong(id);
+    }
 }
