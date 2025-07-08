@@ -34,5 +34,19 @@ public class SongRepository {
     public LiveData<SongWithGenres> getSongWithGenres(int id){
         return songDao.getSongWithGenreLive(id);
     }
+    public void delete(int songId) {
+        new Thread(() -> {
+            Song song = songDao.getSongById2(songId);
+            if (song != null) {
+                songDao.deleteSong(song);
+            }
+        }).start();
+    }
+
+
+    public LiveData<Song> getSong(int id){
+        return songDao.getSongById(id);
+    }
+
 
 }

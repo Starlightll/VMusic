@@ -18,7 +18,7 @@ import models.GenreWithSongs;
 import models.PlaylistSongCrossRef;
 import models.SongGenreCrossRef;
 
-@Database(entities = {Song.class , Playlist.class , Genre.class , User.class, PlaylistSongCrossRef.class , SongGenreCrossRef.class} , version = 2)
+@Database(entities = {Song.class , Playlist.class , Genre.class , User.class, PlaylistSongCrossRef.class , SongGenreCrossRef.class} , version = 1)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static volatile AppDatabase INSTANCE;
