@@ -2,13 +2,25 @@ package ui.fragment;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.vmusic.R;
+
+import java.util.ArrayList;
+
+import ui.adapter.PopularSongAdapter;
+import ui.adapter.RecentSongAdapter;
+import viewmodel.SongViewModel;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,6 +37,11 @@ public class HomePageMusicFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    RecyclerView recyclerRecent , recyclerPopular;
+    RecentSongAdapter recentSongAdapter ;
+    PopularSongAdapter  popularSongAdapter;
+    private SongViewModel songViewModel;
 
     public HomePageMusicFragment() {
         // Required empty public constructor
@@ -62,5 +79,37 @@ public class HomePageMusicFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home_page_music, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        songViewModel = new ViewModelProvider(this).get(SongViewModel.class);
+
+        recyclerRecent = view.findViewById(R.id.recyclerRecent);
+
+        recentSongAdapter = new RecentSongAdapter(requireContext(), new ArrayList<>());
+        popularSongAdapter = new PopularSongAdapter(requireContext(), new ArrayList<>());
+        recyclerRecent.setAdapter(recentSongAdapter);
+        recyclerRecent.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+        songViewModel.getAllSongs().observe(getViewLifecycleOwner(), songs -> {
+            if (songs != null) {
+                recentSongAdapter.setSongs(songs);
+            }
+        });
+
+
+        recyclerPopular = view.findViewById(R.id.recyclerPopular);
+
+        recyclerPopular.setAdapter(popularSongAdapter);
+
+        recyclerPopular.setLayoutManager(new GridLayoutManager(requireContext(), 3));
+
+        songViewModel.getAllSongs().observe(getViewLifecycleOwner(), songs -> {
+            if (songs != null) {
+                popularSongAdapter.setSongs(songs);
+            }
+        });
+
     }
 }
