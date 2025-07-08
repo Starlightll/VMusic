@@ -17,7 +17,7 @@
             android:name="ui.activity.DemoActivity"
             android:exported="false" />
         <activity
-            android:name=".SongDetailsActivity"
+            android:name="ui.activity.SongDetailsActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

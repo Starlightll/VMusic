@@ -31,7 +31,9 @@ public class SongViewModel extends AndroidViewModel{
     public void insert(Song song) {
         repository.insert(song);
     }
-
+    public void insertSongWithGenres(Song song, List<Integer> genreIds) {
+        repository.insertSongWithGenres(song, genreIds);
+    }
     public LiveData<SongWithGenres> getSongWithGenre(int id){
         return  repository.getSongWithGenres(id);
     }
