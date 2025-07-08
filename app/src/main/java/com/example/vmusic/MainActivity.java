@@ -1,7 +1,6 @@
 package com.example.vmusic;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -20,7 +19,6 @@ import viewmodel.SongViewModel;
 
 public class MainActivity extends AppCompatActivity {
     public SongViewModel songViewModel;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -29,6 +27,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         songViewModel = new ViewModelProvider(this).get(SongViewModel.class);
+        Song song = new Song();
+        song.name = "Text";
+        song.artist = "Text";
+        song.audioUrl = "Text";
+        song.image = "Text";
+        song.urlLyric = "Text";
+        song.listenCounts = 1;
+
+        songViewModel.insert(song);
+
+        LiveData<List<Song>> list = songViewModel.getAllSongs();
+        ((TextView)findViewById(R.id.textView)).setText(list.toString());
 
     }
 }
