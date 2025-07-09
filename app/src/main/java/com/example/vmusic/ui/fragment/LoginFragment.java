@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.example.vmusic.R;
 
+import com.example.vmusic.helper.SessionManager;
 import com.example.vmusic.viewmodel.LoginViewModel;
 
 /**
@@ -70,6 +71,9 @@ public class LoginFragment extends Fragment {
 
         loginVM.loginResult.observe(getViewLifecycleOwner(), user -> {
             if (user != null) {
+                SessionManager session = new SessionManager(requireContext());
+                session.saveUser(user);
+
                 NavHostFragment.findNavController(this)
                         .navigate(R.id.action_loginFragment_to_homeFragment);
             } else {

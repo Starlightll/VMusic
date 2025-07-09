@@ -3,12 +3,15 @@ package com.example.vmusic.ui.fragment;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.example.vmusic.R;
+import com.example.vmusic.helper.SessionManager;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -61,6 +64,18 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false);
+
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+
+        Button logoutBtn = view.findViewById(R.id.logoutButton);
+        logoutBtn.setOnClickListener(v -> {
+            SessionManager session = new SessionManager(requireContext());
+            session.logout();
+
+            NavHostFragment.findNavController(this)
+                    .navigate(R.id.loginFragment); // quay về login
+        });
+        return view;
     }
 }

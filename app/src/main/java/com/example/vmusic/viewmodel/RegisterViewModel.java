@@ -13,7 +13,7 @@ import repository.UserRepository;
 
 public class RegisterViewModel extends AndroidViewModel {
     private final UserRepository repo;
-    public MutableLiveData<String> registerResult = new MutableLiveData<>();
+    public MutableLiveData<User> registerResult = new MutableLiveData<>();
 
     public RegisterViewModel(@NonNull Application app) {
         super(app);
@@ -26,7 +26,7 @@ public class RegisterViewModel extends AndroidViewModel {
 
         existCheck.observeForever(existing -> {
             if (existing != null) {
-                registerResult.setValue("Email already exists");
+                registerResult.setValue(null);
             } else {
                 User user = new User();
                 user.setEmail(email);
@@ -35,7 +35,7 @@ public class RegisterViewModel extends AndroidViewModel {
                 user.setRole("user");
 
                 repo.register(user);
-                registerResult.setValue("Registered successfully");
+                registerResult.setValue(user);
             }
         });
     }

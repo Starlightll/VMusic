@@ -3,12 +3,17 @@ package com.example.vmusic.ui.fragment;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 
 import com.example.vmusic.R;
+import com.example.vmusic.viewmodel.RegisterViewModel;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -21,6 +26,7 @@ public class RegisterFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private RegisterViewModel registerVM;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -61,6 +67,37 @@ public class RegisterFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_register, container, false);
+        View view = inflater.inflate(R.layout.fragment_register, container, false);
+        EditText emailEditText = view.findViewById(R.id.txtRegisterEmail);
+        EditText passwordEditText = view.findViewById(R.id.txtRegisterPassword);
+        EditText confirmPasswordEditText = view.findViewById(R.id.txtConfirmPassword);
+        Button registerButton = view.findViewById(R.id.btnRegister);
+        Button goToLoginButton = view.findViewById(R.id.btnGoToLogin);
+
+        registerVM = new ViewModelProvider(this).get(RegisterViewModel.class);
+
+        registerVM.registerResult.observe(getViewLifecycleOwner(), result -> {
+            if (result != null) {
+                // Handle successful registration
+                NavHostFragment.findNavController(this)
+                        .navigate(R.id.action_registerFragment_to_loginFragment);
+            } else {
+                // Handle registration error
+            }
+        });
+
+        registerButton.setOnClickListener(v -> {
+            String email = emailEditText.getText().toString();
+            String password = passwordEditText.getText().toString();
+            String confirmPassword = confirmPasswordEditText.getText().toString();
+            registerVM.register(email, password);
+        });
+
+        goToLoginButton.setOnClickListener(v -> {
+            NavHostFragment.findNavController(this)
+                    .navigate(R.id.action_registerFragment_to_loginFragment);
+        });
+
+        return view;
     }
 }
