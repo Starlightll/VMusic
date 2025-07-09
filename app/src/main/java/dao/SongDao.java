@@ -12,6 +12,7 @@ import androidx.room.Update;
 import java.util.List;
 
 import entity.Song;
+import models.SongGenreCrossRef;
 import models.SongWithGenres;
 import models.SongWithPlaylists;
 
@@ -37,8 +38,30 @@ public interface SongDao {
     Song getSongById2(int id);
 
 
+    // Phương thức insert một mối quan hệ
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    void insertSongGenreCrossRef(SongGenreCrossRef crossRef);
+    @Transaction
+    default void insertSongWithGenres(Song song, List<Integer> genreIds) {
+        // 1. Insert bài hát và lấy về rowId (kiểu long)
+        long rowId = insert(song);
+
+        // Chuyển đổi rowId thành songId kiểu int
+        int songId = (int) rowId;
+
+        // 2. Kiểm tra xem bài hát đã được insert thành công chưa
+        if (songId > 0 && genreIds != null && !genreIds.isEmpty()) {
+            // 3. Lặp qua danh sách các genre ID đã chọn
+            for (Integer genreId : genreIds) {
+                // Tạo một đối tượng quan hệ với songId kiểu int
+                SongGenreCrossRef crossRef = new SongGenreCrossRef(songId, genreId);
+                insertSongGenreCrossRef(crossRef);
+            }
+        }
+    }
+
     @Insert
-    void insert(Song song);
+    long insert(Song song);
 
     @Update
     void updateSong(Song song);
