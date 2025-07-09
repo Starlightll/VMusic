@@ -3,20 +3,21 @@ package entity;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "Users")
+@Entity(tableName = "users")
 public class User {
    @PrimaryKey(autoGenerate = true)
    private  int userId;
-    private  int password;
-
+    private  String passwordHash;
     private String userName;
     private  String email;
-
     private  String role;
 
-    public User(int userId, int password, String userName, String email, String role) {
+    public User() {
+    }
+
+    public User(int userId, String passwordHash, String userName, String email, String role) {
         this.userId = userId;
-        this.password = password;
+        this.passwordHash = passwordHash;
         this.userName = userName;
         this.email = email;
         this.role = role;
@@ -30,20 +31,12 @@ public class User {
         this.userId = userId;
     }
 
-    public int getPassword() {
-        return password;
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
-    public void setPassword(int password) {
-        this.password = password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     public String getUserName() {
@@ -52,6 +45,14 @@ public class User {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getRole() {
