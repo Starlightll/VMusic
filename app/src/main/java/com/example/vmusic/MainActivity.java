@@ -25,7 +25,6 @@ import java.util.List;
 import dao.SongDao;
 import database.AppDatabase;
 import entity.Song;
-import ui.fragment.BlankFragment;
 import ui.fragment.HomePageMusicFragment;
 import viewmodel.SongViewModel;
 
@@ -64,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
             if (itemId == R.id.navigation_home) {
                 fragment = new HomePageMusicFragment();
             } else if (itemId == R.id.navigation_search) {
-                 //fragment = new BlankFragment();
+                // fragment = new SearchFragment();
             } else if (itemId == R.id.navigation_library) {
                 // fragment = new LibraryFragment();
             }
