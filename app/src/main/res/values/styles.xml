@@ -4,4 +4,8 @@
         <item name="android:textColor">@color/white</item>
         <item name="android:background">@color/dark_gray</item>
     </style>
+    <style name="NoActiveIndicator">
+        <item name="android:color">@android:color/transparent</item>
+    </style>
+
 </resources>
