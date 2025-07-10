@@ -25,14 +25,31 @@ public class SongRepository {
     public void insert(Song song) {
         new Thread(() -> songDao.insert(song)).start(); // dùng Thread để tránh main thread
     }
-
+    public void insertSongWithGenres(final Song song, final List<Integer> genreIds) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            songDao.insertSongWithGenres(song, genreIds);
+        });
+    }
     public LiveData<List<Song>> getAllSongs() {
-        // Gọi trong thread khác, không phải trong hàm trực tiếp của MainActivity
         return songDao.getAllSongsLive();
     }
 
     public LiveData<SongWithGenres> getSongWithGenres(int id){
         return songDao.getSongWithGenreLive(id);
     }
+    public void delete(int songId) {
+        new Thread(() -> {
+            Song song = songDao.getSongById2(songId);
+            if (song != null) {
+                songDao.deleteSong(song);
+            }
+        }).start();
+    }
+
+
+    public LiveData<Song> getSong(int id){
+        return songDao.getSongById(id);
+    }
+
 
 }
