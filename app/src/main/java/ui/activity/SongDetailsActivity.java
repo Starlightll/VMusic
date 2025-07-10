@@ -163,7 +163,7 @@ public class SongDetailsActivity extends AppCompatActivity {
         String artist = editArtist.getText().toString().trim(); // Lấy tên ca sĩ
 
         // Kiểm tra tất cả các trường bắt buộc
-        if (title.isEmpty() || artist.isEmpty() || imageUri == null || audioUri == null || lyricUri == null || selectedGenreIds.isEmpty()) {
+        if (title.isEmpty() || artist.isEmpty() || imageUri == null || audioUri == null || lyricUri == null) {
             Toast.makeText(this, "Vui lòng điền đầy đủ thông tin và chọn file", Toast.LENGTH_SHORT).show();
             return;
         }
