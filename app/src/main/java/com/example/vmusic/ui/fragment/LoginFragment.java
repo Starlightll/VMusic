@@ -75,7 +75,7 @@ public class LoginFragment extends Fragment {
                 session.saveUser(user);
 
                 NavHostFragment.findNavController(this)
-                        .navigate(R.id.action_loginFragment_to_homeFragment);
+                        .navigate(R.id.action_loginFragment_to_mainFragment);
             } else {
                 Toast.makeText(getContext(), "Invalid credentials", Toast.LENGTH_SHORT).show();
             }
@@ -92,7 +92,7 @@ public class LoginFragment extends Fragment {
 
         gotoHome.setOnClickListener(v ->
             NavHostFragment.findNavController(this)
-                    .navigate(R.id.action_loginFragment_to_homeFragment)
+                    .navigate(R.id.action_loginFragment_to_mainFragment)
         );
 
         return view;

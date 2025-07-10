@@ -55,10 +55,12 @@ public abstract class AppDatabase extends RoomDatabase {
             Executors.newSingleThreadExecutor().execute(() -> {
                 // Lấy instance của Dao và insert dữ liệu mẫu
                 GenreDao dao = INSTANCE.genreDao();
+
                 dao.insertAll(getInitialGenres());
             });
         }
     };
+
 
     // === HÀM TẠO RA DỮ LIỆU MẪU ===
     private static Genre[] getInitialGenres() {

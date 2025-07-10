@@ -1,4 +1,4 @@
-package ui.fragment;
+package com.example.vmusic.ui.fragment;
 
 import android.os.Bundle;
 
@@ -15,23 +15,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.vmusic.MainActivity;
 import com.example.vmusic.R;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import ui.activity.HomeActivity;
 import ui.adapter.PopularSongAdapter;
 import ui.adapter.RecentSongAdapter;
 import viewmodel.SongViewModel;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link HomePageMusicFragment#newInstance} factory method to
+ * Use the {@link HomeTabFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomePageMusicFragment extends Fragment {
+public class HomeTabFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -46,8 +44,7 @@ public class HomePageMusicFragment extends Fragment {
     RecentSongAdapter recentSongAdapter ;
     PopularSongAdapter  popularSongAdapter;
     private SongViewModel songViewModel;
-
-    public HomePageMusicFragment() {
+    public HomeTabFragment() {
         // Required empty public constructor
     }
 
@@ -57,11 +54,11 @@ public class HomePageMusicFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment HomePageMusicFragment.
+     * @return A new instance of fragment HomeTabFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static HomePageMusicFragment newInstance(String param1, String param2) {
-        HomePageMusicFragment fragment = new HomePageMusicFragment();
+    public static HomeTabFragment newInstance(String param1, String param2) {
+        HomeTabFragment fragment = new HomeTabFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -82,13 +79,11 @@ public class HomePageMusicFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home_page_music, container, false);
+        return inflater.inflate(R.layout.fragment_home_tab, container, false);
     }
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         TextView tvGreeting = view.findViewById(R.id.tvGreeting);
         tvGreeting.setText(getGreetingMessage());
 
@@ -98,16 +93,13 @@ public class HomePageMusicFragment extends Fragment {
         recyclerRecent = view.findViewById(R.id.recyclerRecent);
 
         recentSongAdapter = new RecentSongAdapter(requireContext(), new ArrayList<>(), song -> {
-            if (getActivity() instanceof HomeActivity) {
-                ((HomeActivity) getActivity()).showMiniPlayer(song);
-            }
+
         });
 
-        popularSongAdapter = new PopularSongAdapter(requireContext() ,new ArrayList<>(), song -> {
-            if (getActivity() instanceof HomeActivity) {
-                ((HomeActivity) getActivity()).showMiniPlayer(song);
-            }
+        popularSongAdapter = new PopularSongAdapter(requireContext(), new ArrayList<>(), song -> {
+
         });
+
         recyclerRecent.setAdapter(recentSongAdapter);
         recyclerRecent.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         songViewModel.getAllSongs().observe(getViewLifecycleOwner(), songs -> {
@@ -128,7 +120,6 @@ public class HomePageMusicFragment extends Fragment {
                 popularSongAdapter.setSongs(songs);
             }
         });
-
     }
     private String getGreetingMessage() {
         Calendar calendar = Calendar.getInstance();
@@ -144,5 +135,4 @@ public class HomePageMusicFragment extends Fragment {
             return "Chào buổi tối, Bính 👋";
         }
     }
-
 }
