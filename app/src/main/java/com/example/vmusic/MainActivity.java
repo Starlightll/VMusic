@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
                 long currentPosition = exoPlayer.getCurrentPosition();
 
                 if (duration > 0) {
-                    int progress = (int) ((currentPosition * 100) / duration);
+                    int progress = (int) ((currentPosition * 5000) / duration);
                     progressBar.setProgress(progress);
                 }
 
