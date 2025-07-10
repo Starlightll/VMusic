@@ -39,7 +39,6 @@ public interface SongDao {
 
 
 
-
     // Phương thức insert một mối quan hệ
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertSongGenreCrossRef(SongGenreCrossRef crossRef);
