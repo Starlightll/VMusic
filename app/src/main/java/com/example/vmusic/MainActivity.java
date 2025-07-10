@@ -25,6 +25,7 @@ import java.util.List;
 import dao.SongDao;
 import database.AppDatabase;
 import entity.Song;
+import ui.fragment.BlankFragment;
 import ui.fragment.HomePageMusicFragment;
 import viewmodel.SongViewModel;
 
@@ -63,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
             if (itemId == R.id.navigation_home) {
                 fragment = new HomePageMusicFragment();
             } else if (itemId == R.id.navigation_search) {
-                // fragment = new SearchFragment();
+                 //fragment = new BlankFragment();
             } else if (itemId == R.id.navigation_library) {
                 // fragment = new LibraryFragment();
             }
@@ -140,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
                 long currentPosition = exoPlayer.getCurrentPosition();
 
                 if (duration > 0) {
-                    int progress = (int) ((currentPosition * 100) / duration);
+                    int progress = (int) ((currentPosition * 5000) / duration);
                     progressBar.setProgress(progress);
                 }
 

@@ -14,12 +14,11 @@ public class Song {
     public String audioUrl;
     public  String urlLyric;
 
-    public long lastPlayedAt;
     public Song() {
 
     }
 
-    public Song(int songId, String name, String artist, String image, int listenCounts, String audioUrl, String urlLyric, long lastPlayedAt) {
+    public Song(int songId, String name, String artist, String image, int listenCounts, String audioUrl, String urlLyric) {
         this.songId = songId;
         this.name = name;
         this.artist = artist;
@@ -27,7 +26,6 @@ public class Song {
         this.listenCounts = listenCounts;
         this.audioUrl = audioUrl;
         this.urlLyric = urlLyric;
-        this.lastPlayedAt = lastPlayedAt;
     }
 
 
@@ -87,13 +85,7 @@ public class Song {
     public void setUrlLyric(String urlLyric) {
         this.urlLyric = urlLyric;
     }
-    public long getLastPlayedAt() {
-        return lastPlayedAt;
-    }
 
-    public void setLastPlayedAt(long lastPlayedAt) {
-        this.lastPlayedAt = lastPlayedAt;
-    }
 
     @Override
     public String toString() {
@@ -105,7 +97,6 @@ public class Song {
                 ", listenCounts=" + listenCounts +
                 ", audioUrl='" + audioUrl + '\'' +
                 ", urlLyric='" + urlLyric + '\'' +
-                ", lastPlayedAt=" + lastPlayedAt +
                 '}';
     }
 }
