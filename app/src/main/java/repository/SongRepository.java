@@ -25,9 +25,12 @@ public class SongRepository {
     public void insert(Song song) {
         new Thread(() -> songDao.insert(song)).start(); // dùng Thread để tránh main thread
     }
-
+    public void insertSongWithGenres(final Song song, final List<Integer> genreIds) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            songDao.insertSongWithGenres(song, genreIds);
+        });
+    }
     public LiveData<List<Song>> getAllSongs() {
-        // Gọi trong thread khác, không phải trong hàm trực tiếp của MainActivity
         return songDao.getAllSongsLive();
     }
 
