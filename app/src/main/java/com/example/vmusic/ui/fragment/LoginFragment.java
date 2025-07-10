@@ -1,20 +1,19 @@
 package com.example.vmusic.ui.fragment;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.fragment.NavHostFragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.vmusic.R;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.vmusic.R;
 import com.example.vmusic.helper.SessionManager;
 import com.example.vmusic.viewmodel.LoginViewModel;
 
@@ -66,6 +65,7 @@ public class LoginFragment extends Fragment {
         EditText password = view.findViewById(R.id.txtLoginPassword);
         Button loginBtn = view.findViewById(R.id.btnLogin);
         Button gotoRegister = view.findViewById(R.id.btnGoToRegister);
+        TextView gotoHome = view.findViewById(R.id.btnContinueWithoutAccount);
 
         loginVM = new ViewModelProvider(this).get(LoginViewModel.class);
 
@@ -88,6 +88,11 @@ public class LoginFragment extends Fragment {
         gotoRegister.setOnClickListener(v ->
                 NavHostFragment.findNavController(this)
                         .navigate(R.id.action_loginFragment_to_registerFragment)
+        );
+
+        gotoHome.setOnClickListener(v ->
+            NavHostFragment.findNavController(this)
+                    .navigate(R.id.action_loginFragment_to_homeFragment)
         );
 
         return view;

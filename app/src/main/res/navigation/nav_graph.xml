@@ -27,8 +27,20 @@
     </fragment>
 
     <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.vmusic.ui.fragment.SettingsFragment"
+        android:label="Settings">
+
+    </fragment>
+
+    <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.vmusic.ui.fragment.HomeFragment"
-        android:label="Home" />
+        android:label="Home" >
+        <action
+            android:id="@+id/action_homeFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+
+    </fragment>
 
 </navigation>
