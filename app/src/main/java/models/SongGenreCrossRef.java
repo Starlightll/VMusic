@@ -6,4 +6,8 @@ import androidx.room.Entity;
 public class SongGenreCrossRef {
     public int songId;
     public int genreId;
+    public SongGenreCrossRef(int songId, int genreId) {
+        this.songId = songId;
+        this.genreId = genreId;
+    }
 }

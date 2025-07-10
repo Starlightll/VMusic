@@ -15,7 +15,6 @@ public class Song {
     public  String urlLyric;
 
     public Song() {
-
     }
 
     public Song(int songId, String name, String artist, String image, int listenCounts, String audioUrl, String urlLyric) {

@@ -26,7 +26,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Song Title*"
+                android:text="Tên bài hát*"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:layout_marginBottom="8dp" />
@@ -35,7 +35,7 @@
                 android:id="@+id/editTitle"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:hint="Enter song title"
+                android:hint="Nhập tên bài hát"
                 android:background="@color/dark_gray"
                 android:textColor="@color/white"
                 android:textColorHint="@color/gray_hint"
@@ -48,62 +48,27 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp"
-                android:text="Artists (Max 5)"
+                android:text="Tên ca sĩ*"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
 
-            <LinearLayout
-                android:id="@+id/artistContainer"
+            <EditText
+                android:id="@+id/editAdditionalArtist"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="4dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <EditText
-                        android:id="@+id/editAdditionalArtist"
-                        android:layout_width="0dp"
-                        android:layout_height="40dp"
-                        android:layout_weight="1"
-                        android:hint="Enter artist"
-                        android:background="@color/dark_gray"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/gray_hint"
-                        android:paddingStart="12dp"
-                        android:inputType="text" />
-
-                    <Button
-                        android:id="@+id/btnAddArtist"
-                        android:layout_width="wrap_content"
-                        android:layout_height="40dp"
-                        android:layout_marginStart="8dp"
-                        android:text="ADD"
-                        android:textColor="@color/white"
-                        android:backgroundTint="@color/dark_gray" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/artistTagsContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="8dp"
-                    android:gravity="start"
-                    android:layout_marginBottom="16dp" />
-            </LinearLayout>
-
+                android:layout_height="48dp"
+                android:hint="Nhập tên các nghệ sĩ"
+                android:background="@color/dark_gray"
+                android:textColor="@color/white"
+                android:textColorHint="@color/gray_hint"
+                android:paddingStart="12dp"
+                android:inputType="text" />
             <!-- Cover Image -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp"
-                android:text="Cover Image*"
+                android:text="Ảnh bìa bài hát*"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
 
@@ -123,7 +88,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="12dp"
-                android:text="CHOOSE IMAGE"
+                android:text="Chọn ảnh"
                 android:textColor="@color/white"
                 android:backgroundTint="@color/dark_gray" />
 
@@ -133,7 +98,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp"
-                android:text="Audio File*"
+                android:text="Tệp bài hát*"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
 
@@ -148,7 +113,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="No file selected."
+                    android:text="Chưa có tệp nào."
                     android:textColor="@color/gray_hint"
                     android:maxLines="1"
                     android:ellipsize="end"
@@ -160,7 +125,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
                     android:backgroundTint="@color/dark_gray"
-                    android:text="CHOOSE FILE"
+                    android:text="Chọn tệp"
                     android:textColor="@color/white" />
             </LinearLayout>
 
@@ -170,7 +135,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp"
-                android:text="Lyric File*"
+                android:text="Tệp lời bài hát*"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
 
@@ -185,7 +150,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="No file selected."
+                    android:text="Chưa có tệp nào."
                     android:textColor="@color/gray_hint"
                     android:maxLines="1"
                     android:ellipsize="end"
@@ -197,7 +162,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
                     android:backgroundTint="@color/dark_gray"
-                    android:text="CHOOSE FILE"
+                    android:text="Chọn tệp"
                     android:textColor="@color/white" />
             </LinearLayout>
 
@@ -207,17 +172,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp"
-                android:text="Genre*"
+                android:text="Thể loại (chọn nhiều)*"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
 
-            <Spinner
-                android:id="@+id/spinnerPrimaryGenre"
+            <LinearLayout
+                android:id="@+id/genreContainer"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:popupBackground="@color/dark_gray"
-                android:background="@color/dark_gray"
-                android:theme="@style/SpinnerDark" />
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="4dp" />
 
             <!-- Save Button -->
             <Button
@@ -226,7 +190,7 @@
                 android:layout_height="48dp"
                 android:layout_marginTop="32dp"
                 android:layout_marginBottom="32dp"
-                android:text="SAVE SONG"
+                android:text="Lưu bài hát"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:backgroundTint="@color/primary_green" />
