@@ -15,15 +15,19 @@ import com.example.vmusic.R;
 
 import java.util.List;
 
+import Interface.OnSongClickListener;
 import entity.Song;
 
 public class PopularSongAdapter extends RecyclerView.Adapter<PopularSongAdapter.PopularSongViewHolder>{
     private Context context;
     private List<Song> songList;
 
-    public PopularSongAdapter(Context context, List<Song> songList) {
+    private OnSongClickListener listener;
+
+    public PopularSongAdapter(Context context, List<Song> songList , OnSongClickListener listener) {
         this.context = context;
         this.songList = songList;
+        this.listener = listener;
     }
     public static class PopularSongViewHolder extends RecyclerView.ViewHolder {
         ImageView imgCover;
@@ -54,6 +58,12 @@ public class PopularSongAdapter extends RecyclerView.Adapter<PopularSongAdapter.
                 .load(song.getImage())
                 .placeholder(R.drawable.ic_launcher_background)
                 .into(holder.imgCover);
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onSongClick(song);
+            }
+        });
     }
 
     @Override

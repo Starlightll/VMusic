@@ -13,10 +13,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.example.vmusic.MainActivity;
 import com.example.vmusic.R;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import ui.adapter.PopularSongAdapter;
 import ui.adapter.RecentSongAdapter;
@@ -84,12 +87,26 @@ public class HomePageMusicFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        TextView tvGreeting = view.findViewById(R.id.tvGreeting);
+        tvGreeting.setText(getGreetingMessage());
+
+
         songViewModel = new ViewModelProvider(this).get(SongViewModel.class);
 
         recyclerRecent = view.findViewById(R.id.recyclerRecent);
 
-        recentSongAdapter = new RecentSongAdapter(requireContext(), new ArrayList<>());
-        popularSongAdapter = new PopularSongAdapter(requireContext(), new ArrayList<>());
+        recentSongAdapter = new RecentSongAdapter(requireContext(), new ArrayList<>(), song -> {
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).showMiniPlayer(song);
+            }
+        });
+
+        popularSongAdapter = new PopularSongAdapter(requireContext() ,new ArrayList<>(), song -> {
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).showMiniPlayer(song);
+            }
+        });
         recyclerRecent.setAdapter(recentSongAdapter);
         recyclerRecent.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         songViewModel.getAllSongs().observe(getViewLifecycleOwner(), songs -> {
@@ -112,4 +129,19 @@ public class HomePageMusicFragment extends Fragment {
         });
 
     }
+    private String getGreetingMessage() {
+        Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+
+        if (hour >= 5 && hour < 12) {
+            return "Chào buổi sáng, Bính 👋";
+        } else if (hour >= 12 && hour < 17) {
+            return "Chào buổi trưa, Bính 👋";
+        } else if (hour >= 17 && hour < 21) {
+            return "Chào buổi chiều, Bính 👋";
+        } else {
+            return "Chào buổi tối, Bính 👋";
+        }
+    }
+
 }

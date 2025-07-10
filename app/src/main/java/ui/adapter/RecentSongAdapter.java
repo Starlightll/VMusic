@@ -16,15 +16,17 @@ import com.example.vmusic.R;
 
 import java.util.List;
 
+import Interface.OnSongClickListener;
 import entity.Song;
 
 public class RecentSongAdapter extends RecyclerView.Adapter<RecentSongAdapter.SongViewHolder> {
     private Context context;
     private List<Song> songList;
-
-    public RecentSongAdapter(Context context, List<Song> songList) {
+    private OnSongClickListener listener;
+    public RecentSongAdapter(Context context, List<Song> songList ,OnSongClickListener listener) {
         this.context = context;
         this.songList = songList;
+        this.listener = listener;
     }
     public static class SongViewHolder extends RecyclerView.ViewHolder{
          ImageView imageRecent;
@@ -52,6 +54,12 @@ public class RecentSongAdapter extends RecyclerView.Adapter<RecentSongAdapter.So
         Glide.with(context)
                 .load(song.getImage())
                 .into(holder.imageRecent);
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onSongClick(song);
+            }
+        });
 
     }
 
