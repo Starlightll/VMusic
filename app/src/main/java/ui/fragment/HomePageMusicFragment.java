@@ -21,6 +21,7 @@ import com.example.vmusic.R;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import ui.activity.HomeActivity;
 import ui.adapter.PopularSongAdapter;
 import ui.adapter.RecentSongAdapter;
 import viewmodel.SongViewModel;
@@ -97,14 +98,14 @@ public class HomePageMusicFragment extends Fragment {
         recyclerRecent = view.findViewById(R.id.recyclerRecent);
 
         recentSongAdapter = new RecentSongAdapter(requireContext(), new ArrayList<>(), song -> {
-            if (getActivity() instanceof MainActivity) {
-                ((MainActivity) getActivity()).showMiniPlayer(song);
+            if (getActivity() instanceof HomeActivity) {
+                ((HomeActivity) getActivity()).showMiniPlayer(song);
             }
         });
 
         popularSongAdapter = new PopularSongAdapter(requireContext() ,new ArrayList<>(), song -> {
-            if (getActivity() instanceof MainActivity) {
-                ((MainActivity) getActivity()).showMiniPlayer(song);
+            if (getActivity() instanceof HomeActivity) {
+                ((HomeActivity) getActivity()).showMiniPlayer(song);
             }
         });
         recyclerRecent.setAdapter(recentSongAdapter);
