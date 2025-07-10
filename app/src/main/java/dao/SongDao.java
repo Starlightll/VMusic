@@ -38,6 +38,8 @@ public interface SongDao {
     Song getSongById2(int id);
 
 
+
+
     // Phương thức insert một mối quan hệ
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertSongGenreCrossRef(SongGenreCrossRef crossRef);
