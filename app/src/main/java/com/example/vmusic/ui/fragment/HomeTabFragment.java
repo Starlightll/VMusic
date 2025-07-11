@@ -1,11 +1,14 @@
 package com.example.vmusic.ui.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.media3.common.util.UnstableApi;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,6 +19,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.vmusic.R;
+import com.example.vmusic.service.PlaybackService;
+import com.example.vmusic.viewmodel.PlayerViewModel;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -81,11 +86,14 @@ public class HomeTabFragment extends Fragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home_tab, container, false);
     }
+
+    @OptIn(markerClass = UnstableApi.class)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         TextView tvGreeting = view.findViewById(R.id.tvGreeting);
         tvGreeting.setText(getGreetingMessage());
+        PlayerViewModel playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
 
 
         songViewModel = new ViewModelProvider(this).get(SongViewModel.class);
@@ -93,11 +101,29 @@ public class HomeTabFragment extends Fragment {
         recyclerRecent = view.findViewById(R.id.recyclerRecent);
 
         recentSongAdapter = new RecentSongAdapter(requireContext(), new ArrayList<>(), song -> {
+            Intent intent = new Intent(requireContext(), PlaybackService.class);
+            intent.putExtra("url", song.getAudioUrl());
+            intent.putExtra("name", song.getName());
+            intent.putExtra("artist", song.getArtist());        // THÊM
+            intent.putExtra("image", song.getImage());          // THÊM
+            requireContext().startService(intent);
 
+            // Cập nhật ViewModel để mini player hiển thị
+            playerViewModel.setCurrentSong(song);
+            playerViewModel.setIsPlaying(true);
         });
 
         popularSongAdapter = new PopularSongAdapter(requireContext(), new ArrayList<>(), song -> {
+            Intent intent = new Intent(requireContext(), PlaybackService.class);
+            intent.putExtra("url", song.getAudioUrl());
+            intent.putExtra("name", song.getName());
+            intent.putExtra("artist", song.getArtist());        // THÊM
+            intent.putExtra("image", song.getImage());          // THÊM
+            requireContext().startService(intent);
 
+            // Cập nhật ViewModel để mini player hiển thị
+            playerViewModel.setCurrentSong(song);
+            playerViewModel.setIsPlaying(true);
         });
 
         recyclerRecent.setAdapter(recentSongAdapter);
