@@ -1,16 +1,18 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Nền progress bar -->
     <item android:id="@android:id/background">
         <shape>
-            <solid android:color="#333333" />
+            <solid android:color="#333333" /> <!-- Màu nền xám đậm -->
         </shape>
     </item>
+
+    <!-- Phần tiến độ đã chạy -->
     <item android:id="@android:id/progress">
         <clip>
             <shape android:shape="rectangle">
-                <corners android:radius="8dp"/>
-                <solid android:color="#1DB954"/>
+                <corners android:radius="8dp"/> <!-- Bo góc 8dp -->
+                <solid android:color="#1DB954"/> <!-- Màu xanh Spotify -->
             </shape>
-
         </clip>
     </item>
 </layer-list>
