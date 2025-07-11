@@ -33,6 +33,9 @@ public class SongRepository {
     public LiveData<List<Song>> getAllSongs() {
         return songDao.getAllSongsLive();
     }
+    public LiveData<List<Song>> searchSongsByName(String query) {
+        return songDao.searchSongsByName(query);
+    }
 
     public LiveData<SongWithGenres> getSongWithGenres(int id){
         return songDao.getSongWithGenreLive(id);
