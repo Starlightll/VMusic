@@ -60,6 +60,8 @@ public interface SongDao {
             }
         }
     }
+    @Query("SELECT * FROM songs WHERE name LIKE '%' || :query || '%'")
+    LiveData<List<Song>> searchSongsByName(String query);
 
     @Insert
     long insert(Song song);
