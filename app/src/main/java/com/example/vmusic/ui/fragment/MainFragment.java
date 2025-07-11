@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.MediaItem;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.navigation.NavController;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.vmusic.R;
+import com.example.vmusic.viewmodel.PlayerViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import entity.Song;
@@ -88,6 +90,20 @@ public class MainFragment extends Fragment {
         NavController navController = navHostFragment.getNavController();
         NavigationUI.setupWithNavController(bottomNav, navController);
 
+        PlayerViewModel playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
+        playerViewModel.getCurrentSong().observe(getViewLifecycleOwner(), song -> {
+            View miniContainer = view.findViewById(R.id.miniPlayerContainer);
+            if (song != null) {
+                if (getChildFragmentManager().findFragmentById(R.id.miniPlayerContainer) == null) {
+                    getChildFragmentManager().beginTransaction()
+                            .replace(R.id.miniPlayerContainer, new MiniPlayerFragment())
+                            .commit();
+                }
+                miniContainer.setVisibility(View.VISIBLE);
+            } else {
+                miniContainer.setVisibility(View.GONE);
+            }
+        });
 
 
     }

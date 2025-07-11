@@ -7,6 +7,8 @@ import com.cloudinary.android.MediaManager;
 import java.util.HashMap;
 import java.util.Map;
 
+import models.PlayerManager;
+
 public class MyApp extends Application {
     @Override
     public void onCreate() {
@@ -19,5 +21,7 @@ public class MyApp extends Application {
         config.put("secure", true);
 
         MediaManager.init(this, config);
+
+        PlayerManager.init(this);
     }
 }
