@@ -35,6 +35,14 @@
             android:layout_height="wrap_content" />
     </LinearLayout>
 
+    <!-- Playlist -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/playlistRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="8dp"/>
+
+    <!-- Song -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/songRecyclerView"
         android:layout_width="match_parent"
