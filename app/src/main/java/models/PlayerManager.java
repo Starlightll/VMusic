@@ -23,4 +23,11 @@ public class PlayerManager {
             player = null;
         }
     }
+
+    public static ExoPlayer getPlayer(Context context) {
+        if (player == null) {
+            player = new ExoPlayer.Builder(context.getApplicationContext()).build();
+        }
+        return player;
+    }
 }
