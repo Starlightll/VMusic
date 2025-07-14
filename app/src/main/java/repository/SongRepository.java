@@ -54,5 +54,27 @@ public class SongRepository {
         return songDao.getSongById(id);
     }
 
+    //increase listen count
+    public void increaseListenCount(Song song) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            song.setListenCounts(song.getListenCounts() + 1);
+            songDao.updateSong(song);
+        });
+    }
+
+    public LiveData<List<Song>> getPopularSongs() {
+        return songDao.getPopularSongs();
+    }
+
+    public LiveData<List<Song>> getRecentSongs() {
+        return songDao.getRecentSongs();
+    }
+
+    public LiveData<List<Song>> getSongsByIds(List<Integer> songIds) {
+        return songDao.getSongsByIds(songIds);
+    }
+
+
+
 
 }

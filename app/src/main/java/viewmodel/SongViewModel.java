@@ -48,4 +48,21 @@ public class SongViewModel extends AndroidViewModel{
     public LiveData<Song> getSong(int id){
         return repository.getSong(id);
     }
+
+    public LiveData<List<Song>> getPopularSongs() {
+        return repository.getPopularSongs();
+    }
+    public LiveData<List<Song>> getRecentSongs() {
+        return repository.getRecentSongs();
+    }
+    public LiveData<List<Song>> getSongsByIds(List<Integer> songIds) {
+        return repository.getSongsByIds(songIds);
+    }
+
+
+    public void increaseListenCount(Song song) {
+        repository.increaseListenCount(song);
+    }
+
+
 }

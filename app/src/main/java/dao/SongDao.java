@@ -63,6 +63,15 @@ public interface SongDao {
     @Query("SELECT * FROM songs WHERE name LIKE '%' || :query || '%'")
     LiveData<List<Song>> searchSongsByName(String query);
 
+    @Query("SELECT * FROM songs ORDER BY listenCounts DESC LIMIT 10")
+    LiveData<List<Song>> getPopularSongs();
+
+    @Query("SELECT * FROM songs ORDER BY songId DESC LIMIT 20")
+    LiveData<List<Song>> getRecentSongs();
+
+    @Query("SELECT * FROM songs WHERE songId IN (:songIds)")
+    LiveData<List<Song>> getSongsByIds(List<Integer> songIds);
+
     @Insert
     long insert(Song song);
 

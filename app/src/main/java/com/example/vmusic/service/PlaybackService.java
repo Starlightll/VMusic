@@ -54,11 +54,27 @@ public class PlaybackService extends Service {
                 .setChannelImportance(NotificationManager.IMPORTANCE_LOW)
                 .setSmallIconResourceId(R.drawable.ic_music_note)
                 .build();
+        notificationManager.setUseNextAction(false);
+        notificationManager.setUsePreviousAction(false);
+        notificationManager.setUseRewindAction(false);
+        notificationManager.setUseFastForwardAction(false);
+        notificationManager.setUseStopAction(false);
 
         notificationManager.setPlayer(player);
         notificationManager.setMediaSessionToken(mediaSession.getSessionToken());
 
         createNotificationChannel();
+
+
+        player.addListener(new Player.Listener() {
+            @Override
+            public void onIsPlayingChanged(boolean isPlaying) {
+                Intent intent = new Intent("PLAYER_STATE_CHANGED");
+                intent.putExtra("isPlaying", isPlaying);
+                sendBroadcast(intent);
+            }
+        });
+
     }
 
     @Override
@@ -75,9 +91,17 @@ public class PlaybackService extends Service {
             player.play();
         }
 
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        if (player != null) {
+            player.stop();
+        }
+        stopSelf();
+        super.onTaskRemoved(rootIntent);
+    }
     @Override
     public void onDestroy() {
         notificationManager.setPlayer(null);

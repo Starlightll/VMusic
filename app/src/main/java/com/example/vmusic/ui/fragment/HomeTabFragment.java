@@ -19,14 +19,18 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.vmusic.R;
+import com.example.vmusic.helper.RecentlyPlayedManager;
+import com.example.vmusic.helper.SessionManager;
 import com.example.vmusic.service.PlaybackService;
 import com.example.vmusic.viewmodel.PlayerViewModel;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import ui.adapter.PopularSongAdapter;
 import ui.adapter.RecentSongAdapter;
+import ui.adapter.RecentlyPlayedAdapter;
 import viewmodel.SongViewModel;
 
 /**
@@ -45,9 +49,13 @@ public class HomeTabFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    RecyclerView recyclerRecent , recyclerPopular;
+    RecyclerView recyclerRecent , recyclerPopular , recyclerRecentlyPlayed;
     RecentSongAdapter recentSongAdapter ;
     PopularSongAdapter  popularSongAdapter;
+    RecentlyPlayedAdapter recentlyPlayedAdapter;
+
+    String userName ="";
+
     private SongViewModel songViewModel;
     public HomeTabFragment() {
         // Required empty public constructor
@@ -91,10 +99,12 @@ public class HomeTabFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        SessionManager sessionManager = new SessionManager(requireContext());
         TextView tvGreeting = view.findViewById(R.id.tvGreeting);
         tvGreeting.setText(getGreetingMessage());
         PlayerViewModel playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
-
+        int currentID = sessionManager.getUserId();
+        RecentlyPlayedManager recentlyPlayedManager = new RecentlyPlayedManager(requireContext() , currentID);
 
         songViewModel = new ViewModelProvider(this).get(SongViewModel.class);
 
@@ -111,6 +121,8 @@ public class HomeTabFragment extends Fragment {
             // Cập nhật ViewModel để mini player hiển thị
             playerViewModel.setCurrentSong(song);
             playerViewModel.setIsPlaying(true);
+            songViewModel.increaseListenCount(song);
+            recentlyPlayedManager.addSongId(song.songId);
         });
 
         popularSongAdapter = new PopularSongAdapter(requireContext(), new ArrayList<>(), song -> {
@@ -124,11 +136,13 @@ public class HomeTabFragment extends Fragment {
             // Cập nhật ViewModel để mini player hiển thị
             playerViewModel.setCurrentSong(song);
             playerViewModel.setIsPlaying(true);
+            songViewModel.increaseListenCount(song);
+            recentlyPlayedManager.addSongId(song.songId);
         });
 
         recyclerRecent.setAdapter(recentSongAdapter);
         recyclerRecent.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
-        songViewModel.getAllSongs().observe(getViewLifecycleOwner(), songs -> {
+        songViewModel.getRecentSongs().observe(getViewLifecycleOwner(), songs -> {
             if (songs != null) {
                 recentSongAdapter.setSongs(songs);
             }
@@ -141,24 +155,53 @@ public class HomeTabFragment extends Fragment {
 
         recyclerPopular.setLayoutManager(new GridLayoutManager(requireContext(), 3));
 
-        songViewModel.getAllSongs().observe(getViewLifecycleOwner(), songs -> {
+        songViewModel.getPopularSongs().observe(getViewLifecycleOwner(), songs -> {
             if (songs != null) {
                 popularSongAdapter.setSongs(songs);
             }
         });
+
+        recyclerRecentlyPlayed = view.findViewById(R.id.recyclerRecentlyPlayed);
+
+        recentlyPlayedAdapter = new RecentlyPlayedAdapter(requireContext(), new ArrayList<>(), song -> {
+            Intent intent = new Intent(requireContext(), PlaybackService.class);
+            intent.putExtra("url", song.getAudioUrl());
+            intent.putExtra("name", song.getName());
+            intent.putExtra("artist", song.getArtist());
+            intent.putExtra("image", song.getImage());
+            requireContext().startService(intent);
+
+            playerViewModel.setCurrentSong(song);
+            playerViewModel.setIsPlaying(true);
+            songViewModel.increaseListenCount(song);
+            recentlyPlayedManager.addSongId(song.songId);
+        });
+
+        recyclerRecentlyPlayed.setAdapter(recentlyPlayedAdapter);
+        recyclerRecentlyPlayed.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+
+        List<Integer> recentIds = recentlyPlayedManager.getSongIds();
+
+        songViewModel.getSongsByIds(recentIds).observe(getViewLifecycleOwner(), songs -> {
+            recentlyPlayedAdapter.setSongs(songs);
+        });
+
+
     }
     private String getGreetingMessage() {
+        SessionManager sessionManager = new SessionManager(requireContext());
+        userName = sessionManager.getUsername();
         Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
 
         if (hour >= 5 && hour < 12) {
-            return "Chào buổi sáng, Bính 👋";
+            return "Chào buổi sáng " + userName + "👋" ;
         } else if (hour >= 12 && hour < 17) {
-            return "Chào buổi trưa, Bính 👋";
+            return "Chào buổi trưa " + userName + "👋";
         } else if (hour >= 17 && hour < 21) {
-            return "Chào buổi chiều, Bính 👋";
+            return "Chào buổi chiều " + userName + "👋";
         } else {
-            return "Chào buổi tối, Bính 👋";
+            return "Chào buổi tối " + userName + "👋";
         }
     }
 }
