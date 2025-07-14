@@ -155,7 +155,7 @@ public class PlaybackService extends Service {
         @Override
         public PendingIntent createCurrentContentIntent(Player player) {
             // Mở app khi click notification
-            Intent intent = new Intent(PlaybackService.this, com.example.vmusic.ui.fragment.MainFragment.class);
+            Intent intent = new Intent(PlaybackService.this, ui.activity.PlaySongActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             return PendingIntent.getActivity(PlaybackService.this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
         }
