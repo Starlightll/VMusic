@@ -1,5 +1,6 @@
 package com.example.vmusic.ui.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
@@ -20,7 +22,11 @@ import com.bumptech.glide.Glide;
 import com.example.vmusic.R;
 import com.example.vmusic.viewmodel.PlayerViewModel;
 
+import java.util.List;
+
+import entity.Song;
 import models.PlayerManager;
+import ui.activity.PlaySongActivity;
 
 public class MiniPlayerFragment extends Fragment {
 
@@ -85,6 +91,14 @@ public class MiniPlayerFragment extends Fragment {
 
         // icon
         btnPlay.setOnClickListener(v -> togglePlayPause());
+
+
+        miniPlayerLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), PlaySongActivity.class);
+            intent.putExtra("song", playerViewModel.getCurrentSong().getValue());
+            startActivity(intent);
+        });
+
 
         //progress
         startUpdatingProgressBar();

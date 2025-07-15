@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
@@ -18,7 +19,9 @@ import androidx.viewpager.widget.ViewPager;
 import com.example.vmusic.R;
 import com.example.vmusic.ui.adapter.PlaySongPagerAdapter;
 import com.example.vmusic.ui.fragment.LyricFragment;
+import com.example.vmusic.viewmodel.PlayerViewModel;
 
+import entity.Song;
 import models.PlayerManager;
 
 public class PlaySongActivity extends AppCompatActivity {
@@ -30,6 +33,7 @@ public class PlaySongActivity extends AppCompatActivity {
     private SeekBar seekBar;
     private TextView tvCurrentTime, tvTotalTime;
     private Handler handler = new Handler(Looper.getMainLooper());
+    private PlayerViewModel viewModel;
 
     private boolean isPlaying = false;
     @Override
@@ -38,7 +42,7 @@ public class PlaySongActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_play_song);
 
-        // Init UI...
+        // Init UI
         tvName = findViewById(R.id.tv_name);
         tvSinger = findViewById(R.id.tv_singer);
         viewPager = findViewById(R.id.viewPlayMusic);
@@ -49,38 +53,38 @@ public class PlaySongActivity extends AppCompatActivity {
         tvCurrentTime = findViewById(R.id.txt_timesong);
         tvTotalTime = findViewById(R.id.txt_totaltimesong);
 
-        String name = getIntent().getStringExtra("name");
-        String artist = getIntent().getStringExtra("artist");
-        imageUrl = getIntent().getStringExtra("image");
-        String url = getIntent().getStringExtra("url");
-        String lyricUrl = getIntent().getStringExtra("lyric");
-
-        tvName.setText(name);
-        tvSinger.setText(artist);
-
-        // Khởi tạo player
         player = PlayerManager.getPlayer(this);
 
-        if (url == null || url.isEmpty()) {
-            Toast.makeText(this, "Chưa có bài hát nào được chọn", Toast.LENGTH_SHORT).show();
-            url = "https://res.cloudinary.com/dkujns7st/video/upload/v1752396062/vmusic/songs/file_kov9c7.mp3";
-            imageUrl = "https://res.cloudinary.com/dkujns7st/image/upload/v1752396055/vmusic/cover_art/file_y5lq5t.jpg";
-            lyricUrl = "https://res.cloudinary.com/dkujns7st/raw/upload/v1752396065/vmusic/lyrics/file_mjpr3t";
-        }
+        Song song = (Song) getIntent().getSerializableExtra("song");
 
-        // Cập nhật ViewPager sau khi đã có player
+        if (song == null) {
+            Toast.makeText(this, "Chưa có bài hát nào được chọn", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        viewModel.setCurrentSong(song);
+
+        tvName.setText(song.getName());
+        tvSinger.setText(song.getArtist());
+        imageUrl = song.getImage();
+        String url = song.getAudioUrl();
+        String lyricUrl = song.getUrlLyric();
+
+        // Setup ViewPager
         PlaySongPagerAdapter adapter = new PlaySongPagerAdapter(getSupportFragmentManager(), imageUrl, player, lyricUrl);
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(1, false);
-        // Setup MediaItem
-        MediaItem mediaItem = MediaItem.fromUri(url);
-        player.setMediaItem(mediaItem);
-        player.prepare();
-        player.play();
-        isPlaying = true;
-        btnPlay.setImageResource(R.drawable.ic_pause);
 
-        // Play/pause
+        // Nếu player chưa phát gì thì phát
+        if (player.getPlaybackState() == Player.STATE_IDLE || player.getMediaItemCount() == 0) {
+            MediaItem mediaItem = MediaItem.fromUri(url);
+            player.setMediaItem(mediaItem);
+            player.prepare();
+            player.play();
+        }
+
+        btnPlay.setImageResource(player.isPlaying() ? R.drawable.ic_pause : R.drawable.ic_play);
+
+        // Xử lý Play/Pause
         btnPlay.setOnClickListener(v -> {
             if (player.isPlaying()) {
                 player.pause();
@@ -115,6 +119,8 @@ public class PlaySongActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
 
     private void updateSeekBar() {
