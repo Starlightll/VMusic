@@ -1,11 +1,17 @@
 package com.example.vmusic.ui.fragment;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
 
 import android.os.Handler;
@@ -40,6 +46,7 @@ public class MiniPlayerFragment extends Fragment {
 
     private Handler handler = new Handler();
     private Runnable updateProgressRunnable;
+    private BroadcastReceiver playbackStateReceiver;
 
     public MiniPlayerFragment() {
         // Required empty public constructor
@@ -88,8 +95,16 @@ public class MiniPlayerFragment extends Fragment {
         ImageView btnPlay = view.findViewById(R.id.btnPlay);
         ProgressBar progressBar = view.findViewById(R.id.progressBar);
         View miniPlayerLayout = view.findViewById(R.id.mini_player); // ID ngoài cùng của layout MiniPlayer
-
+        ExoPlayer player = PlayerManager.getPlayer();
         PlayerViewModel playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
+
+        btnPlay.setImageResource(player.isPlaying() ? R.drawable.ic_pause : R.drawable.ic_play);
+        player.addListener(new Player.Listener() {
+            @Override
+            public void onIsPlayingChanged(boolean isPlaying) {
+                btnPlay.setImageResource(isPlaying ? R.drawable.ic_pause : R.drawable.ic_play);
+            }
+        });
 
         // Quan sát bài hát hiện tại
         playerViewModel.getCurrentSong().observe(getViewLifecycleOwner(), song -> {
@@ -110,7 +125,6 @@ public class MiniPlayerFragment extends Fragment {
 
         // Sự kiện nút Play/Pause
         btnPlay.setOnClickListener(v -> {
-            ExoPlayer player = PlayerManager.getPlayer();
             if (player.isPlaying()) {
                 player.pause();
                 playerViewModel.setIsPlaying(false);

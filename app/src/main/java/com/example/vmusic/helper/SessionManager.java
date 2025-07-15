@@ -10,6 +10,7 @@ public class SessionManager {
     private static final String KEY_EMAIL = "email";
     private static final String KEY_USERNAME = "username";
     private static final String KEY_ROLE = "role";
+    private static final String KEY_USER_ID = "user_id";
 
     private final SharedPreferences prefs;
     private final SharedPreferences.Editor editor;
@@ -20,6 +21,7 @@ public class SessionManager {
     }
 
     public void saveUser(User user) {
+        editor.putInt(KEY_USER_ID, user.getUserId());
         editor.putString(KEY_EMAIL, user.getEmail());
         editor.putString(KEY_USERNAME, user.getUserName());
         editor.putString(KEY_ROLE, user.getRole());
@@ -36,6 +38,9 @@ public class SessionManager {
 
     public String getRole() {
         return prefs.getString(KEY_ROLE, null);
+    }
+    public int getUserId() {
+        return prefs.getInt(KEY_USER_ID, -1);
     }
 
     public boolean isLoggedIn() {
