@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/search_nav_graph"
+    app:startDestination="@id/searchTabFragment">
+
+    <fragment
+        android:id="@+id/searchTabFragment"
+        android:name="com.example.vmusic.ui.fragment.SearchTabFragment"
+        android:label="fragment_search_tab"
+        tools:layout="@layout/fragment_search_tab" />
+</navigation>
