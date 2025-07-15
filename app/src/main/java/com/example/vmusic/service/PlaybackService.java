@@ -14,6 +14,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
 import androidx.media3.common.Player;
@@ -26,13 +27,12 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.vmusic.R;
 import com.example.vmusic.helper.ViewModelProviderHelper;
-import com.example.vmusic.ui.activity.PlaySongActivity;
 import com.example.vmusic.viewmodel.PlayerViewModel;
 
 import java.util.ArrayList;
 
-import com.example.vmusic.entity.Song;
-import com.example.vmusic.models.PlayerManager;
+import entity.Song;
+import models.PlayerManager;
 
 @UnstableApi
 public class PlaybackService extends Service {
@@ -205,7 +205,7 @@ public class PlaybackService extends Service {
         @Override
         public PendingIntent createCurrentContentIntent(Player player) {
             // Mở app khi click notification
-            Intent intent = new Intent(PlaybackService.this, PlaySongActivity.class);
+            Intent intent = new Intent(PlaybackService.this, ui.activity.PlaySongActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             return PendingIntent.getActivity(PlaybackService.this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
         }

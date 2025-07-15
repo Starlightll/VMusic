@@ -19,10 +19,14 @@ import com.example.vmusic.ui.adapter.ListSongAdapter;
 import com.example.vmusic.viewmodel.PlayerViewModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import com.example.vmusic.models.PlayerManager;
-import com.example.vmusic.ui.activity.PlaySongActivity;
-import com.example.vmusic.viewmodel.SongViewModel;
+import entity.Song;
+import models.PlayerManager;
+import ui.activity.PlaySongActivity;
+import ui.adapter.PopularSongAdapter;
+import ui.adapter.RecentSongAdapter;
+import viewmodel.SongViewModel;
 
 
 public class ListSongFragment extends Fragment {

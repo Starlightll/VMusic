@@ -1,6 +1,12 @@
 package com.example.vmusic.ui.fragment;
 
 import android.os.Bundle;
+
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -9,23 +15,15 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.vmusic.R;
-import com.example.vmusic.databinding.FragmentLibraryTabBinding;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import com.example.vmusic.entity.Song;
-import com.example.vmusic.models.LibraryViewModel;
-import com.example.vmusic.ui.adapter.SongAdapter;
+import entity.Song;
+import models.LibraryViewModel;
+import ui.adapter.SongAdapter;
 
 
 public class LibraryTabFragment extends Fragment {
@@ -37,14 +35,10 @@ public class LibraryTabFragment extends Fragment {
 
     private List<Song> currentSongs = new ArrayList<>();
 
-    private FragmentLibraryTabBinding binding;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_library_tab, container, false);
-        binding = FragmentLibraryTabBinding.inflate(inflater, container, false);
-
 
         RecyclerView recyclerView = view.findViewById(R.id.songRecyclerView);
         searchEditText = view.findViewById(R.id.searchEditText);
@@ -74,28 +68,7 @@ public class LibraryTabFragment extends Fragment {
 
         // TODO: Spinner cho genre và sắp xếp
 
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        binding.btnSetting.setOnClickListener(v ->{
-            NavController navController = NavHostFragment.findNavController(this);
-            navController.navigate(R.id.action_libraryTabFragment_to_settingsFragment)
-            ;
-        });
-
-
-//        binding.btnSetting.setOnClickListener(v -> {
-//            NavController navController = NavHostFragment.findNavController(this);
-//            navController.navigate(R.id.action_libraryTabFragment_to_settingsFragment, null, new NavOptions.Builder()
-//                    .setLaunchSingleTop(true)
-//                    .setRestoreState(true)
-//                    .setEnterAnim(R.anim.slide_in_right)
-//                    .setExitAnim(R.anim.slide_out_left)
-//                    .build());
-//        });
+        return view;
     }
 
     private void filterAndSortSongs() {

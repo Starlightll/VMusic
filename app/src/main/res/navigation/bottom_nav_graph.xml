@@ -17,14 +17,5 @@
     <fragment
         android:id="@+id/libraryTabFragment"
         android:name="com.example.vmusic.ui.fragment.LibraryTabFragment"
-        android:label="Lib" >
-        <action
-            android:id="@+id/action_libraryTabFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/settingsFragment"
-        android:name="com.example.vmusic.ui.fragment.SettingsFragment"
-        android:label="Settings" />
+        android:label="Lib" />
 </navigation>

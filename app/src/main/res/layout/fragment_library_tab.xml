@@ -8,12 +8,6 @@
     android:padding="8dp"
     tools:context=".ui.fragment.LibraryTabFragment">
 
-    <Button
-        android:id="@+id/btnSetting"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Settings" />
-
     <EditText
         android:id="@+id/searchEditText"
         android:hint="Tìm kiếm bài hát hoặc nghệ sĩ..."

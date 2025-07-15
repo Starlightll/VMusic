@@ -8,8 +8,8 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.vmusic.utils.HashUtil;
 
-import com.example.vmusic.entity.User;
-import com.example.vmusic.repository.UserRepository;
+import entity.User;
+import repository.UserRepository;
 
 public class LoginViewModel extends AndroidViewModel {
     private final UserRepository userRepository;
