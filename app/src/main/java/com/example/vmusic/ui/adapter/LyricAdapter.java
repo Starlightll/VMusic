@@ -14,7 +14,7 @@ import com.example.vmusic.R;
 import java.util.ArrayList;
 import java.util.List;
 
-import models.LyricLine;
+import com.example.vmusic.models.LyricLine;
 
 public class LyricAdapter extends RecyclerView.Adapter<LyricAdapter.LyricViewHolder> {
 

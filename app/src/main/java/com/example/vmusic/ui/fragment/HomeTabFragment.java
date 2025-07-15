@@ -1,7 +1,6 @@
 package com.example.vmusic.ui.fragment;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -22,7 +21,6 @@ import android.widget.TextView;
 import com.example.vmusic.R;
 import com.example.vmusic.helper.RecentlyPlayedManager;
 import com.example.vmusic.helper.SessionManager;
-import com.example.vmusic.helper.ViewModelProviderHelper;
 import com.example.vmusic.service.PlaybackService;
 import com.example.vmusic.viewmodel.PlayerViewModel;
 
@@ -30,11 +28,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import entity.Song;
-import ui.adapter.PopularSongAdapter;
-import ui.adapter.RecentSongAdapter;
-import ui.adapter.RecentlyPlayedAdapter;
-import viewmodel.SongViewModel;
+import com.example.vmusic.entity.Song;
+import com.example.vmusic.ui.adapter.PopularSongAdapter;
+import com.example.vmusic.ui.adapter.RecentSongAdapter;
+import com.example.vmusic.ui.adapter.RecentlyPlayedAdapter;
+import com.example.vmusic.viewmodel.SongViewModel;
 
 public class HomeTabFragment extends Fragment {
 
