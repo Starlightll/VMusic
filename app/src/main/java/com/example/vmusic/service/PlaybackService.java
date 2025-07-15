@@ -47,6 +47,9 @@ public class PlaybackService extends Service {
     private String songTitle = "";
     private String songArtist = "";
     private String songImage = "";
+
+    private ArrayList<Song> currentSongList = new ArrayList<>();
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -82,24 +85,10 @@ public class PlaybackService extends Service {
 
             @Override
             public void onMediaItemTransition(@Nullable MediaItem mediaItem, int reason) {
-                if (mediaItem != null) {
-                    MediaMetadata metadata = mediaItem.mediaMetadata;
-                    songTitle = metadata.title != null ? metadata.title.toString() : "Đang phát nhạc";
-                    songArtist = metadata.artist != null ? metadata.artist.toString() : "";
-                    songImage = metadata.artworkUri != null ? metadata.artworkUri.toString() : "";
-
-                    PlayerViewModel viewModel = ViewModelProviderHelper.getPlayerViewModel();
-                    if (viewModel != null) {
-                        Song song = new Song();
-                        song.setName(songTitle);
-                        song.setArtist(songArtist);
-                        song.setImage(songImage);
-                        viewModel.setCurrentSong(song);
-                        viewModel.setIsPlaying(player.isPlaying());
-                    }
-
-                }
+                int index = player.getCurrentMediaItemIndex();
+                updateCurrentSongInViewModel(index);
             }
+
 
         });
 
@@ -132,15 +121,28 @@ public class PlaybackService extends Service {
             player.play();
 
 
-            Song currentSong = songList.get(index);
-            songTitle = currentSong.getName();
-            songArtist = currentSong.getArtist();
-            songImage = currentSong.getImage();
+            currentSongList = songList;
+            updateCurrentSongInViewModel(index);
+
         }
 
         return START_NOT_STICKY;
     }
 
+    private void updateCurrentSongInViewModel(int index) {
+        if (index >= 0 && index < currentSongList.size()) {
+            Song song = currentSongList.get(index);
+            songTitle = song.getName();
+            songArtist = song.getArtist();
+            songImage = song.getImage();
+
+            PlayerViewModel viewModel = ViewModelProviderHelper.getPlayerViewModel();
+            if (viewModel != null) {
+                viewModel.setCurrentSong(song);
+                viewModel.setIsPlaying(player.isPlaying());
+            }
+        }
+    }
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
