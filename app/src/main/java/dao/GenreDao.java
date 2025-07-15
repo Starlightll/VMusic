@@ -25,7 +25,13 @@ public interface GenreDao {
 
     @Update
     void Update(Genre genre);
-
+    @Query("SELECT COUNT(*) FROM genres")
+    int countGenres();
     @Delete
     void Delete(Genre genre);
+    @Query("SELECT * FROM genres")
+    List<Genre> getAllGenres();
+
+    @Query("DELETE FROM genres")
+    void deleteAll();
 }
