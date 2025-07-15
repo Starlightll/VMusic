@@ -8,12 +8,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.vmusic.database.GenreSeeder;
 import com.example.vmusic.helper.SessionManager;
-import com.example.vmusic.helper.ViewModelProviderHelper;
-import com.example.vmusic.viewmodel.PlayerViewModel;
-
-import database.GenreSeeder;
-import viewmodel.SongViewModel;
+import com.example.vmusic.viewmodel.SongViewModel;
 
 public class MainActivity extends AppCompatActivity {
     public SongViewModel songViewModel;

@@ -10,11 +10,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.vmusic.R;
+import com.example.vmusic.models.LyricLine;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import models.LyricLine;
 
 public class LyricAdapter extends RecyclerView.Adapter<LyricAdapter.LyricViewHolder> {
 

@@ -18,16 +18,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.vmusic.R;
 import com.example.vmusic.databinding.FragmentLibraryTabBinding;
+import com.example.vmusic.entity.Song;
+import com.example.vmusic.models.LibraryViewModel;
+import com.example.vmusic.ui.adapter.PlaylistAdapter;
+import com.example.vmusic.ui.adapter.SongAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-import entity.Song;
-import entity.Playlist;
-import models.LibraryViewModel;
-import ui.adapter.SongAdapter;
-import ui.adapter.PlaylistAdapter;
 
 public class LibraryTabFragment extends Fragment {
     private LibraryViewModel viewModel;

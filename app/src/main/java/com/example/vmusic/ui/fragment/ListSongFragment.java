@@ -2,6 +2,9 @@ package com.example.vmusic.ui.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -10,23 +13,14 @@ import androidx.media3.exoplayer.ExoPlayer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
 import com.example.vmusic.R;
+import com.example.vmusic.models.PlayerManager;
+import com.example.vmusic.ui.activity.PlaySongActivity;
 import com.example.vmusic.ui.adapter.ListSongAdapter;
 import com.example.vmusic.viewmodel.PlayerViewModel;
+import com.example.vmusic.viewmodel.SongViewModel;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import entity.Song;
-import models.PlayerManager;
-import ui.activity.PlaySongActivity;
-import ui.adapter.PopularSongAdapter;
-import ui.adapter.RecentSongAdapter;
-import viewmodel.SongViewModel;
 
 
 public class ListSongFragment extends Fragment {

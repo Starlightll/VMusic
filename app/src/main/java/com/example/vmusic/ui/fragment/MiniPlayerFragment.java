@@ -13,20 +13,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
 
 import com.bumptech.glide.Glide;
 import com.example.vmusic.R;
+import com.example.vmusic.models.PlayerManager;
+import com.example.vmusic.ui.activity.PlaySongActivity;
 import com.example.vmusic.viewmodel.PlayerViewModel;
-
-import java.util.List;
-
-import entity.Song;
-import models.PlayerManager;
-import ui.activity.PlaySongActivity;
 
 public class MiniPlayerFragment extends Fragment {
 

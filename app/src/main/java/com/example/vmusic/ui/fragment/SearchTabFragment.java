@@ -7,7 +7,6 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.OptIn;
 import androidx.appcompat.widget.AppCompatEditText;
@@ -20,19 +19,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.vmusic.R;
+import com.example.vmusic.entity.Genre;
+import com.example.vmusic.entity.Song;
 import com.example.vmusic.service.PlaybackService;
+import com.example.vmusic.ui.adapter.GenreGridAdapter;
+import com.example.vmusic.ui.adapter.SongAdapter;
+import com.example.vmusic.viewmodel.GenreViewModel;
 import com.example.vmusic.viewmodel.PlayerViewModel;
+import com.example.vmusic.viewmodel.SongViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
-
-
-import entity.Genre;
-import entity.Song;
-import ui.adapter.GenreGridAdapter;
-import ui.adapter.SongAdapter;
-import viewmodel.GenreViewModel;
-import viewmodel.SongViewModel;
 
 public class SearchTabFragment extends Fragment {
 
