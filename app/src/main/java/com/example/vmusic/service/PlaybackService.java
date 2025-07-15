@@ -54,8 +54,8 @@ public class PlaybackService extends Service {
                 .setChannelImportance(NotificationManager.IMPORTANCE_LOW)
                 .setSmallIconResourceId(R.drawable.ic_music_note)
                 .build();
-        notificationManager.setUseNextAction(false);
-        notificationManager.setUsePreviousAction(false);
+        notificationManager.setUseNextAction(true);
+        notificationManager.setUsePreviousAction(true);
         notificationManager.setUseRewindAction(false);
         notificationManager.setUseFastForwardAction(false);
         notificationManager.setUseStopAction(false);
