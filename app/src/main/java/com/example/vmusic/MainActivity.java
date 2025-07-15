@@ -12,6 +12,7 @@ import com.example.vmusic.helper.SessionManager;
 import com.example.vmusic.helper.ViewModelProviderHelper;
 import com.example.vmusic.viewmodel.PlayerViewModel;
 
+import database.GenreSeeder;
 import viewmodel.SongViewModel;
 
 public class MainActivity extends AppCompatActivity {
@@ -23,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-
+        GenreSeeder.seedGenres(this);
         SessionManager session = new SessionManager(this);
         if (session.isLoggedIn()) {
             // Navigate to the main screen
