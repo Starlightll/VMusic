@@ -24,13 +24,15 @@ import java.util.List;
 import java.util.Locale;
 
 import entity.Song;
+import entity.Playlist;
 import models.LibraryViewModel;
 import ui.adapter.SongAdapter;
-
+import ui.adapter.PlaylistAdapter;
 
 public class LibraryTabFragment extends Fragment {
     private LibraryViewModel viewModel;
-    private SongAdapter adapter;
+    private SongAdapter songAdapter;
+    private PlaylistAdapter playlistAdapter;
 
     private EditText searchEditText;
     private Spinner genreSpinner, sortSpinner;
@@ -46,21 +48,39 @@ public class LibraryTabFragment extends Fragment {
         binding = FragmentLibraryTabBinding.inflate(inflater, container, false);
 
 
-        RecyclerView recyclerView = view.findViewById(R.id.songRecyclerView);
+        RecyclerView songRecyclerView = view.findViewById(R.id.songRecyclerView);
+        RecyclerView playlistRecyclerView = view.findViewById(R.id.playlistRecyclerView);
+
         searchEditText = view.findViewById(R.id.searchEditText);
         genreSpinner = view.findViewById(R.id.genreSpinner);
         sortSpinner = view.findViewById(R.id.sortSpinner);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new SongAdapter(song -> {
+        // Song setup
+        songRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        songAdapter = new SongAdapter(song -> {
             // TODO: Mở chi tiết bài hát
         });
-        recyclerView.setAdapter(adapter);
+        songRecyclerView.setAdapter(songAdapter);
 
+        // Playlist setup
+        playlistRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        playlistAdapter = new PlaylistAdapter(playlist -> {
+            // TODO: Mở chi tiết playlist
+        });
+        playlistRecyclerView.setAdapter(playlistAdapter);
+
+        // ViewModel
         viewModel = new ViewModelProvider(this).get(LibraryViewModel.class);
+
+        // Quan sát danh sách bài hát
         viewModel.getAllSongs().observe(getViewLifecycleOwner(), songs -> {
             currentSongs = songs;
             filterAndSortSongs();
+        });
+
+        // Quan sát danh sách playlist
+        viewModel.getAllPlaylists().observe(getViewLifecycleOwner(), playlists -> {
+            playlistAdapter.setPlaylists(playlists);
         });
 
         // Tìm kiếm
@@ -110,6 +130,6 @@ public class LibraryTabFragment extends Fragment {
 
         // TODO: Apply lọc theo thể loại và sắp xếp ở đây
 
-        adapter.setSongs(filtered);
+        songAdapter.setSongs(filtered);
     }
 }
