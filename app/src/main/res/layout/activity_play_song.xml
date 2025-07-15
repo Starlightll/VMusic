@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ui.activity.PlaySongActivity"
+    tools:context=".ui.activity.PlaySongActivity"
     android:orientation="vertical"
     android:weightSum="10"
     android:background="@color/black">

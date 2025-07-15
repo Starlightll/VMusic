@@ -10,10 +10,6 @@ import com.example.vmusic.ui.fragment.ImagePlayFragment;
 import com.example.vmusic.ui.fragment.ListSongFragment;
 import com.example.vmusic.ui.fragment.LyricFragment;
 
-import java.util.ArrayList;
-
-import models.LyricLine;
-
 public class PlaySongPagerAdapter extends FragmentPagerAdapter {
 
     private final String imageUrl;

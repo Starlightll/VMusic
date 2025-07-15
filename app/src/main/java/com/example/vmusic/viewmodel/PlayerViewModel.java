@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import entity.Song;
+import com.example.vmusic.entity.Song;
 
 public class PlayerViewModel extends ViewModel {
     private final MutableLiveData<Song> currentSong = new MutableLiveData<>();
