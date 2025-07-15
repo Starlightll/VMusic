@@ -17,11 +17,12 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.example.vmusic.R;
 import com.example.vmusic.ui.adapter.PlaySongPagerAdapter;
-import com.example.vmusic.ui.fragment.LyricFragment;
 
+import entity.Song;
 import models.PlayerManager;
 
 public class PlaySongActivity extends AppCompatActivity {
+
     private TextView tvName, tvSinger;
     private ViewPager viewPager;
     private String imageUrl;
@@ -31,14 +32,13 @@ public class PlaySongActivity extends AppCompatActivity {
     private TextView tvCurrentTime, tvTotalTime;
     private Handler handler = new Handler(Looper.getMainLooper());
 
-    private boolean isPlaying = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_play_song);
 
-        // Init UI...
+        // Init UI
         tvName = findViewById(R.id.tv_name);
         tvSinger = findViewById(R.id.tv_singer);
         viewPager = findViewById(R.id.viewPlayMusic);
@@ -49,38 +49,38 @@ public class PlaySongActivity extends AppCompatActivity {
         tvCurrentTime = findViewById(R.id.txt_timesong);
         tvTotalTime = findViewById(R.id.txt_totaltimesong);
 
-        String name = getIntent().getStringExtra("name");
-        String artist = getIntent().getStringExtra("artist");
-        imageUrl = getIntent().getStringExtra("image");
-        String url = getIntent().getStringExtra("url");
-        String lyricUrl = getIntent().getStringExtra("lyric");
-
-        tvName.setText(name);
-        tvSinger.setText(artist);
-
-        // Khởi tạo player
         player = PlayerManager.getPlayer(this);
 
-        if (url == null || url.isEmpty()) {
+        Song song = (Song) getIntent().getSerializableExtra("song");
+        if (song == null) {
             Toast.makeText(this, "Chưa có bài hát nào được chọn", Toast.LENGTH_SHORT).show();
-            url = "https://res.cloudinary.com/dkujns7st/video/upload/v1752396062/vmusic/songs/file_kov9c7.mp3";
-            imageUrl = "https://res.cloudinary.com/dkujns7st/image/upload/v1752396055/vmusic/cover_art/file_y5lq5t.jpg";
-            lyricUrl = "https://res.cloudinary.com/dkujns7st/raw/upload/v1752396065/vmusic/lyrics/file_mjpr3t";
+            finish();
+            return;
         }
 
-        // Cập nhật ViewPager sau khi đã có player
+        tvName.setText(song.getName());
+        tvSinger.setText(song.getArtist());
+        imageUrl = song.getImage();
+        String url = song.getAudioUrl();
+        String lyricUrl = song.getUrlLyric();
+
+        // Setup ViewPager
         PlaySongPagerAdapter adapter = new PlaySongPagerAdapter(getSupportFragmentManager(), imageUrl, player, lyricUrl);
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(1, false);
-        // Setup MediaItem
-        MediaItem mediaItem = MediaItem.fromUri(url);
-        player.setMediaItem(mediaItem);
-        player.prepare();
-        player.play();
-        isPlaying = true;
-        btnPlay.setImageResource(R.drawable.ic_pause);
 
-        // Play/pause
+        boolean isIdle = player.getPlaybackState() == Player.STATE_IDLE;
+        boolean noMedia = player.getMediaItemCount() == 0;
+
+        if (isIdle || noMedia) {
+            MediaItem mediaItem = MediaItem.fromUri(url);
+            player.setMediaItem(mediaItem);
+            player.prepare();
+            player.play();
+        }
+
+        btnPlay.setImageResource(player.isPlaying() ? R.drawable.ic_pause : R.drawable.ic_play);
+
         btnPlay.setOnClickListener(v -> {
             if (player.isPlaying()) {
                 player.pause();
@@ -91,6 +91,7 @@ public class PlaySongActivity extends AppCompatActivity {
             }
         });
 
+        // Cập nhật tiến trình phát nhạc
         updateSeekBar();
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -104,32 +105,42 @@ public class PlaySongActivity extends AppCompatActivity {
             @Override public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
+        // Khi player READY → cập nhật duration và max
         player.addListener(new Player.Listener() {
             @Override
             public void onPlaybackStateChanged(int state) {
                 if (state == Player.STATE_READY) {
-                    int duration = (int) player.getDuration();
-                    seekBar.setMax(duration);
-                    tvTotalTime.setText(formatTime(duration));
+                    long duration = player.getDuration();
+                    if (duration > 0) {
+                        seekBar.setMax((int) duration);
+                        tvTotalTime.setText(formatTime((int) duration));
+                    }
                 }
             }
         });
     }
 
-
     private void updateSeekBar() {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (player != null && player.isPlaying()) {
-                    int current = (int) player.getCurrentPosition();
-                    seekBar.setProgress(current);
-                    tvCurrentTime.setText(formatTime(current));
+                if (player != null) {
+                    long current = player.getCurrentPosition();
+                    long duration = player.getDuration();
+
+                    if (duration > 0) {
+                        seekBar.setMax((int) duration);
+                        tvTotalTime.setText(formatTime((int) duration));
+                    }
+
+                    seekBar.setProgress((int) current);
+                    tvCurrentTime.setText(formatTime((int) current));
                 }
                 handler.postDelayed(this, 500);
             }
         }, 0);
     }
+
 
     private String formatTime(int millis) {
         int minutes = millis / 60000;
@@ -144,7 +155,6 @@ public class PlaySongActivity extends AppCompatActivity {
             player.release();
             player = null;
         }
+        handler.removeCallbacksAndMessages(null);
     }
-
-
 }

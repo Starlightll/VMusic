@@ -5,6 +5,8 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.media3.common.MediaItem;
+import androidx.media3.exoplayer.ExoPlayer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import entity.Song;
+import models.PlayerManager;
 import ui.activity.PlaySongActivity;
 import ui.adapter.PopularSongAdapter;
 import ui.adapter.RecentSongAdapter;
@@ -42,18 +45,20 @@ public class ListSongFragment extends Fragment {
 
 
         PlayerViewModel playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
-        listSongAdapter = new ListSongAdapter(requireContext(), new ArrayList<>(), song -> {
-            Intent intent = new Intent(requireContext(), PlaySongActivity.class);
-            intent.putExtra("url", song.getAudioUrl());
-            intent.putExtra("name", song.getName());
-            intent.putExtra("artist", song.getArtist());
-            intent.putExtra("image", song.getImage());
-            intent.putExtra("lyric", song.getUrlLyric());
-            requireContext().startActivity(intent);
 
-            playerViewModel.setCurrentSong(song);
-            playerViewModel.setIsPlaying(true);
+        listSongAdapter = new ListSongAdapter(requireContext(), new ArrayList<>(), song -> {
+
+            ExoPlayer player = PlayerManager.getPlayer(requireContext());
+            player.setMediaItem(MediaItem.fromUri(song.getAudioUrl()));
+            player.prepare();
+            player.play();
+
+
+            Intent intent = new Intent(requireContext(), PlaySongActivity.class);
+            intent.putExtra("song", song);
+            requireContext().startActivity(intent);
         });
+
 
         recyclerView.setAdapter(listSongAdapter);
         songViewModel = new ViewModelProvider(this).get(SongViewModel.class);

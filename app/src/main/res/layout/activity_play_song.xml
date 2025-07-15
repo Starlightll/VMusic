@@ -121,8 +121,8 @@
 
             <ImageButton
                 android:id="@+id/img_btn_suffle"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_margin="15dp"
                 android:background="@null"
                 android:contentDescription="suffle"
@@ -165,8 +165,8 @@
             <ImageButton
                 android:contentDescription="replay"
                 android:id="@+id/img_btn_repeat"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_margin="15dp"
                 android:background="@null"
                 android:scaleType="fitXY"
