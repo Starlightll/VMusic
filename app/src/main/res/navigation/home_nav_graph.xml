@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/home_nav_graph"
+    app:startDestination="@id/homeTabFragment">
+
+    <fragment
+        android:id="@+id/homeTabFragment"
+        android:name="com.example.vmusic.ui.fragment.HomeTabFragment"
+        android:label="fragment_home_tab"
+        tools:layout="@layout/fragment_home_tab" />
+</navigation>

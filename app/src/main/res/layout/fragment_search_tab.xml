@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#FFFFFF"
     android:padding="16dp"
     tools:context=".ui.fragment.SearchTabFragment">
 
@@ -19,9 +18,9 @@
         android:paddingEnd="16dp"
         android:drawableStart="@drawable/ic_search"
         android:drawablePadding="10dp"
-        android:background="@android:drawable/edit_text"
+        android:background="@drawable/edittext_search_background"
         android:textColor="#000000"
-        android:textColorHint="#808080"
+        android:textColorHint="#313131"
         android:layout_marginBottom="16dp" />
 
     <!-- Genres title -->

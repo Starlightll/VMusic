@@ -1,6 +1,9 @@
 package com.example.vmusic.ui.fragment;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +24,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.vmusic.R;
+import com.example.vmusic.databinding.FragmentMainBinding;
 import com.example.vmusic.helper.ViewModelProviderHelper;
 import com.example.vmusic.viewmodel.PlayerViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -43,7 +47,11 @@ public class MainFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-
+    private NavHostFragment homeNavHostFragment;
+    private NavHostFragment searchNavHostFragment;
+    private NavHostFragment libraryNavHostFragment;
+    private Fragment activeFragment;
+    private FragmentMainBinding binding;
 
     public MainFragment() {
         // Required empty public constructor
@@ -82,16 +90,42 @@ public class MainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_main, container, false);
+        binding = com.example.vmusic.databinding.FragmentMainBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+
+        homeNavHostFragment = createNavHost(R.id.nav_host_home, R.navigation.home_nav_graph);
+        searchNavHostFragment = createNavHost(R.id.nav_host_search, R.navigation.search_nav_graph);
+        libraryNavHostFragment = createNavHost(R.id.nav_host_library, R.navigation.library_nav_graph);
+
+        // Đặt tab mặc định là Home
+        showFragment(homeNavHostFragment);
+        activeFragment = homeNavHostFragment;
+
         BottomNavigationView bottomNav = view.findViewById(R.id.bottomNavigationView);
-        NavHostFragment navHostFragment = (NavHostFragment)
-                getChildFragmentManager().findFragmentById(R.id.bottom_nav_host_fragment);
-        NavController navController = navHostFragment.getNavController();
-        NavigationUI.setupWithNavController(bottomNav, navController);
+
+        binding.bottomNavigationView.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_home) {
+                switchToFragment(homeNavHostFragment);
+                return true;
+            } else if (id == R.id.nav_search) {
+                switchToFragment(searchNavHostFragment);
+                return true;
+            } else if (id == R.id.nav_library) {
+                switchToFragment(libraryNavHostFragment);
+                return true;
+            }
+            return false;
+        });
+
+//        NavHostFragment navHostFragment = (NavHostFragment)
+//                getChildFragmentManager().findFragmentById(R.id.bottom_nav_host_fragment);
+//        NavController navController = navHostFragment.getNavController();
+//        NavigationUI.setupWithNavController(bottomNav, navController);
 
         PlayerViewModel playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
         playerViewModel.getCurrentSong().observe(getViewLifecycleOwner(), song -> {
@@ -111,6 +145,48 @@ public class MainFragment extends Fragment {
 
     }
 
+    private NavHostFragment createNavHost(int containerId, int navGraphId) {
+        NavHostFragment navHostFragment = (NavHostFragment) getChildFragmentManager().findFragmentById(containerId);
+        if (navHostFragment == null) {
+            navHostFragment = NavHostFragment.create(navGraphId);
+            getChildFragmentManager().beginTransaction()
+                    .hide(navHostFragment)
+                    .replace(containerId, navHostFragment)
+                    .commitNow();
+        }
+        return navHostFragment;
+    }
+
+    private void switchToFragment(Fragment targetFragment) {
+        if (activeFragment != targetFragment) {
+            getChildFragmentManager().beginTransaction()
+                    .hide(activeFragment)
+                    .show(targetFragment)
+                    .commit();
+
+            // Ẩn layout hiện tại, hiện layout mới
+            getContainerViewForFragment(activeFragment).setVisibility(View.GONE);
+            getContainerViewForFragment(targetFragment).setVisibility(View.VISIBLE);
+
+            activeFragment = targetFragment;
+        }
+    }
+
+    private View getContainerViewForFragment(Fragment fragment) {
+        if (fragment == homeNavHostFragment) {
+            return binding.getRoot().findViewById(R.id.nav_host_home);
+        } else if (fragment == searchNavHostFragment) {
+            return binding.getRoot().findViewById(R.id.nav_host_search);
+        } else {
+            return binding.getRoot().findViewById(R.id.nav_host_library);
+        }
+    }
+
+    private void showFragment(Fragment fragment) {
+        getChildFragmentManager().beginTransaction()
+                .show(fragment)
+                .commit();
+    }
 
 
 
