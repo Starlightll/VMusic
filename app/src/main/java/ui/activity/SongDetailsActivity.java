@@ -1,0 +1,262 @@
+package ui.activity;
+
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.OpenableColumns;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.cloudinary.android.MediaManager;
+import com.cloudinary.android.callback.ErrorInfo;
+import com.cloudinary.android.callback.UploadCallback;
+import com.example.vmusic.R;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+
+import entity.Genre;
+import entity.Song;
+import viewmodel.GenreViewModel;
+import viewmodel.SongViewModel;
+
+public class SongDetailsActivity extends AppCompatActivity {
+    // Khai báo các thành phần giao diện
+    private ImageView imageCoverArt;
+    private Button btnChooseImage, btnChooseAudio, btnChooseLyric, btnSave;
+    private EditText editTitle, editArtist;
+    private TextView textAudioFileName, textLyricFileName;
+    private ProgressBar progressBar;
+    private LinearLayout genreContainer;
+
+    // Khai báo các biến dữ liệu
+    private Uri imageUri, audioUri, lyricUri;
+    private SongViewModel songViewModel;
+    private GenreViewModel genreViewModel;
+    private final List<Integer> selectedGenreIds = new ArrayList<>();
+
+    // Các hằng số request code
+    private static final int PICK_IMAGE = 1001;
+    private static final int PICK_AUDIO = 1002;
+    private static final int PICK_LYRIC = 1003;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.uploadmusic_admin);
+
+        initViews();
+        setupViewModels();
+        observeGenres();
+        setupButtons();
+    }
+
+    private void initViews() {
+        imageCoverArt = findViewById(R.id.imageCoverArt);
+        btnChooseImage = findViewById(R.id.btnUploadArtwork);
+        btnChooseAudio = findViewById(R.id.btnUploadAudio);
+        btnChooseLyric = findViewById(R.id.btnUploadLyric);
+        btnSave = findViewById(R.id.savereleaseandaddsong);
+        editTitle = findViewById(R.id.editTitle);
+        editArtist = findViewById(R.id.editAdditionalArtist); // Ánh xạ tới EditText của tên ca sĩ
+        textAudioFileName = findViewById(R.id.textAudioFileName);
+        textLyricFileName = findViewById(R.id.textLyricFileName);
+        progressBar = findViewById(R.id.progressBar);
+        genreContainer = findViewById(R.id.genreContainer);
+    }
+
+    private void setupViewModels() {
+        songViewModel = new ViewModelProvider(this).get(SongViewModel.class);
+        genreViewModel = new ViewModelProvider(this).get(GenreViewModel.class);
+    }
+
+    private void observeGenres() {
+        genreViewModel.getAllGenres().observe(this, genres -> {
+            genreContainer.removeAllViews();
+            for (Genre genre : genres) {
+                CheckBox checkBox = new CheckBox(this);
+                checkBox.setText(genre.name);
+                checkBox.setTextColor(getResources().getColor(R.color.white));
+                checkBox.setButtonTintList(getResources().getColorStateList(R.color.primary_green));
+                checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                    if (isChecked) {
+                        selectedGenreIds.add(genre.genreId);
+                    } else {
+                        selectedGenreIds.remove((Integer) genre.genreId);
+                    }
+                });
+                genreContainer.addView(checkBox);
+            }
+        });
+    }
+
+    private void setupButtons() {
+        btnChooseImage.setOnClickListener(v -> pickFile(PICK_IMAGE, "image/*"));
+        btnChooseAudio.setOnClickListener(v -> pickFile(PICK_AUDIO, "audio/*"));
+        btnChooseLyric.setOnClickListener(v -> pickFile(PICK_LYRIC, "*/*")); // Cho phép chọn mọi loại file cho lyric
+        btnSave.setOnClickListener(v -> uploadAndSaveSong());
+    }
+
+    private void pickFile(int requestCode, String type) {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType(type);
+        startActivityForResult(Intent.createChooser(intent, "Select file"), requestCode);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && data != null && data.getData() != null) {
+            Uri uri = data.getData();
+            switch (requestCode) {
+                case PICK_IMAGE:
+                    imageUri = uri;
+                    imageCoverArt.setImageURI(uri);
+                    break;
+                case PICK_AUDIO:
+                    audioUri = uri;
+                    textAudioFileName.setText(getFileName(uri));
+                    break;
+                case PICK_LYRIC:
+                    lyricUri = uri;
+                    textLyricFileName.setText(getFileName(uri));
+                    break;
+            }
+        }
+    }
+
+    private String getFileName(Uri uri) {
+        String fileName = "unknown";
+        if (uri.getScheme().equals("content")) {
+            try (Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
+                if (cursor != null && cursor.moveToFirst()) {
+                    int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                    if (nameIndex != -1) {
+                        fileName = cursor.getString(nameIndex);
+                    }
+                }
+            }
+        }
+        return fileName;
+    }
+
+    private void uploadAndSaveSong() {
+        String title = editTitle.getText().toString().trim();
+        String artist = editArtist.getText().toString().trim(); // Lấy tên ca sĩ
+
+        // Kiểm tra tất cả các trường bắt buộc
+        if (title.isEmpty() || artist.isEmpty() || imageUri == null || audioUri == null || lyricUri == null) {
+            Toast.makeText(this, "Vui lòng điền đầy đủ thông tin và chọn file", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Hiển thị ProgressBar và vô hiệu hóa nút Save
+        progressBar.setVisibility(View.VISIBLE);
+        btnSave.setEnabled(false);
+
+        // Bắt đầu một thread mới để thực hiện các tác vụ mạng và database
+        new Thread(() -> {
+            try {
+                // 1. Upload các file lên Cloudinary
+                String imageUrl = uploadToCloudinary(imageUri, "vmusic/cover_art");
+                String audioUrl = uploadToCloudinary(audioUri, "vmusic/songs");
+                String lyricUrl = uploadToCloudinary(lyricUri, "vmusic/lyrics");
+
+                // 2. Kiểm tra kết quả upload
+                if (imageUrl == null || audioUrl == null || lyricUrl == null) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(SongDetailsActivity.this, "Upload một hoặc nhiều file thất bại", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
+                        btnSave.setEnabled(true);
+                    });
+                    return; // Dừng tiến trình nếu có lỗi
+                }
+
+                // 3. Tạo đối tượng Song với đầy đủ thông tin
+                Song song = new Song();
+                song.setName(title);
+                song.setArtist(artist); // Gán tên ca sĩ
+                song.setImage(imageUrl);
+                song.setAudioUrl(audioUrl);
+                song.setUrlLyric(lyricUrl);
+                song.setListenCounts(0);
+
+                // 4. Gọi ViewModel để lưu vào database (bao gồm cả quan hệ song-genre)
+                songViewModel.insertSongWithGenres(song, selectedGenreIds);
+
+                // 5. Cập nhật UI sau khi hoàn tất thành công
+                runOnUiThread(() -> {
+                    Toast.makeText(SongDetailsActivity.this, "Thêm bài hát mới thành công!", Toast.LENGTH_SHORT).show();
+                    finish(); // Đóng Activity và quay về màn hình trước
+                });
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Xử lý lỗi nếu có ngoại lệ xảy ra trong quá trình
+                runOnUiThread(() -> {
+                    Toast.makeText(SongDetailsActivity.this, "Đã xảy ra lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
+                    btnSave.setEnabled(true);
+                });
+            }
+        }).start(); // Bắt đầu thread
+    }
+
+    private String uploadToCloudinary(Uri fileUri, String folder) throws InterruptedException {
+        final String[] resultUrl = {null}; // Khởi tạo là null
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        MediaManager.get().upload(fileUri)
+                .option("folder", folder)
+                .option("resource_type", "auto")
+                .unsigned("vmusic_upload") // Thay bằng upload preset của bạn
+                .callback(new UploadCallback() {
+                    @Override
+                    public void onSuccess(String requestId, Map resultData) {
+                        if (resultData != null && resultData.containsKey("url")) {
+                            String rawUrl = (String) resultData.get("url");
+                            if (rawUrl != null) {
+                                resultUrl[0] = rawUrl.replace("http://", "https://");
+                            }
+                        }
+                        latch.countDown();
+                    }
+
+                    @Override
+                    public void onError(String requestId, ErrorInfo error) {
+                        Log.e("CloudinaryError", "Upload failed: " + error.getDescription());
+                        latch.countDown();
+                    }
+
+                    // Các phương thức callback khác
+                    @Override public void onStart(String requestId) {}
+                    @Override public void onProgress(String requestId, long bytes, long totalBytes) {}
+                    @Override public void onReschedule(String requestId, ErrorInfo error) { latch.countDown(); }
+
+                }).dispatch();
+
+        // Chờ cho đến khi upload hoàn tất hoặc thất bại
+        latch.await();
+        return resultUrl[0];
+    }
+}
+
+

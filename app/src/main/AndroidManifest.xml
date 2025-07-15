@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 
     <application
-        android:name=".database.MyApp"
+        android:name="database.MyApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -35,7 +35,7 @@
         </activity>
 
         <activity
-        android:name=".ui.activity.SongDetailsActivity"
+        android:name="ui.activity.SongDetailsActivity"
         android:exported="true">
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
@@ -44,7 +44,7 @@
         </intent-filter>
     </activity>
         <activity
-            android:name=".ui.activity.PlaySongActivity"
+            android:name="ui.activity.PlaySongActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

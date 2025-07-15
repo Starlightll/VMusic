@@ -3,7 +3,7 @@ package com.example.vmusic.helper;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.example.vmusic.entity.User;
+import entity.User;
 
 public class SessionManager {
     private static final String PREF_NAME = "user_session";

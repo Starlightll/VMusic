@@ -23,9 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import com.example.vmusic.entity.Song;
-import com.example.vmusic.models.LibraryViewModel;
-import com.example.vmusic.ui.adapter.SongAdapter;
+import entity.Song;
+import models.LibraryViewModel;
+import ui.adapter.SongAdapter;
 
 
 public class LibraryTabFragment extends Fragment {

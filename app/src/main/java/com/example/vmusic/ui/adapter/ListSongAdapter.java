@@ -15,8 +15,8 @@ import com.example.vmusic.R;
 
 import java.util.List;
 
-import com.example.vmusic.Interface.OnSongClickListener;
-import com.example.vmusic.entity.Song;
+import Interface.OnSongClickListener;
+import entity.Song;
 
 public class ListSongAdapter extends RecyclerView.Adapter<ListSongAdapter.ListSongViewHolder> {
 
