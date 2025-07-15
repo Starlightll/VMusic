@@ -7,6 +7,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.v4.media.session.MediaSessionCompat;
@@ -15,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.media3.common.MediaItem;
+import androidx.media3.common.MediaMetadata;
 import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
@@ -24,7 +26,12 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.vmusic.R;
+import com.example.vmusic.helper.ViewModelProviderHelper;
+import com.example.vmusic.viewmodel.PlayerViewModel;
 
+import java.util.ArrayList;
+
+import entity.Song;
 import models.PlayerManager;
 
 @UnstableApi
@@ -40,7 +47,6 @@ public class PlaybackService extends Service {
     private String songTitle = "";
     private String songArtist = "";
     private String songImage = "";
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -73,26 +79,68 @@ public class PlaybackService extends Service {
                 intent.putExtra("isPlaying", isPlaying);
                 sendBroadcast(intent);
             }
+
+            @Override
+            public void onMediaItemTransition(@Nullable MediaItem mediaItem, int reason) {
+                if (mediaItem != null) {
+                    MediaMetadata metadata = mediaItem.mediaMetadata;
+                    songTitle = metadata.title != null ? metadata.title.toString() : "Đang phát nhạc";
+                    songArtist = metadata.artist != null ? metadata.artist.toString() : "";
+                    songImage = metadata.artworkUri != null ? metadata.artworkUri.toString() : "";
+
+                    PlayerViewModel viewModel = ViewModelProviderHelper.getPlayerViewModel();
+                    if (viewModel != null) {
+                        Song song = new Song();
+                        song.setName(songTitle);
+                        song.setArtist(songArtist);
+                        song.setImage(songImage);
+                        viewModel.setCurrentSong(song);
+                        viewModel.setIsPlaying(player.isPlaying());
+                    }
+
+                }
+            }
+
         });
+
 
     }
 
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        String url = intent.getStringExtra("url");
-        songTitle = intent.getStringExtra("name");
-        songArtist = intent.getStringExtra("artist");
-        songImage = intent.getStringExtra("image");
+        ArrayList<Song> songList = (ArrayList<Song>) intent.getSerializableExtra("song_list");
+        int index = intent.getIntExtra("index", 0);
 
-        if (url != null) {
-            MediaItem mediaItem = MediaItem.fromUri(url);
-            player.setMediaItem(mediaItem);
+        if (songList != null && !songList.isEmpty()) {
+            player.clearMediaItems(); // Xoá bài cũ (nếu có)
+            for (Song s : songList) {
+                MediaItem mediaItem = new MediaItem.Builder()
+                        .setUri(s.getAudioUrl())
+                        .setMediaMetadata(
+                                new MediaMetadata.Builder()
+                                        .setTitle(s.getName())
+                                        .setArtist(s.getArtist())
+                                        .setArtworkUri(Uri.parse(s.getImage()))
+                                        .build()
+                        )
+                        .build();
+                player.addMediaItem(mediaItem);
+            }
             player.prepare();
+            player.seekTo(index, 0);
             player.play();
+
+
+            Song currentSong = songList.get(index);
+            songTitle = currentSong.getName();
+            songArtist = currentSong.getArtist();
+            songImage = currentSong.getImage();
         }
 
         return START_NOT_STICKY;
     }
+
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {

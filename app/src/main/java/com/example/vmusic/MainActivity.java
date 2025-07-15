@@ -9,6 +9,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.vmusic.helper.SessionManager;
+import com.example.vmusic.helper.ViewModelProviderHelper;
+import com.example.vmusic.viewmodel.PlayerViewModel;
 
 import viewmodel.SongViewModel;
 
