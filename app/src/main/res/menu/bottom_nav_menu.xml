@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/homeTabFragment"
+        android:id="@+id/nav_home"
         android:icon="@drawable/ic_home"
-        android:title="Trang chủ" />
+        android:title="@string/Home" />
     <item
-        android:id="@+id/searchTabFragment"
+        android:id="@+id/nav_search"
         android:icon="@drawable/ic_search"
-        android:title="Tìm kiếm" />
+        android:title="@string/Search" />
     <item
-        android:id="@+id/libraryTabFragment"
+        android:id="@+id/nav_library"
         android:icon="@drawable/ic_library"
-        android:title="Thư viện" />
+        android:title="@string/Library" />
 </menu>

@@ -8,9 +8,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.vmusic.database.GenreSeeder;
 import com.example.vmusic.helper.SessionManager;
-
-import viewmodel.SongViewModel;
+import com.example.vmusic.viewmodel.SongViewModel;
 
 public class MainActivity extends AppCompatActivity {
     public SongViewModel songViewModel;
@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-
+        GenreSeeder.seedGenres(this);
         SessionManager session = new SessionManager(this);
         if (session.isLoggedIn()) {
             // Navigate to the main screen

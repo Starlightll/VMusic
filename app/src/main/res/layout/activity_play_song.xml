@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.activity.PlaySongActivity"
+    android:orientation="vertical"
+    android:weightSum="10"
+    android:background="@color/black">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:titleTextColor="@android:color/white"
+        />
+
+    <androidx.viewpager.widget.ViewPager
+        android:contentDescription="ViewPager"
+        android:id="@+id/viewPlayMusic"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="7">
+
+
+    </androidx.viewpager.widget.ViewPager>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:gravity="center_vertical">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Em Của Ngày Hôm Qua"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_singer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sơn Tùng MTP"
+                android:textColor="#A0A0A0"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/ivFavorite"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:src="@drawable/ic_favorite"
+            android:contentDescription="Favorite"
+            app:tint="@color/white"/>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="10"
+            android:gravity="center">
+            <TextView
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:id="@+id/txt_timesong"
+                android:text="00:00"
+                android:layout_weight="0.5"
+                android:gravity="center"
+                android:textColor="#ffff"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+            </TextView>
+            <SeekBar
+                android:id="@+id/seekBar"
+                android:layout_weight="9"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/white"
+                android:progressTint="#C70000"
+                android:thumbTint="#C70000">
+
+            </SeekBar>
+            <TextView
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:id="@+id/txt_totaltimesong"
+                android:text="00:00"
+                android:layout_weight="0.5"
+                android:gravity="center"
+                android:textColor="#ffff"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/img_btn_suffle"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_margin="15dp"
+                android:background="@null"
+                android:contentDescription="suffle"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_shuffle"
+                app:tint="@color/white" />
+
+            <ImageButton
+                android:contentDescription="previous"
+                android:id="@+id/img_btn_back"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_margin="15dp"
+                android:background="@null"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_previous"
+                app:tint="@color/white"/>
+
+            <ImageButton
+                android:contentDescription="play"
+                android:id="@+id/img_btn_play"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_margin="15dp"
+                android:background="@null"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_play"
+                app:tint="@color/white"/>
+
+            <ImageButton
+                android:contentDescription="next"
+                android:id="@+id/img_btn_next"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_margin="15dp"
+                android:background="@null"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_next"
+                app:tint="@color/white"/>
+            <ImageButton
+                android:contentDescription="replay"
+                android:id="@+id/img_btn_repeat"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_margin="15dp"
+                android:background="@null"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_replay"
+                app:tint="@color/white"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>

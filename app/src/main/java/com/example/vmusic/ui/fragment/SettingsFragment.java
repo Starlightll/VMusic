@@ -8,10 +8,13 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.vmusic.R;
+import com.example.vmusic.databinding.FragmentSettingsBinding;
 import com.example.vmusic.ui.adapter.SettingsAdapter;
 
 import java.util.Arrays;
@@ -23,21 +26,29 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class SettingsFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
     RecyclerView recyclerView;
+    private FragmentSettingsBinding binding;
     List<String> settingsList = Arrays.asList(
-            "Account", "Languages", "Devices",
-            "Quality", "Theme", "Download",
-            "Notifications", "Privacy",
-            "Help", "About", "Terms of Service"
+            "Tài khoản", "Ngôn ngữ",
+            "Theme", "Tải xuống",
+            "Thông báo", "Quyền riêng tư",
+            "Hỗ trợ", "Giới thiệu", "Chính sách dịch vụ" , "Chính sách dịch vụ" , "Chính sách dịch vụ"
+            , "Chính sách dịch vụ"
+            , "Chính sách dịch vụ"
+            , "Chính sách dịch vụ"
+            , "Chính sách dịch vụ"
+            , "Chính sách dịch vụ"
+            , "Chính sách dịch vụ"
+            , "Chính sách dịch vụ"
+            , "Chính sách dịch vụ"
+            , "Chính sách dịch vụ"
+            , "Chính sách dịch vụ"
+            , "Chính sách dịch vụ"
+            , "Chính sách dịch vụ"
+            , "Chính sách dịch vụ"
+            , "Chính sách dịch vụ"
+            , "Chính sách dịch vụ"
+            , "Chính sách dịch vụ"
     );
 
     public SettingsFragment() {
@@ -56,8 +67,6 @@ public class SettingsFragment extends Fragment {
     public static SettingsFragment newInstance(String param1, String param2) {
         SettingsFragment fragment = new SettingsFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -65,10 +74,7 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
     }
 
     @Nullable
@@ -76,10 +82,29 @@ public class SettingsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_settings, container, false);
+        binding = com.example.vmusic.databinding.FragmentSettingsBinding.inflate(inflater, container, false);
+        View view = binding.getRoot();
         recyclerView = view.findViewById(R.id.recyclerViewSettings);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(new SettingsAdapter(settingsList));
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null; // Clear the binding reference to avoid memory leaks
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        // Additional setup if needed
+        NavController navController = NavHostFragment.findNavController(this);
+
+        binding.btnBackToLibrary.setOnClickListener(v -> {
+            navController.navigateUp();
+        });
+
     }
 }
