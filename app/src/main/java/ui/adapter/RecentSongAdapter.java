@@ -71,6 +71,9 @@ public class RecentSongAdapter extends RecyclerView.Adapter<RecentSongAdapter.So
         this.songList = songs;
         notifyDataSetChanged();
     }
+    public List<Song> getSongs() {
+        return songList;
+    }
 
 
 }

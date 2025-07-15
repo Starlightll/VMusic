@@ -75,5 +75,8 @@ public class RecentlyPlayedAdapter extends RecyclerView.Adapter<RecentlyPlayedAd
         this.songList = songs;
         notifyDataSetChanged();
     }
+    public List<Song> getSongs() {
+        return songList;
+    }
 }
 

@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.vmusic.R;
+import com.example.vmusic.helper.ViewModelProviderHelper;
 import com.example.vmusic.viewmodel.PlayerViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -73,6 +74,8 @@ public class MainFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        PlayerViewModel viewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
+        ViewModelProviderHelper.init(viewModel);
     }
 
     @Override

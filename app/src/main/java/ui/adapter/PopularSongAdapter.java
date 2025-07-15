@@ -74,5 +74,8 @@ public class PopularSongAdapter extends RecyclerView.Adapter<PopularSongAdapter.
         this.songList = songs;
         notifyDataSetChanged();
     }
+    public List<Song> getSongs() {
+        return songList;
+    }
 
 }
