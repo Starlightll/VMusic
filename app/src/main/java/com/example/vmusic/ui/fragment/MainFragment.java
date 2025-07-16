@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.vmusic.R;
@@ -77,6 +78,9 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = com.example.vmusic.databinding.FragmentMainBinding.inflate(inflater, container, false);
+        getChildFragmentManager().beginTransaction()
+                .replace(R.id.playSongPanel, new PlaySongPanelFragment())
+                .commit();
         return binding.getRoot();
     }
 
@@ -92,6 +96,22 @@ public class MainFragment extends Fragment {
         activeFragment = homeNavHostFragment;
 
         BottomNavigationView bottomNav = view.findViewById(R.id.bottomNavigationView);
+
+//        binding.miniPlayerContainer.setOnClickListener(v -> {
+//            NavController navController = NavHostFragment.findNavController(this);
+//            navController.navigate(R.id.action_miniPlayer_to_playerSongFragment);
+//        });
+
+        View playSongPanel = view.findViewById(R.id.playSongPanel);
+        playSongPanel.setTranslationY(playSongPanel.getHeight());
+
+        binding.miniPlayerContainer.setOnClickListener(v -> {
+            showPlayerPanel();
+        });
+
+        playSongPanel.setOnClickListener(v -> {
+            hidePlayerPanel();
+        });
 
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
@@ -172,6 +192,24 @@ public class MainFragment extends Fragment {
         getChildFragmentManager().beginTransaction()
                 .show(fragment)
                 .commit();
+    }
+
+    private void showPlayerPanel() {
+        View playSongPanel = binding.getRoot().findViewById(R.id.playSongPanel);
+        playSongPanel.setVisibility(View.VISIBLE);
+        playSongPanel.animate()
+                .translationY(0)
+                .setDuration(300)
+                .start();
+    }
+
+    private void hidePlayerPanel() {
+        View playSongPanel = binding.getRoot().findViewById(R.id.playSongPanel);
+        playSongPanel.animate()
+                .translationY(playSongPanel.getHeight())
+                .setDuration(300)
+                .withEndAction(() -> playSongPanel.setVisibility(View.GONE))
+                .start();
     }
 
 
