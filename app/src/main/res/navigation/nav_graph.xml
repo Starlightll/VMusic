@@ -50,8 +50,9 @@
     <fragment
         android:id="@+id/mainFragment"
         android:name="com.example.vmusic.ui.fragment.MainFragment"
-        android:label="Main" >
-
+        android:label="Main">
     </fragment>
+
+
 
 </navigation>

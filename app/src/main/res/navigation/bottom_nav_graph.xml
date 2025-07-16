@@ -23,6 +23,11 @@
             app:destination="@id/settingsFragment" />
     </fragment>
 
+
+
+
+
+
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.example.vmusic.ui.fragment.SettingsFragment"

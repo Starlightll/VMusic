@@ -81,7 +81,8 @@ public class LyricFragment extends Fragment {
                     long currentTime = player.getCurrentPosition();
                     int currentIndex = getCurrentLyricIndex(currentTime);
                     adapter.updateHighlight(currentIndex);
-                    recyclerView.scrollToPosition(currentIndex);
+
+//                    recyclerView.scrollToPosition(currentIndex);
                 }
                 handler.postDelayed(this, 500);
             }
@@ -91,11 +92,12 @@ public class LyricFragment extends Fragment {
 
     private int getCurrentLyricIndex(long time) {
         for (int i = 0; i < lyricLines.size() - 1; i++) {
+            float temp = lyricLines.get(i).getTime();
             if (time >= lyricLines.get(i).getTime() && time < lyricLines.get(i + 1).getTime()) {
                 return i;
             }
         }
-        return lyricLines.isEmpty() ? 0 : lyricLines.size() - 1;
+        return -1;
     }
 
     private List<LyricLine> parseLrc(String lrcText) {

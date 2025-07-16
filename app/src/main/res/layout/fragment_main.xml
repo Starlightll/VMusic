@@ -5,6 +5,14 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
+    <FrameLayout
+        android:id="@+id/playSongPanel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FFF"
+        android:translationY="1000dp"
+        android:visibility="gone"
+        android:elevation="10dp" />
 
     <FrameLayout
         android:id="@+id/nav_host_home"
@@ -27,6 +35,8 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:visibility="gone" />
+
+
 
 <!--    <fragment-->
 <!--        android:id="@+id/bottom_nav_host_fragment"-->
@@ -51,4 +61,6 @@
         android:layout_height="wrap_content"
         android:background="?android:attr/windowBackground"
         app:menu="@menu/bottom_nav_menu" />
+
+
 </LinearLayout>
