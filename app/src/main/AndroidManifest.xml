@@ -44,8 +44,6 @@
             </intent-filter>
         </activity>
 
-
-
         <activity
             android:name=".ui.activity.PlaySongActivity"
             android:exported="true" >
