@@ -94,7 +94,7 @@ public class MiniPlayerFragment extends Fragment {
         observePlayerViewModel();
 
         // icon
-        btnPlay.setOnClickListener(v -> togglePlayPause());
+        btnPlay.setOnClickListener(v -> playerViewModel.togglePlayPause());
 
 
 //        miniPlayerLayout.setOnClickListener(v -> {
