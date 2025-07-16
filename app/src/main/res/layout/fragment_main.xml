@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:background="#FFF"
         android:translationY="1000dp"
-        android:visibility="visible"
+        android:visibility="gone"
         android:elevation="10dp" />
 
     <FrameLayout

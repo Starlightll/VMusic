@@ -78,9 +78,11 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = com.example.vmusic.databinding.FragmentMainBinding.inflate(inflater, container, false);
-        getChildFragmentManager().beginTransaction()
-                .replace(R.id.playSongPanel, new PlaySongPanelFragment())
-                .commit();
+        if (getChildFragmentManager().findFragmentById(R.id.playSongPanel) == null) {
+            getChildFragmentManager().beginTransaction()
+                    .replace(R.id.playSongPanel, new PlaySongPanelFragment())
+                    .commit();
+        }
         return binding.getRoot();
     }
 
@@ -97,13 +99,7 @@ public class MainFragment extends Fragment {
 
         BottomNavigationView bottomNav = view.findViewById(R.id.bottomNavigationView);
 
-//        binding.miniPlayerContainer.setOnClickListener(v -> {
-//            NavController navController = NavHostFragment.findNavController(this);
-//            navController.navigate(R.id.action_miniPlayer_to_playerSongFragment);
-//        });
-
         View playSongPanel = view.findViewById(R.id.playSongPanel);
-        playSongPanel.setTranslationY(playSongPanel.getHeight());
 
         binding.miniPlayerContainer.setOnClickListener(v -> {
             showPlayerPanel();
@@ -127,11 +123,6 @@ public class MainFragment extends Fragment {
             }
             return false;
         });
-
-//        NavHostFragment navHostFragment = (NavHostFragment)
-//                getChildFragmentManager().findFragmentById(R.id.bottom_nav_host_fragment);
-//        NavController navController = navHostFragment.getNavController();
-//        NavigationUI.setupWithNavController(bottomNav, navController);
 
         PlayerViewModel playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
         playerViewModel.getCurrentSong().observe(getViewLifecycleOwner(), song -> {

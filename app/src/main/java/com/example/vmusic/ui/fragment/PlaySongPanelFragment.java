@@ -1,11 +1,28 @@
 package com.example.vmusic.ui.fragment;
 
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.media3.common.MediaItem;
+import androidx.media3.common.Player;
+import androidx.media3.exoplayer.ExoPlayer;
+
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SeekBar;
+
 import com.example.vmusic.R;
+import com.example.vmusic.databinding.FragmentPlaySongPanelBinding;
+import com.example.vmusic.entity.Song;
+import com.example.vmusic.models.PlayerManager;
+import com.example.vmusic.ui.adapter.PlaySongPagerAdapter;
+import com.example.vmusic.viewmodel.PlayerViewModel;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -15,29 +32,15 @@ import com.example.vmusic.R;
  */
 public class PlaySongPanelFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private FragmentPlaySongPanelBinding binding;
+    private ExoPlayer player;
+    private Handler handler = new Handler(Looper.getMainLooper());
+    private PlayerViewModel playerViewModel;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment PlaySongPanelFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static PlaySongPanelFragment newInstance(String param1, String param2) {
+    public static PlaySongPanelFragment newInstance(Song song) {
         PlaySongPanelFragment fragment = new PlaySongPanelFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putSerializable("song", song);
         fragment.setArguments(args);
         return fragment;
     }
@@ -49,17 +52,127 @@ public class PlaySongPanelFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-        
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_play_song_panel, container, false);
+        binding = FragmentPlaySongPanelBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        player = PlayerManager.getPlayer(requireContext());
+        player.addListener(new Player.Listener() {
+            @Override
+            public void onIsPlayingChanged(boolean isPlaying) {
+                playerViewModel.setIsPlaying(isPlaying);
+            }
+        });
+        playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
+
+        observeViewModel();
+        setupSeekBar();
+
+        player.addListener(new Player.Listener() {
+            @Override
+            public void onPlaybackStateChanged(int state) {
+                if (state == Player.STATE_READY) {
+                    long duration = player.getDuration();
+                    if (duration > 0) {
+                        binding.seekBar.setMax((int) duration);
+                        binding.txtTotaltimesong.setText(formatTime((int) duration));
+                    }
+                }
+            }
+        });
+    }
+
+    private void observeViewModel() {
+        playerViewModel.getCurrentSong().observe(getViewLifecycleOwner(), song -> {
+            if (song == null) return;
+
+            binding.tvName.setText(song.getName());
+            binding.tvSinger.setText(song.getArtist());
+
+            PlaySongPagerAdapter adapter = new PlaySongPagerAdapter(
+                    getChildFragmentManager(),
+                    song.getImage(),
+                    player,
+                    song.getUrlLyric()
+            );
+            binding.viewPlayMusic.setAdapter(adapter);
+            binding.viewPlayMusic.setCurrentItem(1, false);
+
+            if (player.getPlaybackState() == Player.STATE_IDLE || player.getMediaItemCount() == 0) {
+                MediaItem mediaItem = MediaItem.fromUri(song.getAudioUrl());
+                player.setMediaItem(mediaItem);
+                player.prepare();
+                player.play();
+                playerViewModel.setIsPlaying(true);
+            }
+        });
+
+        playerViewModel.getIsPlaying().observe(getViewLifecycleOwner(), playing -> {
+            if (playing != null) {
+                binding.imgBtnPlay.setImageResource(playing ? R.drawable.ic_pause : R.drawable.ic_play);
+            }
+        });
+
+        binding.imgBtnPlay.setOnClickListener(v -> {
+            boolean currentlyPlaying = Boolean.TRUE.equals(playerViewModel.getIsPlaying().getValue());
+            if (currentlyPlaying) {
+                player.pause();
+            } else {
+                player.play();
+            }
+            playerViewModel.setIsPlaying(!currentlyPlaying);
+        });
+    }
+
+    private void setupSeekBar() {
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (player != null) {
+                    long current = player.getCurrentPosition();
+                    long duration = player.getDuration();
+
+                    if (duration > 0) {
+                        binding.seekBar.setMax((int) duration);
+                        binding.txtTotaltimesong.setText(formatTime((int) duration));
+                    }
+
+                    binding.seekBar.setProgress((int) current);
+                    binding.txtTimesong.setText(formatTime((int) current));
+                }
+                handler.postDelayed(this, 500);
+            }
+        }, 0);
+
+        binding.seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser && player.getDuration() > 0) {
+                    player.seekTo(progress);
+                }
+            }
+
+            @Override public void onStartTrackingTouch(SeekBar seekBar) {}
+            @Override public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+    }
+
+    private String formatTime(int millis) {
+        int minutes = millis / 60000;
+        int seconds = (millis / 1000) % 60;
+        return String.format("%02d:%02d", minutes, seconds);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        handler.removeCallbacksAndMessages(null);
     }
 }
