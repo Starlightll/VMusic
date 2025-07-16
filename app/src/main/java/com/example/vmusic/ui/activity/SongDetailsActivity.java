@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -29,9 +30,18 @@ import com.example.vmusic.entity.Song;
 import com.example.vmusic.viewmodel.GenreViewModel;
 import com.example.vmusic.viewmodel.SongViewModel;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
 public class SongDetailsActivity extends AppCompatActivity {
@@ -154,66 +164,101 @@ public class SongDetailsActivity extends AppCompatActivity {
         return fileName;
     }
 
+
+
     private void uploadAndSaveSong() {
         String title = editTitle.getText().toString().trim();
-        String artist = editArtist.getText().toString().trim(); // Lấy tên ca sĩ
+        String artist = editArtist.getText().toString().trim();
 
-        // Kiểm tra tất cả các trường bắt buộc
         if (title.isEmpty() || artist.isEmpty() || imageUri == null || audioUri == null || lyricUri == null) {
             Toast.makeText(this, "Vui lòng điền đầy đủ thông tin và chọn file", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Hiển thị ProgressBar và vô hiệu hóa nút Save
         progressBar.setVisibility(View.VISIBLE);
         btnSave.setEnabled(false);
 
-        // Bắt đầu một thread mới để thực hiện các tác vụ mạng và database
         new Thread(() -> {
             try {
-                // 1. Upload các file lên Cloudinary
-                String imageUrl = uploadToCloudinary(imageUri, "vmusic/cover_art");
-                String audioUrl = uploadToCloudinary(audioUri, "vmusic/songs");
-                String lyricUrl = uploadToCloudinary(lyricUri, "vmusic/lyrics");
 
-                // 2. Kiểm tra kết quả upload
-                if (imageUrl == null || audioUrl == null || lyricUrl == null) {
+                // Tạo folder riêng cho mỗi bài hát
+                String uniqueFolderName = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US).format(new Date()) + "_" + UUID.randomUUID();
+                File songFolder = new File(getFilesDir(), "songs/" + uniqueFolderName);
+                if (!songFolder.exists()) songFolder.mkdirs();
+
+                // Copy file vào folder bài hát
+                String imageExt = getFileExtension(imageUri);
+                String audioExt = getFileExtension(audioUri);
+                String lyricExt = getFileExtension(lyricUri);
+
+                String imagePath = copyFileToFolder(imageUri, songFolder, "cover." + imageExt);
+                String audioPath = copyFileToFolder(audioUri, songFolder, "audio." + audioExt);
+                String lyricPath = copyFileToFolder(lyricUri, songFolder, "lyric." + lyricExt);
+
+                if (imagePath == null || audioPath == null || lyricPath == null) {
                     runOnUiThread(() -> {
-                        Toast.makeText(SongDetailsActivity.this, "Upload một hoặc nhiều file thất bại", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Lưu file thất bại", Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.GONE);
                         btnSave.setEnabled(true);
                     });
-                    return; // Dừng tiến trình nếu có lỗi
+                    return;
                 }
 
-                // 3. Tạo đối tượng Song với đầy đủ thông tin
                 Song song = new Song();
                 song.setName(title);
-                song.setArtist(artist); // Gán tên ca sĩ
-                song.setImage(imageUrl);
-                song.setAudioUrl(audioUrl);
-                song.setUrlLyric(lyricUrl);
+                song.setArtist(artist);
+                song.setImage(imagePath);
+                song.setAudioUrl(audioPath);
+                song.setUrlLyric(lyricPath);
                 song.setListenCounts(0);
 
-                // 4. Gọi ViewModel để lưu vào database (bao gồm cả quan hệ song-genre)
                 songViewModel.insertSongWithGenres(song, selectedGenreIds);
 
-                // 5. Cập nhật UI sau khi hoàn tất thành công
                 runOnUiThread(() -> {
-                    Toast.makeText(SongDetailsActivity.this, "Thêm bài hát mới thành công!", Toast.LENGTH_SHORT).show();
-                    finish(); // Đóng Activity và quay về màn hình trước
+                    Toast.makeText(this, "Lưu bài hát thành công!", Toast.LENGTH_SHORT).show();
+                    finish();
                 });
 
             } catch (Exception e) {
                 e.printStackTrace();
-                // Xử lý lỗi nếu có ngoại lệ xảy ra trong quá trình
                 runOnUiThread(() -> {
-                    Toast.makeText(SongDetailsActivity.this, "Đã xảy ra lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     progressBar.setVisibility(View.GONE);
                     btnSave.setEnabled(true);
                 });
             }
-        }).start(); // Bắt đầu thread
+        }).start();
+    }
+
+    private String copyFileToFolder(Uri uri, File targetFolder, String outputFileName) throws IOException {
+        if (!targetFolder.exists()) targetFolder.mkdirs();
+
+        File outFile = new File(targetFolder, outputFileName);
+        try (InputStream inputStream = getContentResolver().openInputStream(uri);
+             OutputStream outputStream = new FileOutputStream(outFile)) {
+            byte[] buffer = new byte[4096];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
+        }
+        return outFile.getAbsolutePath();
+    }
+
+    private String copyFileToInternalStorage(Uri uri, String subFolder, String fileName) throws IOException {
+        File dir = new File(getFilesDir(), subFolder);
+        if (!dir.exists()) dir.mkdirs();
+
+        File outFile = new File(dir, fileName);
+        try (InputStream inputStream = getContentResolver().openInputStream(uri);
+             OutputStream outputStream = new FileOutputStream(outFile)) {
+            byte[] buffer = new byte[4096];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
+        }
+        return outFile.getAbsolutePath();
     }
 
     private String uploadToCloudinary(Uri fileUri, String folder) throws InterruptedException {
@@ -253,6 +298,28 @@ public class SongDetailsActivity extends AppCompatActivity {
         latch.await();
         return resultUrl[0];
     }
+
+    private String getFileExtension(Uri uri) {
+        String extension = null;
+
+        // Kiểm tra MIME type
+        String mimeType = getContentResolver().getType(uri);
+        if (mimeType != null) {
+            extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType);
+        }
+
+        // Fallback nếu MIME không có
+        if (extension == null) {
+            String path = uri.getPath();
+            if (path != null && path.contains(".")) {
+                extension = path.substring(path.lastIndexOf('.') + 1);
+            }
+        }
+
+        return extension != null ? extension : "bin"; // Nếu không xác định, để .bin
+    }
+
+
 }
 
 

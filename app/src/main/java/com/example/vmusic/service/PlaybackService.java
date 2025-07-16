@@ -14,6 +14,8 @@ import android.support.v4.media.session.MediaSessionCompat;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.media3.common.AudioAttributes;
+import androidx.media3.common.C;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
 import androidx.media3.common.Player;
@@ -31,6 +33,7 @@ import com.example.vmusic.models.PlayerManager;
 import com.example.vmusic.ui.activity.PlaySongActivity;
 import com.example.vmusic.viewmodel.PlayerViewModel;
 
+import java.io.File;
 import java.util.ArrayList;
 
 @UnstableApi
@@ -103,8 +106,10 @@ public class PlaybackService extends Service {
         if (songList != null && !songList.isEmpty()) {
             player.clearMediaItems(); // Xoá bài cũ (nếu có)
             for (Song s : songList) {
+                File audioFile = new File(s.getAudioUrl());
+                Uri localUri = Uri.fromFile(audioFile);
                 MediaItem mediaItem = new MediaItem.Builder()
-                        .setUri(s.getAudioUrl())
+                        .setUri(localUri)
                         .setMediaMetadata(
                                 new MediaMetadata.Builder()
                                         .setTitle(s.getName())
@@ -115,6 +120,12 @@ public class PlaybackService extends Service {
                         .build();
                 player.addMediaItem(mediaItem);
             }
+            AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                    .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+                    .setUsage(C.USAGE_MEDIA)
+                    .build();
+
+            player.setAudioAttributes(audioAttributes, true);
             player.prepare();
             player.seekTo(index, 0);
             player.play();

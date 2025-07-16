@@ -3,6 +3,7 @@ package com.example.vmusic.ui.fragment;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,8 @@ import com.example.vmusic.models.LyricLine;
 import com.example.vmusic.ui.adapter.LyricAdapter;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -55,8 +58,8 @@ public class LyricFragment extends Fragment {
         super.onCreate(savedInstanceState);
         lyricPath = getArguments() != null ? getArguments().getString(ARG_LYRIC_PATH) : null;
 
-        if (lyricPath != null && lyricPath.startsWith("http")) {
-            loadLyricsFromUrl(lyricPath);
+        if (lyricPath != null) {
+            loadLyricsFromFile(lyricPath);
         }
     }
 
@@ -119,34 +122,35 @@ public class LyricFragment extends Fragment {
         return list;
     }
 
-    private void loadLyricsFromUrl(String urlString) {
+    private void loadLyricsFromFile(String filePath) {
         new Thread(() -> {
             try {
-                URL url = new URL(urlString);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("GET");
-
-                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                StringBuilder result = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    result.append(line).append("\n");
+                File file = new File(filePath);
+                if (!file.exists()) {
+                    Log.e("LyricLoad", "File not found: " + filePath);
+                    return;
                 }
-                reader.close();
+
+                StringBuilder result = new StringBuilder();
+                try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        result.append(line).append("\n");
+                    }
+                }
 
                 List<LyricLine> loadedLyrics = parseLrc(result.toString());
 
                 new Handler(Looper.getMainLooper()).post(() -> {
                     lyricLines.clear();
                     lyricLines.addAll(loadedLyrics);
-
                     adapter.notifyDataSetChanged();
-
-                    startSync();
+                    startSync(); // Start syncing lyric with music
                 });
 
             } catch (Exception e) {
                 e.printStackTrace();
+                Log.e("LyricLoad", "Error loading lyrics: " + e.getMessage());
             }
         }).start();
     }
