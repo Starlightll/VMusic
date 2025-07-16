@@ -221,6 +221,7 @@ public class PlaybackService extends Service implements MusicController {
     @Override
     public void next() {
         player.seekToNext();
+        updateCurrentSongInViewModel(player.getCurrentMediaItemIndex());
     }
 
     @Override

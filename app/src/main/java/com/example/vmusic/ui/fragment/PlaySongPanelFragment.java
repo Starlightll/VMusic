@@ -122,14 +122,20 @@ public class PlaySongPanelFragment extends Fragment {
         });
 
         binding.imgBtnPlay.setOnClickListener(v -> {
-            boolean currentlyPlaying = Boolean.TRUE.equals(playerViewModel.getIsPlaying().getValue());
-            if (currentlyPlaying) {
-                player.pause();
-            } else {
-                player.play();
-            }
-            playerViewModel.setIsPlaying(!currentlyPlaying);
+//            boolean currentlyPlaying = Boolean.TRUE.equals(playerViewModel.getIsPlaying().getValue());
+//            if (currentlyPlaying) {
+//                player.pause();
+//            } else {
+//                player.play();
+//            }
+//            playerViewModel.setIsPlaying(!currentlyPlaying);
+            playerViewModel.togglePlayPause();
         });
+
+        binding.imgBtnNext.setOnClickListener(v -> playerViewModel.next());
+        binding.imgBtnBack.setOnClickListener(v -> playerViewModel.previous());
+//        binding.imgBtnSuffle.setOnClickListener(v -> playerViewModel.toggleShuffle());
+
     }
 
     private void setupSeekBar() {
