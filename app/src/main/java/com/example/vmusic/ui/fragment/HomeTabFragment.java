@@ -194,7 +194,7 @@ public class HomeTabFragment extends Fragment {
     }
 
     private String getGreetingMessage() {
-        userName = sessionManager.getUsername();
+        userName = sessionManager.getUsername() != null ? sessionManager.getUsername() : "";
         int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
 
         if (hour >= 5 && hour < 12) {
