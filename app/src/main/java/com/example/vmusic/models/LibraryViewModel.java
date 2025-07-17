@@ -45,4 +45,10 @@ public class LibraryViewModel extends AndroidViewModel {
     public void deletePlaylist(Playlist playlist) {
         playlistRepository.delete(playlist);
     }
+    public void addToFavorite(int songId) {
+        playlistRepository.addToFavorite(songId);
+    }
+    public void addSongToPlaylist(int songId, int playlistId) {
+        playlistRepository.addSongToPlaylist(songId, playlistId);
+    }
 }

@@ -1,5 +1,6 @@
 package com.example.vmusic.ui.fragment;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.vmusic.R;
 import com.example.vmusic.databinding.FragmentLibraryTabBinding;
+import com.example.vmusic.entity.Playlist;
 import com.example.vmusic.entity.Song;
 import com.example.vmusic.models.LibraryViewModel;
 import com.example.vmusic.ui.adapter.PlaylistAdapter;
@@ -103,6 +105,29 @@ public class LibraryTabFragment extends Fragment {
             navController.navigate(R.id.action_libraryTabFragment_to_settingsFragment)
             ;
         });
+
+
+        binding.btnAddPlaylist.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setTitle("Tạo Playlist mới");
+
+            final EditText input = new EditText(requireContext());
+            input.setHint("Tên Playlist");
+            builder.setView(input);
+
+            builder.setPositiveButton("Tạo", (dialog, which) -> {
+                String name = input.getText().toString().trim();
+                if (!name.isEmpty()) {
+                    Playlist newPlaylist = new Playlist(0, name, "playlist", 1); // userOwnerId = 1 (demo)
+                    viewModel.insertPlaylist(newPlaylist);
+                }
+            });
+
+            builder.setNegativeButton("Hủy", (dialog, which) -> dialog.cancel());
+
+            builder.show();
+        });
+
 
 
 //        binding.btnSetting.setOnClickListener(v -> {
