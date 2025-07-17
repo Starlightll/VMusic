@@ -86,7 +86,8 @@ public class SettingsFragment extends Fragment {
         View view = binding.getRoot();
         recyclerView = view.findViewById(R.id.recyclerViewSettings);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(new SettingsAdapter(settingsList));
+        recyclerView.setAdapter(new SettingsAdapter(settingsList, NavHostFragment.findNavController(this)));
+
         return view;
     }
 

@@ -8,6 +8,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.vmusic.R;
@@ -21,9 +24,11 @@ public class SettingsAdapter  extends RecyclerView.Adapter<SettingsAdapter.ViewH
     private static final int TYPE_ITEM = 1;
     private static final int TYPE_FOOTER = 2;
     List<String> items;
+    private NavController navController;
 
-    public SettingsAdapter(List<String> items) {
+    public SettingsAdapter(List<String> items, NavController navController) {
         this.items = items;
+        this.navController = navController;
     }
 
     @NonNull
@@ -48,6 +53,12 @@ public class SettingsAdapter  extends RecyclerView.Adapter<SettingsAdapter.ViewH
             ((ItemViewHolder) holder).textSetting.setText(items.get(position - 1)); // -1 vì header chiếm vị trí 0
         } else if (holder instanceof HeaderViewHolder) {
             // Gắn avatar, tên người dùng v.v.
+            holder.itemView.findViewById(R.id.item_settings_profile).setOnClickListener(v -> {
+                // Xử lý click vào phần header
+                Toast.makeText(holder.itemView.getContext(), "Chỉnh sửa thông tin cá nhân", Toast.LENGTH_SHORT).show();
+                // Điều hướng đến ProfileFragment
+                navController.navigate(R.id.action_settingsFragment_to_profileFragment);
+            });
         } else if (holder instanceof FooterViewHolder) {
             // Gắn xử lý click "Đăng xuất"
         }
