@@ -1,6 +1,8 @@
 package com.example.vmusic.ui.fragment;
 
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -9,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -21,6 +24,7 @@ import com.example.vmusic.R;
 import com.example.vmusic.databinding.FragmentLibraryTabBinding;
 import com.example.vmusic.entity.Playlist;
 import com.example.vmusic.entity.Song;
+import com.example.vmusic.helper.SessionManager;
 import com.example.vmusic.models.LibraryViewModel;
 import com.example.vmusic.ui.adapter.PlaylistAdapter;
 import com.example.vmusic.ui.adapter.SongAdapter;
@@ -44,16 +48,16 @@ public class LibraryTabFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_library_tab, container, false);
+        // Chỉ dùng binding thôi
         binding = FragmentLibraryTabBinding.inflate(inflater, container, false);
 
+        // Setup RecyclerView từ binding
+        RecyclerView songRecyclerView = binding.songRecyclerView;
+        RecyclerView playlistRecyclerView = binding.playlistRecyclerView;
 
-        RecyclerView songRecyclerView = view.findViewById(R.id.songRecyclerView);
-        RecyclerView playlistRecyclerView = view.findViewById(R.id.playlistRecyclerView);
-
-        searchEditText = view.findViewById(R.id.searchEditText);
-        genreSpinner = view.findViewById(R.id.genreSpinner);
-        sortSpinner = view.findViewById(R.id.sortSpinner);
+        searchEditText = binding.searchEditText;
+        genreSpinner = binding.genreSpinner;
+        sortSpinner = binding.sortSpinner;
 
         // Song setup
         songRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -92,10 +96,9 @@ public class LibraryTabFragment extends Fragment {
             @Override public void afterTextChanged(Editable s) {}
         });
 
-        // TODO: Spinner cho genre và sắp xếp
-
-        return binding.getRoot();
+        return binding.getRoot(); // ✅ Dùng layout từ binding
     }
+
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -116,17 +119,33 @@ public class LibraryTabFragment extends Fragment {
             builder.setView(input);
 
             builder.setPositiveButton("Tạo", (dialog, which) -> {
-                String name = input.getText().toString().trim();
-                if (!name.isEmpty()) {
-                    Playlist newPlaylist = new Playlist(0, name, "playlist", 1); // userOwnerId = 1 (demo)
-                    viewModel.insertPlaylist(newPlaylist);
+                try {
+                    String name = input.getText().toString().trim();
+                    if (!name.isEmpty()) {
+                        SessionManager session = new SessionManager(requireContext());
+                        int userId = session.getUserId();
+
+                        if (userId == -1) {
+                            Toast.makeText(requireContext(), "Bạn cần đăng nhập để tạo playlist.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        Playlist newPlaylist = new Playlist(0, name, "playlist", userId);
+                        viewModel.insertPlaylist(newPlaylist);
+                        Toast.makeText(requireContext(), "Tạo playlist thành công", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(requireContext(), "Tên playlist không được để trống.", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(requireContext(), "Lỗi khi tạo playlist: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             });
 
             builder.setNegativeButton("Hủy", (dialog, which) -> dialog.cancel());
-
             builder.show();
         });
+
 
 
 

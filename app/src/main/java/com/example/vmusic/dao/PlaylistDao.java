@@ -35,7 +35,8 @@ public interface PlaylistDao {
     @Transaction
     @Query("SELECT * FROM playlist WHERE playlistId = :playlistId")
     LiveData<PlaylistWithSongs> getPlaylistWithSongs(int playlistId);
-
+    @Query("SELECT * FROM playlist WHERE type != 'system'")
+    LiveData<List<Playlist>> getAllUserPlaylists();
     // ✅ Lấy playlist theo type
     @Query("SELECT * FROM playlist WHERE type = :type LIMIT 1")
     Playlist getPlaylistByType(String type);
@@ -43,4 +44,7 @@ public interface PlaylistDao {
     // ✅ Kiểm tra nếu 1 bài hát đã có trong playlist
     @Query("SELECT COUNT(*) FROM playlistsongcrossref WHERE playListId = :playlistId AND songId = :songId")
     int isSongInPlaylist(int playlistId, int songId);
+    @Query("SELECT * FROM playlist WHERE type = :type AND userId = :userId LIMIT 1")
+    Playlist getPlaylistByTypeAndUser(String type, int userId);
+
 }

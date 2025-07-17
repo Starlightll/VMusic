@@ -21,6 +21,7 @@ public class Playlist {
     public String name;
     public String type;
     public int userOwnerId;
+    public int userId;
 
     public Playlist(int playListId, String name, String type, int userOwnerId) {
         this.playListId = playListId;
