@@ -46,12 +46,12 @@
         android:layout_marginBottom="36dp"
         android:contentDescription="Favorite"
         android:src="@drawable/ic_favorite"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintBottom_toTopOf="@+id/item_settings_profile"
         app:layout_constraintEnd_toEndOf="parent"
         app:tint="@color/white"/>
 
     <LinearLayout
-        android:id="@+id/linearLayout"
+        android:id="@+id/item_settings_profile"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="10dp"
