@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.vmusic.R;
 import com.example.vmusic.databinding.FragmentSettingsBinding;
+import com.example.vmusic.helper.SessionManager;
 import com.example.vmusic.ui.adapter.SettingsAdapter;
 
 import java.util.Arrays;
@@ -51,6 +52,8 @@ public class SettingsFragment extends Fragment {
             , "Chính sách dịch vụ"
     );
 
+    SessionManager sessionManager;
+
     public SettingsFragment() {
         // Required empty public constructor
     }
@@ -83,6 +86,7 @@ public class SettingsFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         binding = com.example.vmusic.databinding.FragmentSettingsBinding.inflate(inflater, container, false);
+        sessionManager = new SessionManager(requireContext());
         View view = binding.getRoot();
         recyclerView = view.findViewById(R.id.recyclerViewSettings);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

@@ -61,6 +61,15 @@ public class SettingsAdapter  extends RecyclerView.Adapter<SettingsAdapter.ViewH
             });
         } else if (holder instanceof FooterViewHolder) {
             // Gắn xử lý click "Đăng xuất"
+            holder.itemView.findViewById(R.id.btnLogout).setOnClickListener(v ->{
+                // Xử lý đăng xuất
+                Toast.makeText(holder.itemView.getContext(), "Đăng xuất", Toast.LENGTH_SHORT).show();
+                // Có thể gọi một phương thức trong SessionManager để đăng xuất
+                SessionManager sessionManager = new SessionManager(holder.itemView.getContext());
+                sessionManager.logout();
+                // Sau khi đăng xuất, có thể điều hướng về Login
+                navController.navigate(R.id.action_settingsFragment_to_loginFragment);
+            });
         }
     }
 

@@ -54,6 +54,7 @@ public class ProfileFragment extends Fragment {
             navController.navigateUp();
         });
 
+
     }
 
 }
