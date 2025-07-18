@@ -68,7 +68,7 @@ public class LibraryTabFragment extends Fragment {
         songRecyclerView.setAdapter(songAdapter);
 
         // Playlist setup
-        playlistRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        playlistRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         playlistAdapter = new PlaylistAdapter(playlist -> {
             // TODO: Mở chi tiết playlist
         });

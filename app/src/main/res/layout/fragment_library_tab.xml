@@ -83,11 +83,17 @@
 
     <!-- Song -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/songRecyclerView"
+        android:id="@+id/playlistRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="0dp" />
+        android:orientation="vertical"
+        android:layout_height="500dp"
+        android:layout_weight="1" />
+
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/songRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_weight="1"
+        android:layout_height="0dp" />
+
 </LinearLayout>
