@@ -33,6 +33,18 @@
             app:destination="@id/profileFragment"
             app:enterAnim="@anim/slide_in_right"  app:exitAnim="@anim/stay_still"   app:popEnterAnim="@anim/stay_still_back"
             app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_settingsFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:enterAnim="@anim/slide_in_right"  app:exitAnim="@anim/stay_still"   app:popEnterAnim="@anim/stay_still_back"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.vmusic.ui.fragment.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login" >
     </fragment>
 
 
