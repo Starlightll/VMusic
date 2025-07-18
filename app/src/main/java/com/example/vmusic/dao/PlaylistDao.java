@@ -17,7 +17,7 @@ import java.util.List;
 @Dao
 public interface PlaylistDao {
 
-    @Query("SELECT * FROM playlist")
+    @Query("SELECT * FROM playlists")
     LiveData<List<Playlist>> getAllPlaylistLive();
 
     @Insert
@@ -33,21 +33,21 @@ public interface PlaylistDao {
 
 
     @Transaction
-    @Query("SELECT * FROM playlist WHERE playlistId = :playlistId")
+    @Query("SELECT * FROM playlists WHERE playlistId = :playlistId")
     LiveData<PlaylistWithSongs> getPlaylistWithSongs(int playlistId);
-    @Query("SELECT * FROM playlist WHERE type != 'system'")
+    @Query("SELECT * FROM playlists WHERE type != 'system'")
     LiveData<List<Playlist>> getAllUserPlaylists();
     // ✅ Lấy playlist theo type
-    @Query("SELECT * FROM playlist WHERE type = :type LIMIT 1")
+    @Query("SELECT * FROM playlists WHERE type = :type LIMIT 1")
     Playlist getPlaylistByType(String type);
 
     // ✅ Kiểm tra nếu 1 bài hát đã có trong playlist
     @Query("SELECT COUNT(*) FROM playlistsongcrossref WHERE playListId = :playlistId AND songId = :songId")
     int isSongInPlaylist(int playlistId, int songId);
-    @Query("SELECT * FROM playlist WHERE type = :type AND userId = :userId LIMIT 1")
-    Playlist getPlaylistByTypeAndUser(String type, int userId);
+    @Query("SELECT * FROM playlists WHERE type = :type AND userOwnerId = :userOwnerId LIMIT 1")
+    Playlist getPlaylistByTypeAndUser(String type, int userOwnerId);
 
-    @Query("SELECT * FROM playlist WHERE userId = :userId")
-    LiveData<List<Playlist>> getAllPlaylistsByUser(int userId);
+    @Query("SELECT * FROM playlists WHERE userOwnerId = :userOwnerId")
+    LiveData<List<Playlist>> getAllPlaylistsByUser(int userOwnerId);
 
 }

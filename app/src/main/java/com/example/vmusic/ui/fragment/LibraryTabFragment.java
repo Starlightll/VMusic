@@ -135,12 +135,6 @@ public class LibraryTabFragment extends Fragment {
                         Playlist newPlaylist = new Playlist(0, name, "playlist", userId);
                         viewModel.insertPlaylist(newPlaylist);
 
-
-                        viewModel.getPlaylistsByUser(userId).observe(getViewLifecycleOwner(), playlists -> {
-                            playlistAdapter.setPlaylists(playlists);
-                            Log.d("PlaylistObserver", "Cập nhật playlist, tổng: " + playlists.size());
-                        });
-
                         Toast.makeText(requireContext(), "Tạo playlist thành công", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(requireContext(), "Tên playlist không được để trống.", Toast.LENGTH_SHORT).show();
