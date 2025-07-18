@@ -9,25 +9,26 @@ import androidx.room.PrimaryKey;
         foreignKeys = @ForeignKey(
                 entity = User.class,
                 parentColumns = "userId",
-                childColumns = "userOwnerId",
+                childColumns = "userId",
                 onDelete = ForeignKey.CASCADE
         )
 )
 public class Playlist {
 
     @PrimaryKey(autoGenerate = true)
-
     public int playListId;
+
     public String name;
     public String type;
-    public int userOwnerId;
-    public int userId;
 
-    public Playlist(int playListId, String name, String type, int userOwnerId) {
+    public int userId;
+    public int userOwnerId;
+
+    public Playlist(int playListId, String name, String type, int userId) {
         this.playListId = playListId;
         this.name = name;
         this.type = type;
-        this.userOwnerId = userOwnerId;
+        this.userId = userId; // lưu userId
     }
 
     public int getPlayListId() {
@@ -54,11 +55,12 @@ public class Playlist {
         this.type = type;
     }
 
-    public int getUserOwnerId() {
-        return userOwnerId;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setUserOwnerId(int userOwnerId) {
-        this.userOwnerId = userOwnerId;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }
+

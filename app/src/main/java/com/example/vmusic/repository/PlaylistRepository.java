@@ -32,6 +32,7 @@ public class PlaylistRepository {
         executorService.execute(() -> playlistDao.Insert(playlist));
     }
 
+
     // ✅ Cập nhật playlist
     public void update(Playlist playlist) {
         executorService.execute(() -> playlistDao.Update(playlist));
@@ -41,6 +42,10 @@ public class PlaylistRepository {
     public void delete(Playlist playlist) {
         executorService.execute(() -> playlistDao.Delete(playlist));
     }
+    public LiveData<List<Playlist>> getPlaylistsByUser(int userId) {
+        return playlistDao.getAllPlaylistsByUser(userId);
+    }
+
     public void addSongToPlaylist(int songId, int playlistId) {
         executorService.execute(() -> {
             if (playlistDao.isSongInPlaylist(playlistId, songId) == 0) {

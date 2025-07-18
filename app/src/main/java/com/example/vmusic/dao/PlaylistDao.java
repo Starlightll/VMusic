@@ -47,4 +47,7 @@ public interface PlaylistDao {
     @Query("SELECT * FROM playlist WHERE type = :type AND userId = :userId LIMIT 1")
     Playlist getPlaylistByTypeAndUser(String type, int userId);
 
+    @Query("SELECT * FROM playlist WHERE userId = :userId")
+    LiveData<List<Playlist>> getAllPlaylistsByUser(int userId);
+
 }

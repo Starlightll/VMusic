@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -125,6 +126,7 @@ public class LibraryTabFragment extends Fragment {
                         SessionManager session = new SessionManager(requireContext());
                         int userId = session.getUserId();
 
+                        // Không cho phép tạo nếu chưa đăng nhập
                         if (userId == -1) {
                             Toast.makeText(requireContext(), "Bạn cần đăng nhập để tạo playlist.", Toast.LENGTH_SHORT).show();
                             return;
@@ -132,6 +134,13 @@ public class LibraryTabFragment extends Fragment {
 
                         Playlist newPlaylist = new Playlist(0, name, "playlist", userId);
                         viewModel.insertPlaylist(newPlaylist);
+
+
+                        viewModel.getPlaylistsByUser(userId).observe(getViewLifecycleOwner(), playlists -> {
+                            playlistAdapter.setPlaylists(playlists);
+                            Log.d("PlaylistObserver", "Cập nhật playlist, tổng: " + playlists.size());
+                        });
+
                         Toast.makeText(requireContext(), "Tạo playlist thành công", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(requireContext(), "Tên playlist không được để trống.", Toast.LENGTH_SHORT).show();
@@ -145,6 +154,7 @@ public class LibraryTabFragment extends Fragment {
             builder.setNegativeButton("Hủy", (dialog, which) -> dialog.cancel());
             builder.show();
         });
+
 
 
 
