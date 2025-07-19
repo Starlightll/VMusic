@@ -8,9 +8,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.NavController;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.vmusic.Interface.OnArtistClickListener;
 import com.example.vmusic.R;
 import com.example.vmusic.entity.Artist;
 
@@ -20,10 +22,13 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.ArtistView
 
     private final List<Artist> artists;
     private final Context context;
-
-    public ArtistAdapter(List<Artist> artists, Context context) {
+    private final OnArtistClickListener onArtistClickListener;
+    private NavController navController;
+    public ArtistAdapter(Context context, List<Artist> artists, OnArtistClickListener listener) {
         this.artists = artists;
         this.context = context;
+        this.onArtistClickListener = listener;
+        this.navController = navController;
     }
 
     @NonNull
@@ -42,6 +47,14 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.ArtistView
                 .load(artist.getImage())
                 .placeholder(R.drawable.circle_background)
                 .into(holder.imgArtist);
+
+        holder.itemView.setOnClickListener(v -> {
+            if (onArtistClickListener != null) {
+                onArtistClickListener.onArtistClick(artist);
+            }
+
+        });
+
     }
 
     @Override
@@ -59,4 +72,10 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.ArtistView
             tvArtistName = itemView.findViewById(R.id.tvArtistName);
         }
     }
+    public void setArtists(List<Artist> artists) {
+        this.artists.clear();
+        this.artists.addAll(artists);
+        notifyDataSetChanged();
+    }
+
 }

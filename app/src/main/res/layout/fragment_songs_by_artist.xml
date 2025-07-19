@@ -1,14 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.fragment.SongsByArtistFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <!-- Ảnh nền ca sĩ -->
+    <ImageView
+        android:id="@+id/imgArtistBackground"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="220dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</FrameLayout>
+    <!-- Nút back -->
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_arrow_back"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_margin="16dp" />
+
+    <!-- Tên ca sĩ -->
+    <TextView
+        android:id="@+id/tvArtistName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hoàng Tôn"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        app:layout_constraintTop_toBottomOf="@id/imgArtistBackground"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="-40dp" />
+
+    <!-- Nút play lớn màu xanh -->
+    <ImageButton
+        android:id="@+id/btnPlay"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:backgroundTint="@color/spotify_green"
+        android:background="@drawable/circle_bg_green"
+        android:src="@drawable/ic_play"
+        app:layout_constraintTop_toBottomOf="@id/tvArtistName"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp" />
+
+    <!-- Tiêu đề Phổ biến -->
+    <TextView
+        android:id="@+id/tvPopular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Phổ biến"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        app:layout_constraintTop_toBottomOf="@id/btnPlay"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp" />
+
+    <!-- Danh sách bài hát của ca sĩ -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerSongsByArtist"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/tvPopular"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

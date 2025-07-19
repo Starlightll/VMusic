@@ -9,9 +9,6 @@
         android:id="@+id/homeTabFragment"
         android:name="com.example.vmusic.ui.fragment.HomeTabFragment"
         android:label="Home" >
-        <action
-            android:id="@+id/action_homeTabFragment_to_songsByArtistFragment"
-            app:destination="@id/songsByArtistFragment" />
     </fragment>
 
     <fragment
@@ -27,6 +24,7 @@
             android:id="@+id/action_libraryTabFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
     </fragment>
+
 
 
 

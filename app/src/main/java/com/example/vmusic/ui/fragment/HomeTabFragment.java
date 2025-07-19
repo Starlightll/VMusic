@@ -29,6 +29,7 @@ import com.example.vmusic.ui.adapter.ArtistAdapter;
 import com.example.vmusic.ui.adapter.PopularSongAdapter;
 import com.example.vmusic.ui.adapter.RecentSongAdapter;
 import com.example.vmusic.ui.adapter.RecentlyPlayedAdapter;
+import com.example.vmusic.viewmodel.ArtistViewModel;
 import com.example.vmusic.viewmodel.PlayerViewModel;
 import com.example.vmusic.viewmodel.SongViewModel;
 
@@ -44,6 +45,8 @@ public class HomeTabFragment extends Fragment {
     private RecentlyPlayedAdapter recentlyPlayedAdapter;
 
     private SongViewModel songViewModel;
+
+    private ArtistViewModel artistViewModel;
     private PlayerViewModel playerViewModel;
     private SessionManager sessionManager;
     private RecentlyPlayedManager recentlyPlayedManager;
@@ -88,7 +91,7 @@ public class HomeTabFragment extends Fragment {
         // ViewModels
         playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
         songViewModel = new ViewModelProvider(this).get(SongViewModel.class);
-
+        artistViewModel = new ViewModelProvider(this).get(ArtistViewModel.class);
         // Setup UI
         setupRecyclerViews(view);
         setupAdapters();
@@ -184,14 +187,14 @@ public class HomeTabFragment extends Fragment {
         recyclerRecentlyPlayed.setAdapter(recentlyPlayedAdapter);
 
 
-//        artistAdapter = new ArtistAdapter(requireContext(), new ArrayList<>(), artist -> {
-//            Bundle bundle = new Bundle();
-////            bundle.putString("artistId", artist.);
-//
-//            NavController navController = NavHostFragment.findNavController(this);
-//            navController.navigate(R.id.action_homeTabFragment_to_songsByArtistFragment, bundle);
-//        });
-//        recyclerArtists.setAdapter(artistAdapter);
+        artistAdapter = new ArtistAdapter(requireContext(), new ArrayList<>(), artist -> {
+            Bundle bundle = new Bundle();
+            bundle.putInt("artistId", artist.getArtistId());
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(R.id.action_homeTabFragment_to_songsByArtistFragment,bundle);
+        });
+
+        recyclerArtists.setAdapter(artistAdapter);
 
     }
 
@@ -210,6 +213,18 @@ public class HomeTabFragment extends Fragment {
         List<Integer> recentIds = recentlyPlayedManager.getSongIds();
         songViewModel.getSongsByIds(recentIds).observe(getViewLifecycleOwner(), songs -> {
             if (songs != null) recentlyPlayedAdapter.setSongs(songs);
+        });
+
+        // Nghệ sĩ
+        artistViewModel.getAllArtists().observe(getViewLifecycleOwner(), artists -> {
+            if (artists != null) {
+                artistAdapter.setArtists(artists);
+                if (artists.isEmpty()) {
+                    recyclerArtists.setVisibility(View.GONE);
+                } else {
+                    recyclerArtists.setVisibility(View.VISIBLE);
+                }
+            }
         });
     }
 
