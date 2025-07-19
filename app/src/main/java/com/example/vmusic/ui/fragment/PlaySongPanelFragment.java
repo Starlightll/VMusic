@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.MediaItem;
@@ -15,14 +16,19 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
 import com.example.vmusic.R;
 import com.example.vmusic.databinding.FragmentPlaySongPanelBinding;
 import com.example.vmusic.entity.Song;
+import com.example.vmusic.entity.User;
+import com.example.vmusic.helper.SessionManager;
 import com.example.vmusic.models.PlayerManager;
 import com.example.vmusic.ui.adapter.PlaySongPagerAdapter;
 import com.example.vmusic.viewmodel.PlayerViewModel;
+import com.example.vmusic.viewmodel.SongViewModel;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,6 +42,10 @@ public class PlaySongPanelFragment extends Fragment {
     private ExoPlayer player;
     private Handler handler = new Handler(Looper.getMainLooper());
     private PlayerViewModel playerViewModel;
+    private SongViewModel songViewModel;
+    private boolean isShuffle = false;
+    private int repeatMode = 0;
+    private int songId=0;
 
     public static PlaySongPanelFragment newInstance(Song song) {
         PlaySongPanelFragment fragment = new PlaySongPanelFragment();
@@ -72,7 +82,7 @@ public class PlaySongPanelFragment extends Fragment {
             }
         });
         playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
-
+        songViewModel = new ViewModelProvider(requireActivity()).get(SongViewModel.class);
         observeViewModel();
         setupSeekBar();
 
@@ -113,6 +123,7 @@ public class PlaySongPanelFragment extends Fragment {
                 player.play();
                 playerViewModel.setIsPlaying(true);
             }
+            songId= song.getSongId();
         });
 
         playerViewModel.getIsPlaying().observe(getViewLifecycleOwner(), playing -> {
@@ -122,19 +133,74 @@ public class PlaySongPanelFragment extends Fragment {
         });
 
         binding.imgBtnPlay.setOnClickListener(v -> {
-//            boolean currentlyPlaying = Boolean.TRUE.equals(playerViewModel.getIsPlaying().getValue());
-//            if (currentlyPlaying) {
-//                player.pause();
-//            } else {
-//                player.play();
-//            }
-//            playerViewModel.setIsPlaying(!currentlyPlaying);
             playerViewModel.togglePlayPause();
         });
 
         binding.imgBtnNext.setOnClickListener(v -> playerViewModel.next());
         binding.imgBtnBack.setOnClickListener(v -> playerViewModel.previous());
-//        binding.imgBtnSuffle.setOnClickListener(v -> playerViewModel.toggleShuffle());
+        binding.imgBtnSuffle.setOnClickListener(v -> {
+            playerViewModel.toggleShuffle();
+
+            isShuffle = !isShuffle;
+
+            if (isShuffle) {
+                binding.imgBtnSuffle.setColorFilter(ContextCompat.getColor(requireContext(), R.color.primary_green));
+            } else {
+                binding.imgBtnSuffle.setColorFilter(ContextCompat.getColor(requireContext(), R.color.white));
+            }
+        });
+
+        binding.imgBtnRepeat.setOnClickListener(v -> {
+            playerViewModel.changeRepeatMode();
+
+            repeatMode = (repeatMode + 1) % 3;
+
+            switch (repeatMode) {
+                case 0:
+                    binding.imgBtnRepeat.setImageResource(R.drawable.ic_replay);
+                    binding.imgBtnRepeat.setColorFilter(ContextCompat.getColor(requireContext(), R.color.white));
+                    break;
+                case 1:
+                    binding.imgBtnRepeat.setImageResource(R.drawable.repeat_1);
+                    binding.imgBtnRepeat.setColorFilter(ContextCompat.getColor(requireContext(), R.color.primary_green));
+                    break;
+                case 2:
+                    binding.imgBtnRepeat.setImageResource(R.drawable.ic_replay);
+                    binding.imgBtnRepeat.setColorFilter(ContextCompat.getColor(requireContext(), R.color.primary_green));
+                    break;
+            }
+        });
+
+
+        SessionManager session = new SessionManager(requireContext());
+        int userId = session.getUserId();
+
+
+            binding.imgBtnFavorite.setVisibility(View.VISIBLE);
+
+            songViewModel.getIsFavorite().observe(getViewLifecycleOwner(), isFav -> {
+                if (isFav != null && isFav) {
+                    binding.imgBtnFavorite.setImageResource(R.drawable.ic_favorite_full);
+                } else {
+                    binding.imgBtnFavorite.setImageResource(R.drawable.ic_favorite);
+                }
+            });
+
+            binding.imgBtnFavorite.setOnClickListener(v -> {
+                if (userId == 0) {
+                    Toast.makeText(requireContext(), "Vui lòng đăng nhập để sử dụng tính năng này", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Song currentSong = playerViewModel.getCurrentSong().getValue();
+                if (currentSong != null) {
+                    if (songViewModel.getIsFavorite().getValue() != null && songViewModel.getIsFavorite().getValue()) {
+                        songViewModel.removeFromFavorite(currentSong.getSongId(), userId);
+                    } else {
+                        songViewModel.addToFavorite(currentSong.getSongId(), userId);
+                    }
+                }
+            });
+
 
     }
 

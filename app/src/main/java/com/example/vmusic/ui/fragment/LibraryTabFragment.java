@@ -89,11 +89,19 @@ public class LibraryTabFragment extends Fragment {
         // ViewModel
         viewModel = new ViewModelProvider(this).get(LibraryViewModel.class);
 
-        // Quan sát playlist
-        viewModel.getAllPlaylists().observe(getViewLifecycleOwner(), playlists -> {
-            currentPlaylists = playlists;
-            filterAndSortPlaylists();
-        });
+
+        // ✅ Lấy danh sách playlist theo userId (chỉ hiển thị playlist của người dùng đăng nhập)
+        SessionManager session = new SessionManager(requireContext());
+        int userId = session.getUserId();
+
+        if (userId != -1) {
+            viewModel.getPlaylistsByUser(userId).observe(getViewLifecycleOwner(), playlists -> {
+                currentPlaylists = playlists;
+                filterAndSortPlaylists();
+            });
+        } else {
+            Toast.makeText(requireContext(), "Bạn cần đăng nhập để xem playlist.", Toast.LENGTH_SHORT).show();
+        }
 
         // Tìm kiếm
         EditText searchBox = binding.etLibrarySearch;

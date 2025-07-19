@@ -8,11 +8,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.vmusic.MainActivity;
 import com.example.vmusic.R;
 import com.example.vmusic.helper.SessionManager;
 
@@ -52,23 +54,19 @@ public class SettingsAdapter  extends RecyclerView.Adapter<SettingsAdapter.ViewH
         if (holder instanceof ItemViewHolder) {
             ((ItemViewHolder) holder).textSetting.setText(items.get(position - 1)); // -1 vì header chiếm vị trí 0
         } else if (holder instanceof HeaderViewHolder) {
-            // Gắn avatar, tên người dùng v.v.
             holder.itemView.findViewById(R.id.item_settings_profile).setOnClickListener(v -> {
-                // Xử lý click vào phần header
                 Toast.makeText(holder.itemView.getContext(), "Chỉnh sửa thông tin cá nhân", Toast.LENGTH_SHORT).show();
-                // Điều hướng đến ProfileFragment
                 navController.navigate(R.id.action_settingsFragment_to_profileFragment);
             });
         } else if (holder instanceof FooterViewHolder) {
-            // Gắn xử lý click "Đăng xuất"
             holder.itemView.findViewById(R.id.btnLogout).setOnClickListener(v ->{
-                // Xử lý đăng xuất
                 Toast.makeText(holder.itemView.getContext(), "Đăng xuất", Toast.LENGTH_SHORT).show();
-                // Có thể gọi một phương thức trong SessionManager để đăng xuất
                 SessionManager sessionManager = new SessionManager(holder.itemView.getContext());
                 sessionManager.logout();
-                // Sau khi đăng xuất, có thể điều hướng về Login
-                navController.navigate(R.id.action_settingsFragment_to_loginFragment);
+                AppCompatActivity activity = (AppCompatActivity) holder.itemView.getContext();
+                if (activity instanceof MainActivity) {
+                    ((MainActivity) activity).switchToAuthNavGraph();
+                }
             });
         }
     }

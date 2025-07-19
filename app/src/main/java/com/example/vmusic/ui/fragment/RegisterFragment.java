@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -80,8 +81,10 @@ public class RegisterFragment extends Fragment {
                 // Handle successful registration
                 NavHostFragment.findNavController(this)
                         .navigate(R.id.action_registerFragment_to_loginFragment);
+                Toast.makeText(getContext(), "Registration successful", Toast.LENGTH_SHORT).show();
             } else {
                 // Handle registration error
+                Toast.makeText(getContext(), "Registration failed. Please try again.", Toast.LENGTH_SHORT).show();
             }
         });
 
