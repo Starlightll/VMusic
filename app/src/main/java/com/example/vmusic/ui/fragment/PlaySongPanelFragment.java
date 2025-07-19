@@ -199,7 +199,7 @@ public class PlaySongPanelFragment extends Fragment {
     private void startDiscAnimation() {
         if (discAnimator == null) {
             discAnimator = ObjectAnimator.ofFloat(binding.viewPlayMusic, "rotation", 0f, 360f);
-            discAnimator.setDuration(17000);
+            discAnimator.setDuration(23000);
             discAnimator.setInterpolator(new LinearInterpolator());
             discAnimator.setRepeatCount(ValueAnimator.INFINITE);
             discAnimator.setRepeatMode(ValueAnimator.RESTART);
