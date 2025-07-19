@@ -13,6 +13,9 @@ import androidx.annotation.OptIn;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.util.UnstableApi;
+import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,6 +25,7 @@ import com.example.vmusic.entity.Song;
 import com.example.vmusic.helper.RecentlyPlayedManager;
 import com.example.vmusic.helper.SessionManager;
 import com.example.vmusic.service.PlaybackService;
+import com.example.vmusic.ui.adapter.ArtistAdapter;
 import com.example.vmusic.ui.adapter.PopularSongAdapter;
 import com.example.vmusic.ui.adapter.RecentSongAdapter;
 import com.example.vmusic.ui.adapter.RecentlyPlayedAdapter;
@@ -43,6 +47,8 @@ public class HomeTabFragment extends Fragment {
     private PlayerViewModel playerViewModel;
     private SessionManager sessionManager;
     private RecentlyPlayedManager recentlyPlayedManager;
+    private RecyclerView recyclerArtists;
+    private ArtistAdapter artistAdapter;
 
     private String userName = "";
 
@@ -98,6 +104,9 @@ public class HomeTabFragment extends Fragment {
 
         recyclerRecentlyPlayed = view.findViewById(R.id.recyclerRecentlyPlayed);
         recyclerRecentlyPlayed.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+
+        recyclerArtists = view.findViewById(R.id.recyclerFavoriteArtists);
+        recyclerArtists.setLayoutManager( new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
     }
 
     @OptIn(markerClass = UnstableApi.class)
@@ -173,6 +182,17 @@ public class HomeTabFragment extends Fragment {
             recentlyPlayedManager.addSongId(song.songId);
         });
         recyclerRecentlyPlayed.setAdapter(recentlyPlayedAdapter);
+
+
+        artistAdapter = new ArtistAdapter(requireContext(), new ArrayList<>(), artist -> {
+            Bundle bundle = new Bundle();
+            bundle.putString("artistId", artist.getArtistId());
+
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(R.id.action_homeTabFragment_to_songsByArtistFragment, bundle);
+        });
+        recyclerArtists.setAdapter(artistAdapter);
+
     }
 
     private void observeData() {
