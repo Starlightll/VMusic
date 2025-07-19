@@ -15,6 +15,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.vmusic.MainActivity;
 import com.example.vmusic.R;
+import com.example.vmusic.helper.SessionManager;
 import com.google.android.material.card.MaterialCardView;
 
 public class AdminDashboardFragment extends Fragment {
@@ -49,6 +50,8 @@ public class AdminDashboardFragment extends Fragment {
 
         Button logoutButton = view.findViewById(R.id.btnLogout);
         logoutButton.setOnClickListener(v -> {
+            SessionManager session = new SessionManager(requireContext());
+            session.logout();
             AppCompatActivity activity = (AppCompatActivity) view.getContext();
             if (activity instanceof MainActivity) {
                 ((MainActivity) activity).switchToAuthNavGraph();
