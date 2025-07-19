@@ -75,8 +75,13 @@ public class LoginFragment extends Fragment {
                 SessionManager session = new SessionManager(requireContext());
                 session.saveUser(user);
 
-                NavHostFragment.findNavController(this)
-                        .navigate(R.id.action_loginFragment_to_mainFragment);
+                if(user.getRole().toLowerCase().equals("admin")) {
+                    NavHostFragment.findNavController(this)
+                            .navigate(R.id.action_loginFragment_to_adminDashboardFragment);
+                } else {
+                    NavHostFragment.findNavController(this)
+                            .navigate(R.id.action_loginFragment_to_mainFragment);
+                }
             } else {
                 Toast.makeText(getContext(), "Invalid credentials", Toast.LENGTH_SHORT).show();
             }
