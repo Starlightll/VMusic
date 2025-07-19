@@ -65,27 +65,27 @@
             android:id="@+id/action_adminDashboardFragment_to_adminSongListFragment"
             app:destination="@id/adminSongListFragment" />
         <action
-            android:id="@+id/action_adminDashboardFragment_to_artistManagementFragment"
-            app:destination="@id/artistManagementFragment" />
+            android:id="@+id/action_adminDashboardFragment_to_adminArtistListFragment"
+            app:destination="@id/adminArtistListFragment" />
     </fragment>
     <fragment
         android:id="@+id/adminSongListFragment"
         android:name="com.example.vmusic.ui.fragment.AdminSongListFragment"
         android:label="Admin Song List" />
     <fragment
-        android:id="@+id/artistManagementFragment"
-        android:name="com.example.vmusic.ui.fragment.ArtistManagementFragment"
-        android:label="fragment_artist_management"
-        tools:layout="@layout/fragment_artist_management" >
+        android:id="@+id/adminArtistListFragment"
+        android:name="com.example.vmusic.ui.fragment.AdminArtistListFragment"
+        android:label="fragment_admin_artist_list"
+        tools:layout="@layout/fragment_admin_artist_list" >
         <action
-            android:id="@+id/action_artistManagementFragment_to_addArtistFragment"
-            app:destination="@id/addArtistFragment" />
+            android:id="@+id/action_adminArtistListFragment_to_artistDetailsActivity"
+            app:destination="@id/artistDetailsActivity" />
     </fragment>
-    <fragment
-        android:id="@+id/addArtistFragment"
-        android:name="com.example.vmusic.ui.fragment.AddArtistFragment"
-        android:label="fragment_add_artist"
-        tools:layout="@layout/fragment_add_artist" />
+    <activity
+        android:id="@+id/artistDetailsActivity"
+        android:name="com.example.vmusic.ui.activity.ArtistDetailsActivity"
+        android:label="activity_artist_details"
+        tools:layout="@layout/activity_artist_details" />
 
 
 

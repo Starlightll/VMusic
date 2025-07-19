@@ -42,7 +42,7 @@ public class AdminDashboardFragment extends Fragment {
         MaterialCardView manageArtistsCard = view.findViewById(R.id.card_manage_artists);
         manageArtistsCard.setOnClickListener(v -> {
             NavController navController = NavHostFragment.findNavController(this);
-            navController.navigate(R.id.action_adminDashboardFragment_to_artistManagementFragment);
+            navController.navigate(R.id.action_adminDashboardFragment_to_adminArtistListFragment);
         });
     }
 }
