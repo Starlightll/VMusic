@@ -71,11 +71,11 @@ public class AdminHomeFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         // Initialize your views and set up any necessary listeners here
-        Button buttonArtistManagement = view.findViewById(R.id.btnArtistManagement);
-        buttonArtistManagement.setOnClickListener(v -> {
-            NavController navController = NavHostFragment.findNavController(this);
-            navController.navigate(R.id.action_adminHomeFragment_to_artistManagementFragment);
-        });
+//        Button buttonArtistManagement = view.findViewById(R.id.btnArtistManagement);
+//        buttonArtistManagement.setOnClickListener(v -> {
+//            NavController navController = NavHostFragment.findNavController(this);
+//            navController.navigate(R.id.action_adminHomeFragment_to_artistManagementFragment);
+//        });
 
     }
 }

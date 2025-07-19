@@ -4,10 +4,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.vmusic.R;
@@ -35,6 +37,12 @@ public class AdminDashboardFragment extends Fragment {
             // Chúng ta sẽ tạo action này ở bước tiếp theo
             NavHostFragment.findNavController(AdminDashboardFragment.this)
                     .navigate(R.id.action_adminDashboardFragment_to_adminSongListFragment);
+
+        });
+        MaterialCardView manageArtistsCard = view.findViewById(R.id.card_manage_artists);
+        manageArtistsCard.setOnClickListener(v -> {
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(R.id.action_adminDashboardFragment_to_artistManagementFragment);
         });
     }
 }
