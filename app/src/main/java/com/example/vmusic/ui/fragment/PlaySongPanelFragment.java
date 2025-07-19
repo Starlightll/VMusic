@@ -18,10 +18,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
 import com.example.vmusic.R;
 import com.example.vmusic.databinding.FragmentPlaySongPanelBinding;
 import com.example.vmusic.entity.Song;
+import com.example.vmusic.entity.User;
 import com.example.vmusic.helper.SessionManager;
 import com.example.vmusic.models.PlayerManager;
 import com.example.vmusic.ui.adapter.PlaySongPagerAdapter;
@@ -173,9 +175,7 @@ public class PlaySongPanelFragment extends Fragment {
         SessionManager session = new SessionManager(requireContext());
         int userId = session.getUserId();
 
-        if (userId <= 0) {
-            binding.imgBtnFavorite.setVisibility(View.GONE);
-        } else {
+
             binding.imgBtnFavorite.setVisibility(View.VISIBLE);
 
             songViewModel.getIsFavorite().observe(getViewLifecycleOwner(), isFav -> {
@@ -187,6 +187,10 @@ public class PlaySongPanelFragment extends Fragment {
             });
 
             binding.imgBtnFavorite.setOnClickListener(v -> {
+                if (userId == 0) {
+                    Toast.makeText(requireContext(), "Vui lòng đăng nhập để sử dụng tính năng này", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 Song currentSong = playerViewModel.getCurrentSong().getValue();
                 if (currentSong != null) {
                     if (songViewModel.getIsFavorite().getValue() != null && songViewModel.getIsFavorite().getValue()) {
@@ -196,7 +200,6 @@ public class PlaySongPanelFragment extends Fragment {
                     }
                 }
             });
-        }
 
 
     }
