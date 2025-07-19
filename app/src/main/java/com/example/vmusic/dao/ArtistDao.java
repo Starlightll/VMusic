@@ -1,8 +1,10 @@
 package com.example.vmusic.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
@@ -12,7 +14,7 @@ import java.util.List;
 
 @Dao
 public interface ArtistDao {
-     @Insert
+     @Insert(onConflict = OnConflictStrategy.IGNORE)
      void insertArtist(Artist artist);
 
      @Query("SELECT * FROM artists WHERE artistId = :artistId")
@@ -26,4 +28,6 @@ public interface ArtistDao {
 
      @Delete
      void deleteArtist(Artist artist);
+     @Query("SELECT * FROM artists ORDER BY name ASC")
+     LiveData<List<Artist>> getAllArtistsLive();
 }

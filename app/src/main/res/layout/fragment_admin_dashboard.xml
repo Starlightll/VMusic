@@ -41,14 +41,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:drawablePadding="12dp"
+            android:gravity="center_vertical"
             android:padding="16dp"
             android:text="Quản lý bài hát"
             android:textColor="@color/white"
             android:textSize="18sp"
             app:drawableStartCompat="@drawable/ic_music_note"
-            app:drawableTint="@color/white"
-            android:drawablePadding="12dp"
-            android:gravity="center_vertical"/>
+            app:drawableTint="@color/white" />
 
 
     </com.google.android.material.card.MaterialCardView>
@@ -85,6 +85,19 @@
 
 
     </com.google.android.material.card.MaterialCardView>
+
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/btn_secondary"
+        android:text="Logout"
+        android:textColor="#FFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
     <!-- Bạn có thể thêm các card khác ở đây trong tương lai -->
     <!-- Ví dụ: Quản lý người dùng, xem thống kê... -->
 

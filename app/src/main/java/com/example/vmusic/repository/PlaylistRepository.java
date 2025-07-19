@@ -56,14 +56,14 @@ public class PlaylistRepository {
             }
         });
     }
-    public void addToFavorite(int songId) {
+    public void addToFavorite(int songId,int userId) {
         executorService.execute(() -> {
-            Playlist favorite = playlistDao.getPlaylistByType("Favorite");
+            Playlist favorite = playlistDao.getPlaylistByTypeAndUser("Favorite", userId);
 
             if (favorite == null) {
-                Playlist newFavorite = new Playlist(0, "Yêu thích", "Favorite", 1); // userId = 1
+                Playlist newFavorite = new Playlist(0, "Yêu thích", "Favorite", userId); // userId = 1
                 playlistDao.Insert(newFavorite);
-                favorite = playlistDao.getPlaylistByType("Favorite");
+                favorite = playlistDao.getPlaylistByTypeAndUser("Favorite", userId);
             }
 
             if (playlistDao.isSongInPlaylist(favorite.playListId, songId) == 0) {

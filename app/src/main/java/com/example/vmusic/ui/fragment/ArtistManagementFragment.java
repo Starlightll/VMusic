@@ -1,7 +1,10 @@
 package com.example.vmusic.ui.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -12,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.vmusic.R;
+import com.example.vmusic.ui.activity.ArtistDetailsActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -63,19 +67,24 @@ public class ArtistManagementFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_artist_management, container, false);
-
+        // Inflate the layout for this fragment một lần duy nhất
         return inflater.inflate(R.layout.fragment_artist_management, container, false);
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Button addArtistButton = view.findViewById(R.id.btnAddArtist);
+
+        // Giả sử nút của bạn có ID là "btnAddArtist" trong file layout
+        Button addArtistButton = view.findViewById(R.id.fab_add_artist);
+
+        // Gán sự kiện click
         addArtistButton.setOnClickListener(v -> {
-            NavController navController = NavHostFragment.findNavController(this);
-            navController.navigate(R.id.action_artistManagementFragment_to_addArtistFragment);
+
+            Intent intent = new Intent(getActivity(), ArtistDetailsActivity.class);
+
+            // 2. Khởi động Activity
+            startActivity(intent);
         });
     }
 }

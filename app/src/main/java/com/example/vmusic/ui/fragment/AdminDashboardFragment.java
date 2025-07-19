@@ -8,10 +8,12 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.vmusic.MainActivity;
 import com.example.vmusic.R;
 import com.google.android.material.card.MaterialCardView;
 
@@ -42,7 +44,15 @@ public class AdminDashboardFragment extends Fragment {
         MaterialCardView manageArtistsCard = view.findViewById(R.id.card_manage_artists);
         manageArtistsCard.setOnClickListener(v -> {
             NavController navController = NavHostFragment.findNavController(this);
-            navController.navigate(R.id.action_adminDashboardFragment_to_artistManagementFragment);
+            navController.navigate(R.id.action_adminDashboardFragment_to_adminArtistListFragment);
+        });
+
+        Button logoutButton = view.findViewById(R.id.btnLogout);
+        logoutButton.setOnClickListener(v -> {
+            AppCompatActivity activity = (AppCompatActivity) view.getContext();
+            if (activity instanceof MainActivity) {
+                ((MainActivity) activity).switchToAuthNavGraph();
+            }
         });
     }
 }
