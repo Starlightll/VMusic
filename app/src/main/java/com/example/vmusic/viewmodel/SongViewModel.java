@@ -82,10 +82,11 @@ public class SongViewModel extends AndroidViewModel{
             isFavorite.postValue(result);
         });
     }
-    public void addToFavorite(int songId) {
-        playlistRepository.addToFavorite(songId);
+    public void addToFavorite(int songId, int userId) {
+        playlistRepository.addToFavorite(songId, userId);
         isFavorite.setValue(true);
     }
+
 
     public void removeFromFavorite(int songId, int userId) {
         playlistRepository.removeFromFavorite(songId, userId);

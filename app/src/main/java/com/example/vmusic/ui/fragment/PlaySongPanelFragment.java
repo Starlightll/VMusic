@@ -80,7 +80,7 @@ public class PlaySongPanelFragment extends Fragment {
             }
         });
         playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
-
+        songViewModel = new ViewModelProvider(requireActivity()).get(SongViewModel.class);
         observeViewModel();
         setupSeekBar();
 
@@ -192,7 +192,7 @@ public class PlaySongPanelFragment extends Fragment {
                     if (songViewModel.getIsFavorite().getValue() != null && songViewModel.getIsFavorite().getValue()) {
                         songViewModel.removeFromFavorite(currentSong.getSongId(), userId);
                     } else {
-                        songViewModel.addToFavorite(currentSong.getSongId());
+                        songViewModel.addToFavorite(currentSong.getSongId(), userId);
                     }
                 }
             });
