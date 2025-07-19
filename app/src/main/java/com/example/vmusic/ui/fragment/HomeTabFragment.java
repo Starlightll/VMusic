@@ -184,14 +184,14 @@ public class HomeTabFragment extends Fragment {
         recyclerRecentlyPlayed.setAdapter(recentlyPlayedAdapter);
 
 
-        artistAdapter = new ArtistAdapter(requireContext(), new ArrayList<>(), artist -> {
-            Bundle bundle = new Bundle();
-            bundle.putString("artistId", artist.getArtistId());
-
-            NavController navController = NavHostFragment.findNavController(this);
-            navController.navigate(R.id.action_homeTabFragment_to_songsByArtistFragment, bundle);
-        });
-        recyclerArtists.setAdapter(artistAdapter);
+//        artistAdapter = new ArtistAdapter(requireContext(), new ArrayList<>(), artist -> {
+//            Bundle bundle = new Bundle();
+////            bundle.putString("artistId", artist.);
+//
+//            NavController navController = NavHostFragment.findNavController(this);
+//            navController.navigate(R.id.action_homeTabFragment_to_songsByArtistFragment, bundle);
+//        });
+//        recyclerArtists.setAdapter(artistAdapter);
 
     }
 
