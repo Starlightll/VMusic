@@ -27,14 +27,29 @@ public class MainActivity extends AppCompatActivity {
         SessionManager session = new SessionManager(this);
         if (session.isLoggedIn()) {
             // Navigate to the main screen
-            NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-            if (navHostFragment != null) {
-                NavController navController = navHostFragment.getNavController();
-                navController.navigate(R.id.action_loginFragment_to_mainFragment);
+            if(session.getRole()=="admin") {
+                NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+                if (navHostFragment != null) {
+                    NavController navController = navHostFragment.getNavController();
+                    navController.navigate(R.id.action_loginFragment_to_adminDashboardFragment);
+                }
+            } else {
+                NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+                if (navHostFragment != null) {
+                    NavController navController = navHostFragment.getNavController();
+                    navController.navigate(R.id.action_loginFragment_to_mainFragment);
+                }
             }
         }
 
         songViewModel = new ViewModelProvider(this).get(SongViewModel.class);
 
+    }
+
+    public void switchToAuthNavGraph() {
+        NavHostFragment navHostFragment = NavHostFragment.create(R.navigation.nav_graph);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.nav_host_fragment, navHostFragment)
+                .commit();
     }
 }
