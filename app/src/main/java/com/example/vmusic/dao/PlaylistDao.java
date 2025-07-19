@@ -50,4 +50,8 @@ public interface PlaylistDao {
     @Query("SELECT * FROM playlists WHERE userOwnerId = :userOwnerId")
     LiveData<List<Playlist>> getAllPlaylistsByUser(int userOwnerId);
 
+    //Delete song from playlist
+    @Query("DELETE FROM playlistsongcrossref WHERE playListId = :playlistId AND songId = :songId")
+    void deleteSongFromPlaylist(int playlistId, int songId);
+
 }
