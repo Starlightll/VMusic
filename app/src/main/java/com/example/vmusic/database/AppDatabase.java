@@ -12,6 +12,7 @@ import com.example.vmusic.dao.GenreDao;
 import com.example.vmusic.dao.PlaylistDao;
 import com.example.vmusic.dao.SongDao;
 import com.example.vmusic.dao.UserDao;
+import com.example.vmusic.entity.Artist;
 import com.example.vmusic.entity.Genre;
 import com.example.vmusic.entity.Playlist;
 import com.example.vmusic.entity.Song;
@@ -22,7 +23,7 @@ import com.example.vmusic.models.SongGenreCrossRef;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {Song.class , Playlist.class , Genre.class , User.class, PlaylistSongCrossRef.class , SongGenreCrossRef.class} , version = 1)
+@Database(entities = {Song.class , Playlist.class, Artist.class , Genre.class , User.class, PlaylistSongCrossRef.class , SongGenreCrossRef.class} , version = 1)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static volatile AppDatabase INSTANCE;
