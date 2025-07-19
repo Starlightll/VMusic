@@ -74,4 +74,12 @@ public class PlaylistRepository {
             }
         });
     }
-}
+    public boolean isFavorite(int songId, int userId) {
+        return playlistDao.isFavorite(songId, userId);
+    }
+
+    public void removeFromFavorite(int songId, int userId) {
+        executorService.execute(() -> {
+            playlistDao.removeFromFavorite(songId, userId);
+        });
+}}

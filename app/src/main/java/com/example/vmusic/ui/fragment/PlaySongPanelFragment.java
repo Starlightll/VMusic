@@ -16,14 +16,17 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 
 import com.example.vmusic.R;
 import com.example.vmusic.databinding.FragmentPlaySongPanelBinding;
 import com.example.vmusic.entity.Song;
+import com.example.vmusic.helper.SessionManager;
 import com.example.vmusic.models.PlayerManager;
 import com.example.vmusic.ui.adapter.PlaySongPagerAdapter;
 import com.example.vmusic.viewmodel.PlayerViewModel;
+import com.example.vmusic.viewmodel.SongViewModel;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,8 +40,10 @@ public class PlaySongPanelFragment extends Fragment {
     private ExoPlayer player;
     private Handler handler = new Handler(Looper.getMainLooper());
     private PlayerViewModel playerViewModel;
+    private SongViewModel songViewModel;
     private boolean isShuffle = false;
     private int repeatMode = 0;
+    private int songId=0;
 
     public static PlaySongPanelFragment newInstance(Song song) {
         PlaySongPanelFragment fragment = new PlaySongPanelFragment();
@@ -116,6 +121,7 @@ public class PlaySongPanelFragment extends Fragment {
                 player.play();
                 playerViewModel.setIsPlaying(true);
             }
+            songId= song.getSongId();
         });
 
         playerViewModel.getIsPlaying().observe(getViewLifecycleOwner(), playing -> {
@@ -162,6 +168,35 @@ public class PlaySongPanelFragment extends Fragment {
                     break;
             }
         });
+
+
+        SessionManager session = new SessionManager(requireContext());
+        int userId = session.getUserId();
+
+        if (userId <= 0) {
+            binding.imgBtnFavorite.setVisibility(View.GONE);
+        } else {
+            binding.imgBtnFavorite.setVisibility(View.VISIBLE);
+
+            songViewModel.getIsFavorite().observe(getViewLifecycleOwner(), isFav -> {
+                if (isFav != null && isFav) {
+                    binding.imgBtnFavorite.setImageResource(R.drawable.ic_favorite_full);
+                } else {
+                    binding.imgBtnFavorite.setImageResource(R.drawable.ic_favorite);
+                }
+            });
+
+            binding.imgBtnFavorite.setOnClickListener(v -> {
+                Song currentSong = playerViewModel.getCurrentSong().getValue();
+                if (currentSong != null) {
+                    if (songViewModel.getIsFavorite().getValue() != null && songViewModel.getIsFavorite().getValue()) {
+                        songViewModel.removeFromFavorite(currentSong.getSongId(), userId);
+                    } else {
+                        songViewModel.addToFavorite(currentSong.getSongId());
+                    }
+                }
+            });
+        }
 
 
     }
