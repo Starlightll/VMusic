@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.MediaItem;
@@ -36,6 +37,8 @@ public class PlaySongPanelFragment extends Fragment {
     private ExoPlayer player;
     private Handler handler = new Handler(Looper.getMainLooper());
     private PlayerViewModel playerViewModel;
+    private boolean isShuffle = false;
+    private int repeatMode = 0;
 
     public static PlaySongPanelFragment newInstance(Song song) {
         PlaySongPanelFragment fragment = new PlaySongPanelFragment();
@@ -122,19 +125,44 @@ public class PlaySongPanelFragment extends Fragment {
         });
 
         binding.imgBtnPlay.setOnClickListener(v -> {
-//            boolean currentlyPlaying = Boolean.TRUE.equals(playerViewModel.getIsPlaying().getValue());
-//            if (currentlyPlaying) {
-//                player.pause();
-//            } else {
-//                player.play();
-//            }
-//            playerViewModel.setIsPlaying(!currentlyPlaying);
             playerViewModel.togglePlayPause();
         });
 
         binding.imgBtnNext.setOnClickListener(v -> playerViewModel.next());
         binding.imgBtnBack.setOnClickListener(v -> playerViewModel.previous());
-//        binding.imgBtnSuffle.setOnClickListener(v -> playerViewModel.toggleShuffle());
+        binding.imgBtnSuffle.setOnClickListener(v -> {
+            playerViewModel.toggleShuffle();
+
+            isShuffle = !isShuffle;
+
+            if (isShuffle) {
+                binding.imgBtnSuffle.setColorFilter(ContextCompat.getColor(requireContext(), R.color.primary_green));
+            } else {
+                binding.imgBtnSuffle.setColorFilter(ContextCompat.getColor(requireContext(), R.color.white));
+            }
+        });
+
+        binding.imgBtnRepeat.setOnClickListener(v -> {
+            playerViewModel.changeRepeatMode();
+
+            repeatMode = (repeatMode + 1) % 3;
+
+            switch (repeatMode) {
+                case 0:
+                    binding.imgBtnRepeat.setImageResource(R.drawable.ic_replay);
+                    binding.imgBtnRepeat.setColorFilter(ContextCompat.getColor(requireContext(), R.color.white));
+                    break;
+                case 1:
+                    binding.imgBtnRepeat.setImageResource(R.drawable.repeat_1);
+                    binding.imgBtnRepeat.setColorFilter(ContextCompat.getColor(requireContext(), R.color.primary_green));
+                    break;
+                case 2:
+                    binding.imgBtnRepeat.setImageResource(R.drawable.ic_replay);
+                    binding.imgBtnRepeat.setColorFilter(ContextCompat.getColor(requireContext(), R.color.primary_green));
+                    break;
+            }
+        });
+
 
     }
 
