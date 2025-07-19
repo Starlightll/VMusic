@@ -8,6 +8,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import com.example.vmusic.dao.ArtistDao;
 import com.example.vmusic.dao.GenreDao;
 import com.example.vmusic.dao.PlaylistDao;
 import com.example.vmusic.dao.SongDao;
@@ -93,6 +94,7 @@ public abstract class AppDatabase extends RoomDatabase {
     // Khai báo các abstract Dao của bạn
     public abstract UserDao userDao();
     public abstract SongDao songDao();
+    public abstract ArtistDao artistDao();
     public abstract GenreDao genreDao();
     public abstract PlaylistDao playlistDao();
 }
