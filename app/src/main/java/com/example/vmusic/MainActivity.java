@@ -9,6 +9,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.vmusic.database.GenreSeeder;
+import com.example.vmusic.database.UserSeeder;
 import com.example.vmusic.helper.SessionManager;
 import com.example.vmusic.viewmodel.SongViewModel;
 
@@ -22,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         GenreSeeder.seedGenres(this);
+        UserSeeder.seedUsers(this);
         SessionManager session = new SessionManager(this);
         if (session.isLoggedIn()) {
             // Navigate to the main screen

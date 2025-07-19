@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/adminDashboardFragment"
+    app:startDestination="@id/loginFragment"
     >
 
     <fragment
@@ -20,7 +21,9 @@
             android:id="@+id/action_loginFragment_to_mainFragment"
             app:destination="@id/mainFragment"
             app:enterAnim="@anim/slide_in_left"/>
-
+        <action
+            android:id="@+id/action_loginFragment_to_adminHomeFragment"
+            app:destination="@id/adminHomeFragment" />
     </fragment>
 
     <fragment
@@ -66,6 +69,29 @@
         android:id="@+id/adminSongListFragment"
         android:name="com.example.vmusic.ui.fragment.AdminSongListFragment"
         android:label="Admin Song List" />
+    <fragment
+        android:id="@+id/adminHomeFragment"
+        android:name="com.example.vmusic.ui.fragment.AdminHomeFragment"
+        android:label="fragment_admin_home"
+        tools:layout="@layout/fragment_admin_home">
+        <action
+            android:id="@+id/action_adminHomeFragment_to_artistManagementFragment"
+            app:destination="@id/artistManagementFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/artistManagementFragment"
+        android:name="com.example.vmusic.ui.fragment.ArtistManagementFragment"
+        android:label="fragment_artist_management"
+        tools:layout="@layout/fragment_artist_management" >
+        <action
+            android:id="@+id/action_artistManagementFragment_to_addArtistFragment"
+            app:destination="@id/addArtistFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addArtistFragment"
+        android:name="com.example.vmusic.ui.fragment.AddArtistFragment"
+        android:label="fragment_add_artist"
+        tools:layout="@layout/fragment_add_artist" />
 
 
 </navigation>
