@@ -33,6 +33,9 @@ public class LibraryViewModel extends AndroidViewModel {
     public LiveData<List<Playlist>> getAllPlaylists() {
         return allPlaylists;
     }
+    public LiveData<List<Playlist>> getPlaylistsByUser(int userId) {
+        return playlistRepository.getPlaylistsByUser(userId);
+    }
 
     public void insertPlaylist(Playlist playlist) {
         playlistRepository.insert(playlist);
@@ -44,5 +47,14 @@ public class LibraryViewModel extends AndroidViewModel {
 
     public void deletePlaylist(Playlist playlist) {
         playlistRepository.delete(playlist);
+    }
+    public void addToFavorite(int songId) {
+        playlistRepository.addToFavorite(songId);
+    }
+
+    public void addSongToPlaylist(int songId, int playlistId) {
+        playlistRepository.addSongToPlaylist(songId, playlistId);
+
+
     }
 }

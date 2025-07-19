@@ -71,6 +71,7 @@ public class LoginFragment extends Fragment {
 
         loginVM.loginResult.observe(getViewLifecycleOwner(), user -> {
             if (user != null) {
+
                 SessionManager session = new SessionManager(requireContext());
                 session.saveUser(user);
 
