@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 @Entity(tableName = "artists")
 public class Artist implements Serializable {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     private int artistId;
     private String name;
     private String image;
