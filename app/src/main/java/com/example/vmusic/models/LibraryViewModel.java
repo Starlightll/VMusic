@@ -1,5 +1,7 @@
 package com.example.vmusic.models;
 
+import static androidx.core.content.ContentProviderCompat.requireContext;
+
 import android.app.Application;
 
 import androidx.lifecycle.AndroidViewModel;
@@ -8,6 +10,7 @@ import androidx.lifecycle.LiveData;
 import com.example.vmusic.entity.Genre;
 import com.example.vmusic.entity.Playlist;
 import com.example.vmusic.entity.Song;
+import com.example.vmusic.helper.SessionManager;
 import com.example.vmusic.repository.GenreRepository;
 import com.example.vmusic.repository.PlaylistRepository;
 import com.example.vmusic.repository.SongRepository;
@@ -58,7 +61,9 @@ public class LibraryViewModel extends AndroidViewModel {
     public void addToFavorite(int songId,int userId) {
         playlistRepository.addToFavorite(songId,userId);
     }
-
+    public void removeFromFavorite(int songId, int userId) {
+        playlistRepository.removeFromFavorite(songId, userId);
+    }
     public void addSongToPlaylist(int songId, int playlistId) {
         playlistRepository.addSongToPlaylist(songId, playlistId);
 
