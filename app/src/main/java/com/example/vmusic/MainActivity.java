@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         SessionManager session = new SessionManager(this);
         if (session.isLoggedIn()) {
             // Navigate to the main screen
-            if(session.getRole()=="admin") {
+            if(session.getRole().toLowerCase().equals("admin")) {
                 NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
                 if (navHostFragment != null) {
                     NavController navController = navHostFragment.getNavController();
