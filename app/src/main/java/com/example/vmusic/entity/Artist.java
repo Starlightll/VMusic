@@ -2,9 +2,11 @@ package com.example.vmusic.entity;
 
 
 import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
 @Entity(tableName = "artists")
 public class Artist {
+    @PrimaryKey
     private int artistId;
     private String name;
     private String image;
