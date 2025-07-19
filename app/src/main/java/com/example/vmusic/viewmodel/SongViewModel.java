@@ -42,8 +42,9 @@ public class SongViewModel extends AndroidViewModel{
     }
 
     public LiveData<List<Song>> searchSongs(String query) {
-        return repository.searchSongsByName(query);
+        return repository.searchSongs(query); // gọi hàm mới hỗ trợ name + artist
     }
+
 
     public LiveData<Song> getSong(int id){
         return repository.getSong(id);
@@ -58,7 +59,9 @@ public class SongViewModel extends AndroidViewModel{
     public LiveData<List<Song>> getSongsByIds(List<Integer> songIds) {
         return repository.getSongsByIds(songIds);
     }
-
+    public LiveData<List<Song>> getSongsByGenreId(int genreId) {
+        return repository.getSongsByGenreId(genreId);
+    }
 
     public void increaseListenCount(Song song) {
         repository.increaseListenCount(song);
