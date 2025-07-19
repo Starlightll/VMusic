@@ -175,31 +175,35 @@ public class PlaySongPanelFragment extends Fragment {
         SessionManager session = new SessionManager(requireContext());
         int userId = session.getUserId();
 
+        playerViewModel.getCurrentSong().observe(getViewLifecycleOwner(), song -> {
+            if (song != null) {
+                songViewModel.checkIfFavorite(song.songId, userId);
+            }
+        });
+        songViewModel.getIsFavorite().observe(getViewLifecycleOwner(), isFav -> {
+            if (isFav != null && isFav) {
+                binding.imgBtnFavorite.setImageResource(R.drawable.ic_favorite_full);
+            } else {
+                binding.imgBtnFavorite.setImageResource(R.drawable.ic_favorite);
+            }
+        });
 
-            binding.imgBtnFavorite.setVisibility(View.VISIBLE);
-
-            songViewModel.getIsFavorite().observe(getViewLifecycleOwner(), isFav -> {
-                if (isFav != null && isFav) {
-                    binding.imgBtnFavorite.setImageResource(R.drawable.ic_favorite_full);
+        binding.imgBtnFavorite.setOnClickListener(v -> {
+            if (userId == 0) {
+                Toast.makeText(requireContext(), "Vui lòng đăng nhập để sử dụng tính năng này", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            Song currentSong = playerViewModel.getCurrentSong().getValue();
+            if (currentSong != null) {
+                if (songViewModel.getIsFavorite().getValue() != null && songViewModel.getIsFavorite().getValue()) {
+                    songViewModel.removeFromFavorite(currentSong.getSongId(), userId);
                 } else {
-                    binding.imgBtnFavorite.setImageResource(R.drawable.ic_favorite);
+                    songViewModel.addToFavorite(currentSong.getSongId(), userId);
                 }
-            });
+                songViewModel.checkIfFavorite(currentSong.getSongId(), userId);
+            }
 
-            binding.imgBtnFavorite.setOnClickListener(v -> {
-                if (userId == 0) {
-                    Toast.makeText(requireContext(), "Vui lòng đăng nhập để sử dụng tính năng này", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                Song currentSong = playerViewModel.getCurrentSong().getValue();
-                if (currentSong != null) {
-                    if (songViewModel.getIsFavorite().getValue() != null && songViewModel.getIsFavorite().getValue()) {
-                        songViewModel.removeFromFavorite(currentSong.getSongId(), userId);
-                    } else {
-                        songViewModel.addToFavorite(currentSong.getSongId(), userId);
-                    }
-                }
-            });
+        });
 
 
     }
