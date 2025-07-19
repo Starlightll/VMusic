@@ -23,21 +23,25 @@ public class SongRepository {
     public void insert(Song song) {
         new Thread(() -> songDao.insert(song)).start(); // dùng Thread để tránh main thread
     }
+
     public void insertSongWithGenres(final Song song, final List<Integer> genreIds) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             songDao.insertSongWithGenres(song, genreIds);
         });
     }
+
     public LiveData<List<Song>> getAllSongs() {
         return songDao.getAllSongsLive();
     }
+
     public LiveData<List<Song>> searchSongsByName(String query) {
         return songDao.searchSongsByName(query);
     }
 
-    public LiveData<SongWithGenres> getSongWithGenres(int id){
+    public LiveData<SongWithGenres> getSongWithGenres(int id) {
         return songDao.getSongWithGenreLive(id);
     }
+
     public void delete(int songId) {
         new Thread(() -> {
             Song song = songDao.getSongById2(songId);
@@ -48,7 +52,7 @@ public class SongRepository {
     }
 
 
-    public LiveData<Song> getSong(int id){
+    public LiveData<Song> getSong(int id) {
         return songDao.getSongById(id);
     }
 
@@ -72,7 +76,9 @@ public class SongRepository {
         return songDao.getSongsByIds(songIds);
     }
 
-
-
-
+    public void updateSongWithGenres(Song song, List<Integer> genreIds) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            songDao.updateSongWithGenres(song, genreIds);
+        });
+    }
 }

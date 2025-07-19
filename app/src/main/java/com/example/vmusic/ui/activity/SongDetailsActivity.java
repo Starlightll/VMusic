@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.bumptech.glide.Glide;
 import com.cloudinary.android.MediaManager;
 import com.cloudinary.android.callback.ErrorInfo;
 import com.cloudinary.android.callback.UploadCallback;
@@ -29,6 +30,7 @@ import com.example.vmusic.entity.Genre;
 import com.example.vmusic.entity.Song;
 import com.example.vmusic.viewmodel.GenreViewModel;
 import com.example.vmusic.viewmodel.SongViewModel;
+import com.google.android.material.appbar.MaterialToolbar;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -40,9 +42,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
+
 
 public class SongDetailsActivity extends AppCompatActivity {
     // Khai báo các thành phần giao diện
@@ -54,6 +55,7 @@ public class SongDetailsActivity extends AppCompatActivity {
     private LinearLayout genreContainer;
 
     // Khai báo các biến dữ liệu
+    private Song songToEdit = null;
     private Uri imageUri, audioUri, lyricUri;
     private SongViewModel songViewModel;
     private GenreViewModel genreViewModel;
@@ -63,16 +65,76 @@ public class SongDetailsActivity extends AppCompatActivity {
     private static final int PICK_IMAGE = 1001;
     private static final int PICK_AUDIO = 1002;
     private static final int PICK_LYRIC = 1003;
+    private int songIdToEdit = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.uploadmusic_admin);
 
+        MaterialToolbar toolbar = findViewById(R.id.toolbar_song_details);
+
+        toolbar.setNavigationOnClickListener(v -> {
+            finish();
+        });
+        // === KẾT THÚC CODE MỚI ===
+        songIdToEdit = getIntent().getIntExtra("SONG_ID_TO_EDIT", -1);
         initViews();
         setupViewModels();
         observeGenres();
         setupButtons();
+        if (songIdToEdit != -1) {
+            // Gọi hàm để bắt đầu quá trình khởi tạo songToEdit
+            loadSongDataForEdit();
+        }
+    }
+    private void loadSongDataForEdit() {
+        setTitle("Chỉnh sửa bài hát");
+        btnSave.setText("Lưu thay đổi");
+
+        songViewModel.getSongWithGenre(songIdToEdit).observe(this, songWithGenres -> {
+            if (songWithGenres != null && songWithGenres.song != null) {
+                // 1. Lưu lại bài hát đang sửa
+                this.songToEdit = songWithGenres.song;
+
+                // 2. Đổ dữ liệu cơ bản lên các EditText và ImageView
+                editTitle.setText(songWithGenres.song.getName());
+                editArtist.setText(songWithGenres.song.getArtist());
+                File imageFile = new File(songWithGenres.song.getImage());
+                if (imageFile.exists()) {
+                    Glide.with(this).load(imageFile).into(imageCoverArt);
+                }
+
+                // ================== PHẦN SỬA LỖI HIỂN THỊ TÊN FILE ==================
+                // Lấy đường dẫn đầy đủ của file nhạc từ database
+                String audioPath = songWithGenres.song.getAudioUrl();
+                if (audioPath != null && !audioPath.isEmpty()) {
+                    // Dùng lớp File để lấy ra tên file từ đường dẫn đầy đủ
+                    String audioFileName = new File(audioPath).getName();
+                    textAudioFileName.setText(audioFileName);
+                }
+
+                // Lấy đường dẫn đầy đủ của file lyric từ database
+                String lyricPath = songWithGenres.song.getUrlLyric();
+                if (lyricPath != null && !lyricPath.isEmpty()) {
+                    // Dùng lớp File để lấy ra tên file từ đường dẫn đầy đủ
+                    String lyricFileName = new File(lyricPath).getName();
+                    textLyricFileName.setText(lyricFileName);
+                }
+                // ====================================================================
+
+                // 3. Lấy và hiển thị các thể loại đã chọn
+                List<Integer> checkedGenreIds = new ArrayList<>();
+                if (songWithGenres.genres != null) {
+                    for (Genre genre : songWithGenres.genres) {
+                        checkedGenreIds.add(genre.genreId);
+                    }
+                }
+                selectedGenreIds.clear();
+                selectedGenreIds.addAll(checkedGenreIds);
+                updateCheckboxes(checkedGenreIds);
+            }
+        });
     }
 
     private void initViews() {
@@ -101,7 +163,10 @@ public class SongDetailsActivity extends AppCompatActivity {
                 CheckBox checkBox = new CheckBox(this);
                 checkBox.setText(genre.name);
                 checkBox.setTextColor(getResources().getColor(R.color.white));
-                checkBox.setButtonTintList(getResources().getColorStateList(R.color.primary_green));
+
+                // LƯU Ý QUAN TRỌNG: Gán genreId vào tag của CheckBox
+                checkBox.setTag(genre.genreId);
+
                 checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
                     if (isChecked) {
                         selectedGenreIds.add(genre.genreId);
@@ -110,6 +175,12 @@ public class SongDetailsActivity extends AppCompatActivity {
                     }
                 });
                 genreContainer.addView(checkBox);
+            }
+
+            // Sau khi đã tạo tất cả checkbox, nếu đang ở chế độ sửa, hãy gọi lại loadSongDataForEdit
+            // để đảm bảo dữ liệu được đổ vào đúng lúc.
+            if (songIdToEdit != -1) {
+                loadSongDataForEdit();
             }
         });
     }
@@ -170,59 +241,120 @@ public class SongDetailsActivity extends AppCompatActivity {
         String title = editTitle.getText().toString().trim();
         String artist = editArtist.getText().toString().trim();
 
-        if (title.isEmpty() || artist.isEmpty() || imageUri == null || audioUri == null || lyricUri == null) {
-            Toast.makeText(this, "Vui lòng điền đầy đủ thông tin và chọn file", Toast.LENGTH_SHORT).show();
+        // --- BƯỚC 1: KIỂM TRA DỮ LIỆU ĐẦU VÀO ---
+        if (title.isEmpty() || artist.isEmpty()) {
+            Toast.makeText(this, "Vui lòng nhập đầy đủ tên bài hát và nghệ sĩ", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Nếu là chế độ TẠO MỚI, bắt buộc phải chọn file ảnh và nhạc
+        if (songToEdit == null && (imageUri == null || audioUri == null)) {
+            Toast.makeText(this, "Vui lòng chọn file ảnh bìa và file nhạc", Toast.LENGTH_SHORT).show();
             return;
         }
 
         progressBar.setVisibility(View.VISIBLE);
         btnSave.setEnabled(false);
 
+        // --- BƯỚC 2: THỰC HIỆN TÁC VỤ NỀN (LƯU/CẬP NHẬT) ---
         new Thread(() -> {
             try {
+                // =================================================================
+                // === TRƯỜNG HỢP 1: CẬP NHẬT BÀI HÁT ĐÃ CÓ (UPDATE MODE) ===
+                // =================================================================
+                if (songToEdit != null) {
+                    // Lấy thư mục hiện tại của bài hát từ đường dẫn file audio
+                    File songFolder = new File(songToEdit.getAudioUrl()).getParentFile();
 
-                // Tạo folder riêng cho mỗi bài hát
-                String uniqueFolderName = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US).format(new Date()) + "_" + UUID.randomUUID();
-                File songFolder = new File(getFilesDir(), "songs/" + uniqueFolderName);
-                if (!songFolder.exists()) songFolder.mkdirs();
+                    // Cập nhật thông tin metadata
+                    songToEdit.setName(title);
+                    songToEdit.setArtist(artist);
 
-                // Copy file vào folder bài hát
-                String imageExt = getFileExtension(imageUri);
-                String audioExt = getFileExtension(audioUri);
-                String lyricExt = getFileExtension(lyricUri);
+                    // KIỂM TRA VÀ THAY THẾ FILE NẾU NGƯỜI DÙNG CHỌN FILE MỚI
+                    // 1. Cập nhật ảnh bìa (nếu có)
+                    if (imageUri != null) {
+                        new File(songToEdit.getImage()).delete(); // Xóa file ảnh cũ
+                        String newImageExt = getFileExtension(imageUri);
+                        String newImagePath = copyFileToFolder(imageUri, songFolder, "cover." + newImageExt);
+                        songToEdit.setImage(newImagePath);
+                    }
 
-                String imagePath = copyFileToFolder(imageUri, songFolder, "cover." + imageExt);
-                String audioPath = copyFileToFolder(audioUri, songFolder, "audio." + audioExt);
-                String lyricPath = copyFileToFolder(lyricUri, songFolder, "lyric." + lyricExt);
+                    // 2. Cập nhật file nhạc (nếu có)
+                    if (audioUri != null) {
+                        new File(songToEdit.getAudioUrl()).delete(); // Xóa file nhạc cũ
+                        String newAudioExt = getFileExtension(audioUri);
+                        String newAudioPath = copyFileToFolder(audioUri, songFolder, "audio." + newAudioExt);
+                        songToEdit.setAudioUrl(newAudioPath);
+                    }
 
-                if (imagePath == null || audioPath == null || lyricPath == null) {
+                    // 3. Cập nhật file lyric (nếu có)
+                    if (lyricUri != null) {
+                        new File(songToEdit.getUrlLyric()).delete(); // Xóa file lyric cũ
+                        String newLyricExt = getFileExtension(lyricUri);
+                        String newLyricPath = copyFileToFolder(lyricUri, songFolder, "lyric." + newLyricExt);
+                        songToEdit.setUrlLyric(newLyricPath);
+                    }
+
+                    // Gọi ViewModel để cập nhật bài hát và các thể loại liên quan
+                    songViewModel.updateSongWithGenres(songToEdit, selectedGenreIds);
+
+                    // Cập nhật UI sau khi thành công
                     runOnUiThread(() -> {
-                        Toast.makeText(this, "Lưu file thất bại", Toast.LENGTH_SHORT).show();
-                        progressBar.setVisibility(View.GONE);
-                        btnSave.setEnabled(true);
+                        Toast.makeText(this, "Cập nhật bài hát thành công!", Toast.LENGTH_SHORT).show();
+                        finish();
                     });
-                    return;
+
                 }
+                // ===========================================================
+                // === TRƯỜNG HỢP 2: LƯU BÀI HÁT MỚI (CREATE MODE) ===
+                // ===========================================================
+                else {
+                    // Tạo thư mục mới, độc nhất cho bài hát
+                    String uniqueFolderName = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US).format(new Date()) + "_" + UUID.randomUUID().toString().substring(0, 8);
+                    File songFolder = new File(getFilesDir(), "songs/" + uniqueFolderName);
+                    songFolder.mkdirs();
 
-                Song song = new Song();
-                song.setName(title);
-                song.setArtist(artist);
-                song.setImage(imagePath);
-                song.setAudioUrl(audioPath);
-                song.setUrlLyric(lyricPath);
-                song.setListenCounts(0);
+                    // Sao chép các file đã chọn vào thư mục mới
+                    String imagePath = copyFileToFolder(imageUri, songFolder, "cover." + getFileExtension(imageUri));
+                    String audioPath = copyFileToFolder(audioUri, songFolder, "audio." + getFileExtension(audioUri));
 
-                songViewModel.insertSongWithGenres(song, selectedGenreIds);
+                    // File lyric không bắt buộc, nên cần kiểm tra null
+                    String lyricPath = "";
+                    if (lyricUri != null) {
+                        lyricPath = copyFileToFolder(lyricUri, songFolder, "lyric." + getFileExtension(lyricUri));
+                    }
 
-                runOnUiThread(() -> {
-                    Toast.makeText(this, "Lưu bài hát thành công!", Toast.LENGTH_SHORT).show();
-                    finish();
-                });
+                    // Kiểm tra lại nếu việc copy file bị lỗi
+                    if (imagePath == null || audioPath == null) {
+                        runOnUiThread(() -> Toast.makeText(this, "Lưu file thất bại", Toast.LENGTH_SHORT).show());
+                        // Dọn dẹp thư mục rỗng đã tạo nếu thất bại
+                        songFolder.delete();
+                        return;
+                    }
 
+                    // Tạo đối tượng Song mới
+                    Song newSong = new Song();
+                    newSong.setName(title);
+                    newSong.setArtist(artist);
+                    newSong.setImage(imagePath);
+                    newSong.setAudioUrl(audioPath);
+                    newSong.setUrlLyric(lyricPath);
+                    newSong.setListenCounts(0);
+
+                    // Gọi ViewModel để chèn bài hát mới và các thể loại liên quan
+                    songViewModel.insertSongWithGenres(newSong, selectedGenreIds);
+
+                    // Cập nhật UI sau khi thành công
+                    runOnUiThread(() -> {
+                        Toast.makeText(this, "Lưu bài hát mới thành công!", Toast.LENGTH_SHORT).show();
+                        finish();
+                    });
+                }
             } catch (Exception e) {
                 e.printStackTrace();
+                // --- BƯỚC 3: XỬ LÝ LỖI (NẾU CÓ) ---
                 runOnUiThread(() -> {
-                    Toast.makeText(this, "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Đã xảy ra lỗi: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     progressBar.setVisibility(View.GONE);
                     btnSave.setEnabled(true);
                 });
@@ -261,43 +393,7 @@ public class SongDetailsActivity extends AppCompatActivity {
         return outFile.getAbsolutePath();
     }
 
-    private String uploadToCloudinary(Uri fileUri, String folder) throws InterruptedException {
-        final String[] resultUrl = {null}; // Khởi tạo là null
-        final CountDownLatch latch = new CountDownLatch(1);
 
-        MediaManager.get().upload(fileUri)
-                .option("folder", folder)
-                .option("resource_type", "auto")
-                .unsigned("vmusic_upload") // Thay bằng upload preset của bạn
-                .callback(new UploadCallback() {
-                    @Override
-                    public void onSuccess(String requestId, Map resultData) {
-                        if (resultData != null && resultData.containsKey("url")) {
-                            String rawUrl = (String) resultData.get("url");
-                            if (rawUrl != null) {
-                                resultUrl[0] = rawUrl.replace("http://", "https://");
-                            }
-                        }
-                        latch.countDown();
-                    }
-
-                    @Override
-                    public void onError(String requestId, ErrorInfo error) {
-                        Log.e("CloudinaryError", "Upload failed: " + error.getDescription());
-                        latch.countDown();
-                    }
-
-                    // Các phương thức callback khác
-                    @Override public void onStart(String requestId) {}
-                    @Override public void onProgress(String requestId, long bytes, long totalBytes) {}
-                    @Override public void onReschedule(String requestId, ErrorInfo error) { latch.countDown(); }
-
-                }).dispatch();
-
-        // Chờ cho đến khi upload hoàn tất hoặc thất bại
-        latch.await();
-        return resultUrl[0];
-    }
 
     private String getFileExtension(Uri uri) {
         String extension = null;
@@ -318,7 +414,27 @@ public class SongDetailsActivity extends AppCompatActivity {
 
         return extension != null ? extension : "bin"; // Nếu không xác định, để .bin
     }
+    private void updateCheckboxes(List<Integer> checkedIds) {
+        if (checkedIds == null) return;
 
+        // genreContainer là LinearLayout chứa các checkbox của bạn
+        for (int i = 0; i < genreContainer.getChildCount(); i++) {
+            View childView = genreContainer.getChildAt(i);
+            if (childView instanceof CheckBox) {
+                CheckBox checkBox = (CheckBox) childView;
+                // Chúng ta cần một cách để lấy genreId từ CheckBox.
+                // Một cách hay là dùng setTag/getTag.
+                Object tag = checkBox.getTag();
+                if (tag instanceof Integer) {
+                    int genreId = (Integer) tag;
+                    // Nếu ID của checkbox này có trong danh sách đã chọn, thì tick vào nó.
+                    if (checkedIds.contains(genreId)) {
+                        checkBox.setChecked(true);
+                    }
+                }
+            }
+        }
+    }
 
 }
 

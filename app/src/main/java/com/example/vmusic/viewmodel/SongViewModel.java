@@ -63,6 +63,8 @@ public class SongViewModel extends AndroidViewModel{
     public void increaseListenCount(Song song) {
         repository.increaseListenCount(song);
     }
-
+    public void updateSongWithGenres(Song song, List<Integer> genreIds) {
+        repository.updateSongWithGenres(song, genreIds);
+    }
 
 }

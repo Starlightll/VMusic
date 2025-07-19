@@ -79,5 +79,25 @@ public interface SongDao {
 
     @Delete
     void deleteSong(Song song);
+    // PHƯƠNG THỨC MỚI: Xóa các quan hệ genre của một bài hát
+    @Query("DELETE FROM SongGenreCrossRef WHERE songId = :songId")
+    void deleteAllGenresForSong(int songId);
 
+    // PHƯƠNG THỨC MỚI QUAN TRỌNG: Gộp tất cả hành động update vào một transaction
+    @Transaction
+    default void updateSongWithGenres(Song song, List<Integer> newGenreIds) {
+        // 1. Cập nhật thông tin cơ bản của bài hát
+        updateSong(song);
+
+        // 2. Xóa hết các quan hệ genre cũ
+        deleteAllGenresForSong(song.getSongId());
+
+        // 3. Thêm các quan hệ genre mới
+        if (newGenreIds != null) {
+            for (Integer genreId : newGenreIds) {
+                SongGenreCrossRef crossRef = new SongGenreCrossRef(song.getSongId(), genreId);
+                insertSongGenreCrossRef(crossRef);
+            }
+        }
+    }
 }

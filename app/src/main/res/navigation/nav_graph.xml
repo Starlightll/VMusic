@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/loginFragment"
+    app:startDestination="@id/adminDashboardFragment"
     >
 
     <fragment
@@ -20,6 +20,7 @@
             android:id="@+id/action_loginFragment_to_mainFragment"
             app:destination="@id/mainFragment"
             app:enterAnim="@anim/slide_in_left"/>
+
     </fragment>
 
     <fragment
@@ -52,7 +53,19 @@
         android:name="com.example.vmusic.ui.fragment.MainFragment"
         android:label="Main">
     </fragment>
+    <fragment
+        android:id="@+id/adminDashboardFragment"
+        android:name="com.example.vmusic.ui.fragment.AdminDashboardFragment"
+        android:label="Admin Dashboard">
 
+        <action
+            android:id="@+id/action_adminDashboardFragment_to_adminSongListFragment"
+            app:destination="@id/adminSongListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/adminSongListFragment"
+        android:name="com.example.vmusic.ui.fragment.AdminSongListFragment"
+        android:label="Admin Song List" />
 
 
 </navigation>
