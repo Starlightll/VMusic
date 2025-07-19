@@ -15,6 +15,7 @@ public class Song implements Serializable {
     public int listenCounts;
     public String audioUrl;
     public  String urlLyric;
+    public int artistId;
 
     public Song() {
     }
@@ -27,6 +28,16 @@ public class Song implements Serializable {
         this.listenCounts = listenCounts;
         this.audioUrl = audioUrl;
         this.urlLyric = urlLyric;
+    }
+
+    public Song(int songId, String name, String image, int listenCounts, String audioUrl, String urlLyric, int artistId) {
+        this.songId = songId;
+        this.name = name;
+        this.image = image;
+        this.listenCounts = listenCounts;
+        this.audioUrl = audioUrl;
+        this.urlLyric = urlLyric;
+        this.artistId = artistId;
     }
 
     public int getSongId() {
@@ -83,6 +94,14 @@ public class Song implements Serializable {
 
     public void setUrlLyric(String urlLyric) {
         this.urlLyric = urlLyric;
+    }
+
+    public int getArtistId() {
+        return artistId;
+    }
+
+    public void setArtistId(int artistId) {
+        this.artistId = artistId;
     }
 
     @Override
