@@ -45,4 +45,11 @@ public class MainActivity extends AppCompatActivity {
         songViewModel = new ViewModelProvider(this).get(SongViewModel.class);
 
     }
+
+    public void switchToAuthNavGraph() {
+        NavHostFragment navHostFragment = NavHostFragment.create(R.navigation.nav_graph);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.nav_host_fragment, navHostFragment)
+                .commit();
+    }
 }
