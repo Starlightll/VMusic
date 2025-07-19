@@ -21,6 +21,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Playli
 
     public interface OnPlaylistClickListener {
         void onPlaylistClick(Playlist playlist);
+        void onPlaylistLongClick(Playlist playlist);
     }
 
     public PlaylistAdapter(OnPlaylistClickListener listener) {
@@ -47,6 +48,10 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Playli
         holder.type.setText(playlist.getType());
 
         holder.itemView.setOnClickListener(v -> listener.onPlaylistClick(playlist));
+        holder.itemView.setOnLongClickListener(v -> {
+            listener.onPlaylistLongClick(playlist);
+            return true;
+        });
     }
 
     @Override
