@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData;
 import com.example.vmusic.dao.SongDao;
 import com.example.vmusic.database.AppDatabase;
 import com.example.vmusic.entity.Song;
+import com.example.vmusic.models.SongWithArtists;
 import com.example.vmusic.models.SongWithGenres;
 
 import java.util.List;
@@ -64,6 +65,7 @@ public class SongRepository {
         });
     }
 
+
     public LiveData<List<Song>> getPopularSongs() {
         return songDao.getPopularSongs();
     }
@@ -76,7 +78,19 @@ public class SongRepository {
         return songDao.getSongsByIds(songIds);
     }
 
-
+    public LiveData<SongWithArtists> getSongWithArtists(int songId) {
+        return songDao.getSongWithArtists(songId);
+    }
+    public void insertSongWithRelationships(Song song, List<Integer> genreIds, List<Integer> artistIds) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            songDao.insertSongWithRelationships(song, genreIds, artistIds);
+        });
+    }
+    public void updateSongWithRelationships(Song song, List<Integer> genreIds, List<Integer> artistIds) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            songDao.updateSongWithRelationships(song, genreIds, artistIds);
+        });
+    }
     public void updateSongWithGenres(Song song, List<Integer> genreIds) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             songDao.updateSongWithGenres(song, genreIds);
