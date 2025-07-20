@@ -39,8 +39,12 @@ public interface SongDao {
     Song getSongById2(int id);
 
 
-    @Query("SELECT * FROM songs WHERE artistId = :artistId")
+    @Transaction
+    @Query("SELECT s.* FROM songs s " +
+            "INNER JOIN SongArtistCrossRef sa ON s.songId = sa.songId " +
+            "WHERE sa.artistId = :artistId")
     LiveData<List<Song>> getSongsByArtistId(int artistId);
+
 
     // Phương thức insert một mối quan hệ
     @Insert(onConflict = OnConflictStrategy.IGNORE)
