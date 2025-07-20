@@ -9,6 +9,7 @@ import androidx.annotation.OptIn;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.util.UnstableApi;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -115,7 +116,11 @@ public class SongsByArtistFragment extends Fragment {
         Glide.with(requireContext()).load(artistImage).into(imgArtistBackground);
 
         // Back button
-        btnBack.setOnClickListener(v -> requireActivity().onBackPressed());
+        btnBack.setOnClickListener(v -> {
+            NavHostFragment.findNavController(this).navigateUp();
+        });
+
+
 
         // Setup RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));

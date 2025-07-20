@@ -73,7 +73,7 @@ public class SongsByArtistAdapter extends RecyclerView.Adapter<SongsByArtistAdap
     }
 
     public void setSongs(List<Song> songs) {
-        this.songList = songs;
+        this.songList = new ArrayList<>(songs);
         notifyDataSetChanged();
     }
 
