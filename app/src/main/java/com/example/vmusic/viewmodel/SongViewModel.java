@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.vmusic.entity.Song;
+import com.example.vmusic.models.SongWithArtists;
 import com.example.vmusic.models.SongWithGenres;
 import com.example.vmusic.models.SongWithPlaylists;
 import com.example.vmusic.repository.PlaylistRepository;
@@ -94,5 +95,13 @@ public class SongViewModel extends AndroidViewModel{
     public void removeFromFavorite(int songId, int userId) {
         playlistRepository.removeFromFavorite(songId, userId);
     }
-
+    public LiveData<SongWithArtists> getSongWithArtists(int songId) {
+        return repository.getSongWithArtists(songId);
+    }
+    public void insertSongWithRelationships(Song song, List<Integer> genreIds, List<Integer> artistIds) {
+        repository.insertSongWithRelationships(song, genreIds, artistIds);
+    }
+    public void updateSongWithRelationships(Song song, List<Integer> genreIds, List<Integer> artistIds) {
+        repository.updateSongWithRelationships(song, genreIds, artistIds);
+    }
 }
