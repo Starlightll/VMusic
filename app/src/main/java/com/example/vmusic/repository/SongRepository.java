@@ -50,6 +50,9 @@ public class SongRepository {
             }
         }).start();
     }
+    public LiveData<List<Song>> getSongsByArtistId(int artistId) {
+        return songDao.getSongsByArtistId(artistId);
+    }
 
 
     public LiveData<Song> getSong(int id) {

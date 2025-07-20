@@ -37,6 +37,8 @@ public interface SongDao {
     Song getSongById2(int id);
 
 
+    @Query("SELECT * FROM songs WHERE artistId = :artistId")
+    LiveData<List<Song>> getSongsByArtistId(int artistId);
 
     // Phương thức insert một mối quan hệ
     @Insert(onConflict = OnConflictStrategy.IGNORE)

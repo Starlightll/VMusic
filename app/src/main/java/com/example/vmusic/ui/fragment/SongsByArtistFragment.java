@@ -2,13 +2,24 @@ package com.example.vmusic.ui.fragment;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.vmusic.R;
+import com.example.vmusic.ui.adapter.SongAdapter;
+import com.example.vmusic.viewmodel.SongViewModel;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -21,6 +32,16 @@ public class SongsByArtistFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    private int artistId;
+    private String artistName;
+    private String artistImage;
+    private SongViewModel songViewModel;
+    private RecyclerView recyclerView;
+    private SongAdapter songAdapter;
+    private TextView tvArtistName;
+    private ImageView imgArtistBackground;
+    private ImageButton btnBack;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -52,8 +73,9 @@ public class SongsByArtistFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            artistId = getArguments().getInt("artistId");
+            artistName = getArguments().getString("artistName");
+            artistImage = getArguments().getString("artistImage");
         }
     }
 
@@ -62,5 +84,39 @@ public class SongsByArtistFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_songs_by_artist, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        tvArtistName = view.findViewById(R.id.tvArtistName);
+        imgArtistBackground = view.findViewById(R.id.imgArtistBackground);
+        btnBack = view.findViewById(R.id.btnBack);
+        recyclerView = view.findViewById(R.id.recyclerSongsByArtist);
+
+        // Set name and image
+        tvArtistName.setText(artistName);
+        Glide.with(requireContext()).load(artistImage).into(imgArtistBackground);
+
+        // Back button
+        btnBack.setOnClickListener(v -> requireActivity().onBackPressed());
+
+        // Setup RecyclerView
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        songAdapter = new SongAdapter(song -> {
+            // Xử lý khi nhấn bài hát (nếu cần)
+        });
+        recyclerView.setAdapter(songAdapter);
+
+
+        // ViewModel
+        songViewModel = new ViewModelProvider(this).get(SongViewModel.class);
+
+        // Load songs by artist
+        if (artistId != -1) {
+            songViewModel.getSongsByArtistId(artistId).observe(getViewLifecycleOwner(), songs -> {
+                songAdapter.setSongs(songs);
+            });
+        }
     }
 }
