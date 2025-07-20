@@ -1,5 +1,7 @@
 package com.example.vmusic.ui.fragment;
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -17,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.view.animation.LinearInterpolator;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
@@ -46,6 +49,7 @@ public class PlaySongPanelFragment extends Fragment {
     private boolean isShuffle = false;
     private int repeatMode = 0;
     private int songId=0;
+    private ObjectAnimator discAnimator;
 
     public static PlaySongPanelFragment newInstance(Song song) {
         PlaySongPanelFragment fragment = new PlaySongPanelFragment();
@@ -128,7 +132,16 @@ public class PlaySongPanelFragment extends Fragment {
 
         playerViewModel.getIsPlaying().observe(getViewLifecycleOwner(), playing -> {
             if (playing != null) {
-                binding.imgBtnPlay.setImageResource(playing ? R.drawable.ic_pause : R.drawable.ic_play);
+                binding.imgBtnPlay.setImageResource(playing ? R.drawable.pause_ic : R.drawable.play_ic);
+                if (playing) {
+                    if (discAnimator == null || !discAnimator.isRunning()) {
+                        startDiscAnimation();
+                    } else {
+                        resumeDiscAnimation();
+                    }
+                } else {
+                    pauseDiscAnimation();
+                }
             }
         });
 
@@ -246,5 +259,29 @@ public class PlaySongPanelFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         handler.removeCallbacksAndMessages(null);
+    }
+
+
+    private void startDiscAnimation() {
+        if (discAnimator == null) {
+            discAnimator = ObjectAnimator.ofFloat(binding.viewPlayMusic, "rotation", 0f, 360f);
+            discAnimator.setDuration(23000);
+            discAnimator.setInterpolator(new LinearInterpolator());
+            discAnimator.setRepeatCount(ValueAnimator.INFINITE);
+            discAnimator.setRepeatMode(ValueAnimator.RESTART);
+        }
+        discAnimator.start();
+    }
+
+    private void pauseDiscAnimation() {
+        if (discAnimator != null && discAnimator.isRunning()) {
+            discAnimator.pause();
+        }
+    }
+
+    private void resumeDiscAnimation() {
+        if (discAnimator != null && discAnimator.isPaused()) {
+            discAnimator.resume();
+        }
     }
 }
