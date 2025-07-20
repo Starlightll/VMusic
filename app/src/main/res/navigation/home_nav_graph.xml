@@ -9,5 +9,16 @@
         android:id="@+id/homeTabFragment"
         android:name="com.example.vmusic.ui.fragment.HomeTabFragment"
         android:label="fragment_home_tab"
-        tools:layout="@layout/fragment_home_tab" />
+        tools:layout="@layout/fragment_home_tab" >
+        <action
+            android:id="@+id/action_homeTabFragment_to_songsByArtistFragment"
+            app:destination="@id/songsByArtistFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/songsByArtistFragment"
+        android:name="com.example.vmusic.ui.fragment.SongsByArtistFragment"
+        android:label="fragment_songs_by_artist"
+        tools:layout="@layout/fragment_songs_by_artist" />
+
+
 </navigation>
