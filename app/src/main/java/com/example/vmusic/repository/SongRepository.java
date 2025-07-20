@@ -35,9 +35,7 @@ public class SongRepository {
         return songDao.getAllSongsLive();
     }
 
-    public LiveData<List<Song>> searchSongsByName(String query) {
-        return songDao.searchSongsByName(query);
-    }
+
 
     public LiveData<SongWithGenres> getSongWithGenres(int id) {
         return songDao.getSongWithGenreLive(id);
@@ -55,9 +53,15 @@ public class SongRepository {
         return songDao.getSongsByArtistId(artistId);
     }
 
+    public LiveData<List<Song>> getSongsByGenreId(int genreId) {
+        return songDao.getSongsByGenreId(genreId);
+    }
 
     public LiveData<Song> getSong(int id) {
         return songDao.getSongById(id);
+    }
+    public LiveData<List<Song>> searchSongs(String query) {
+        return songDao.searchSongs(query);  // cần thêm trong SongDao
     }
 
     //increase listen count

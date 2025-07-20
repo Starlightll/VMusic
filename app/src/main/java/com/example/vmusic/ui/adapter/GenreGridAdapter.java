@@ -25,10 +25,15 @@ public class GenreGridAdapter extends RecyclerView.Adapter<GenreGridAdapter.Genr
     private final String[] colorHexList = {
             "#FF6F61", "#6A5ACD", "#32CD32", "#00CED1", "#FF69B4", "#FFA500", "#20B2AA", "#9370DB", "#00BFFF"
     };
+    public interface OnGenreClickListener {
+        void onGenreClick(Genre genre);
+    }
 
-    public GenreGridAdapter(Context context, List<Genre> genreList) {
+    private OnGenreClickListener genreClickListener;
+    public GenreGridAdapter(Context context, List<Genre> genreList, OnGenreClickListener listener) {
         this.context = context;
         this.genreList = genreList;
+        this.genreClickListener = listener;
     }
 
     @NonNull
@@ -46,6 +51,13 @@ public class GenreGridAdapter extends RecyclerView.Adapter<GenreGridAdapter.Genr
         // Đặt màu nền theo vòng lặp
         String color = colorHexList[position % colorHexList.length];
         holder.cardView.setCardBackgroundColor(Color.parseColor(color));
+
+        // ✅ Bắt sự kiện click và gọi callback
+        holder.itemView.setOnClickListener(v -> {
+            if (genreClickListener != null) {
+                genreClickListener.onGenreClick(genre);
+            }
+        });
     }
 
     @Override

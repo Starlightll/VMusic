@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,8 +38,9 @@ public class SearchTabFragment extends Fragment {
     private SongViewModel songViewModel;
     private GenreGridAdapter genreAdapter;
     private SongAdapter songAdapter;
-
+    private Observer<List<Song>> genreSongObserver;
     private List<Genre> fullGenreList = new ArrayList<>();
+    private Integer selectedGenreId = null;
 
     @OptIn(markerClass = UnstableApi.class)
     @Override
@@ -49,7 +51,29 @@ public class SearchTabFragment extends Fragment {
         // Genre RecyclerView
         RecyclerView genreRecyclerView = view.findViewById(R.id.rv_genres);
         genreRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        genreAdapter = new GenreGridAdapter(getContext(), new ArrayList<>());
+        genreAdapter = new GenreGridAdapter(getContext(), new ArrayList<>(), genre -> {
+            if (selectedGenreId != null && selectedGenreId.equals(genre.genreId)) {
+                // ✅ Đang chọn → click lần nữa thì bỏ chọn
+                selectedGenreId = null;
+                genreAdapter.setGenres(fullGenreList); // hiện lại toàn bộ genre
+                songAdapter.setSongs(new ArrayList<>()); // clear danh sách bài hát
+                Log.d("GENRE_CLICK", "Unselected genreId: " + genre.genreId);
+            } else {
+                // ✅ Chọn genre mới
+                selectedGenreId = genre.genreId;
+                List<Genre> onlySelected = new ArrayList<>();
+                onlySelected.add(genre);
+                genreAdapter.setGenres(onlySelected); // chỉ giữ lại 1 genre
+
+                Log.d("GENRE_CLICK", "Selected genreId: " + genre.genreId);
+
+                songViewModel.getSongsByGenreId(genre.genreId)
+                        .observe(getViewLifecycleOwner(), songs -> {
+                            Log.d("GENRE_SONGS", "Found " + songs.size() + " songs");
+                            songAdapter.setSongs(songs);
+                        });
+            }
+        });
         genreRecyclerView.setAdapter(genreAdapter);
 
         // Song RecyclerView
