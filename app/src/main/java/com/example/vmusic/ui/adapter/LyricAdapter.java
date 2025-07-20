@@ -26,16 +26,14 @@ public class LyricAdapter extends RecyclerView.Adapter<LyricAdapter.LyricViewHol
         }
     }
 
-
     public void setLyrics(List<LyricLine> newLyrics) {
         this.lyrics = newLyrics != null ? newLyrics : new ArrayList<>();
         currentIndex = -1;
         notifyDataSetChanged();
     }
 
-    // Gọi mỗi khi cần highlight dòng mới
     public void updateHighlight(int index) {
-        if (index < 0 || index >= lyrics.size()) return;
+        if (index < -1 || index >= lyrics.size()) return;
 
         if (index != currentIndex) {
             int previousIndex = currentIndex;
@@ -44,7 +42,9 @@ public class LyricAdapter extends RecyclerView.Adapter<LyricAdapter.LyricViewHol
             if (previousIndex >= 0 && previousIndex < getItemCount()) {
                 notifyItemChanged(previousIndex);
             }
-            notifyItemChanged(currentIndex);
+            if (currentIndex >= 0 && currentIndex < getItemCount()) {
+                notifyItemChanged(currentIndex);
+            }
         }
     }
 

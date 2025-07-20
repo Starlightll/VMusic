@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.vmusic.R;
 import com.example.vmusic.models.PlayerManager;
-import com.example.vmusic.ui.activity.PlaySongActivity;
 import com.example.vmusic.ui.adapter.ListSongAdapter;
 import com.example.vmusic.viewmodel.PlayerViewModel;
 import com.example.vmusic.viewmodel.SongViewModel;
@@ -48,9 +47,10 @@ public class ListSongFragment extends Fragment {
             player.play();
 
 
-            Intent intent = new Intent(requireContext(), PlaySongActivity.class);
-            intent.putExtra("song", song);
-            requireContext().startActivity(intent);
+//            Intent intent = new Intent(requireContext(), PlaySongActivity.class);
+//            intent.putExtra("song", song);
+//            requireContext().startActivity(intent);
+            playerViewModel.setCurrentSong(song);
         });
 
 

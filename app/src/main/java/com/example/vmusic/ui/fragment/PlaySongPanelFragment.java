@@ -6,12 +6,14 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -54,7 +56,7 @@ public class PlaySongPanelFragment extends Fragment {
     public static PlaySongPanelFragment newInstance(Song song) {
         PlaySongPanelFragment fragment = new PlaySongPanelFragment();
         Bundle args = new Bundle();
-        args.putSerializable("song", song);
+        //args.putSerializable("song", song);
         fragment.setArguments(args);
         return fragment;
     }
@@ -133,15 +135,15 @@ public class PlaySongPanelFragment extends Fragment {
         playerViewModel.getIsPlaying().observe(getViewLifecycleOwner(), playing -> {
             if (playing != null) {
                 binding.imgBtnPlay.setImageResource(playing ? R.drawable.pause_ic : R.drawable.play_ic);
-                if (playing) {
-                    if (discAnimator == null || !discAnimator.isRunning()) {
-                        startDiscAnimation();
-                    } else {
-                        resumeDiscAnimation();
-                    }
-                } else {
-                    pauseDiscAnimation();
-                }
+//                if (playing) {
+//                    if (discAnimator == null || !discAnimator.isRunning()) {
+//                        startDiscAnimation();
+//                    } else {
+//                        resumeDiscAnimation();
+//                    }
+//                } else {
+//                    pauseDiscAnimation();
+//                }
             }
         });
 
@@ -266,26 +268,26 @@ public class PlaySongPanelFragment extends Fragment {
     }
 
 
-    private void startDiscAnimation() {
-        if (discAnimator == null) {
-            discAnimator = ObjectAnimator.ofFloat(binding.viewPlayMusic, "rotation", 0f, 360f);
-            discAnimator.setDuration(23000);
-            discAnimator.setInterpolator(new LinearInterpolator());
-            discAnimator.setRepeatCount(ValueAnimator.INFINITE);
-            discAnimator.setRepeatMode(ValueAnimator.RESTART);
-        }
-        discAnimator.start();
-    }
+//    private void startDiscAnimation() {
+//        if (discAnimator == null) {
+//            discAnimator = ObjectAnimator.ofFloat(binding.viewPlayMusic, "rotation", 0f, 360f);
+//            discAnimator.setDuration(230);
+//            discAnimator.setInterpolator(new LinearInterpolator());
+//            discAnimator.setRepeatCount(ValueAnimator.INFINITE);
+//            discAnimator.setRepeatMode(ValueAnimator.RESTART);
+//        }
+//        discAnimator.start();
+//    }
 
-    private void pauseDiscAnimation() {
-        if (discAnimator != null && discAnimator.isRunning()) {
-            discAnimator.pause();
-        }
-    }
-
-    private void resumeDiscAnimation() {
-        if (discAnimator != null && discAnimator.isPaused()) {
-            discAnimator.resume();
-        }
-    }
+//    private void pauseDiscAnimation() {
+//        if (discAnimator != null && discAnimator.isRunning()) {
+//            discAnimator.pause();
+//        }
+//    }
+//
+//    private void resumeDiscAnimation() {
+//        if (discAnimator != null && discAnimator.isPaused()) {
+//            discAnimator.resume();
+//        }
+//    }
 }

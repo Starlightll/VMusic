@@ -10,16 +10,29 @@
     tools:context=".ui.fragment.PlaySongPanelFragment">
 
     <!-- Toolbar -->
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:titleTextColor="@android:color/white"
+        android:minHeight="56dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@android:color/transparent">
 
-    <!-- ViewPager -->
+        <!-- Tùy chỉnh icon to hơn -->
+        <ImageView
+            android:id="@+id/btnback"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="start|center_vertical"
+            android:paddingTop="10dp"
+            android:src="@drawable/ic_arrow_back"
+            android:contentDescription="Back"
+            app:tint="@color/light_grey" />
+    </androidx.appcompat.widget.Toolbar>
+
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewPlayMusic"
         android:layout_width="0dp"
