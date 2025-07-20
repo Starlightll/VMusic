@@ -1,6 +1,7 @@
 package com.example.vmusic.viewmodel;
 
 import android.app.Application;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -26,6 +27,7 @@ public class RegisterViewModel extends AndroidViewModel {
         existCheck.observeForever(existing -> {
             if (existing != null) {
                 registerResult.setValue(null);
+                Toast.makeText(getApplication(), "Email already exists", Toast.LENGTH_SHORT).show();
             } else {
                 User user = new User();
                 user.setEmail(email);
