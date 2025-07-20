@@ -186,7 +186,7 @@ public class HomeTabFragment extends Fragment {
         });
         recyclerRecentlyPlayed.setAdapter(recentlyPlayedAdapter);
 
-
+        // Artists
         artistAdapter = new ArtistAdapter(requireContext(), new ArrayList<>(), artist -> {
             Bundle bundle = new Bundle();
             bundle.putInt("artistId", artist.getArtistId());

@@ -1,11 +1,14 @@
 package com.example.vmusic.ui.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.media3.common.util.UnstableApi;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,8 +21,16 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.vmusic.R;
+import com.example.vmusic.entity.Song;
+import com.example.vmusic.helper.RecentlyPlayedManager;
+import com.example.vmusic.service.PlaybackService;
 import com.example.vmusic.ui.adapter.SongAdapter;
+import com.example.vmusic.ui.adapter.SongsByArtistAdapter;
+import com.example.vmusic.viewmodel.PlayerViewModel;
 import com.example.vmusic.viewmodel.SongViewModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -38,10 +49,12 @@ public class SongsByArtistFragment extends Fragment {
     private String artistImage;
     private SongViewModel songViewModel;
     private RecyclerView recyclerView;
-    private SongAdapter songAdapter;
+    private SongsByArtistAdapter songAdapter;
     private TextView tvArtistName;
     private ImageView imgArtistBackground;
     private ImageButton btnBack;
+    private PlayerViewModel playerViewModel;
+
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -83,9 +96,11 @@ public class SongsByArtistFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         return inflater.inflate(R.layout.fragment_songs_by_artist, container, false);
     }
 
+    @OptIn(markerClass = UnstableApi.class)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -93,6 +108,7 @@ public class SongsByArtistFragment extends Fragment {
         imgArtistBackground = view.findViewById(R.id.imgArtistBackground);
         btnBack = view.findViewById(R.id.btnBack);
         recyclerView = view.findViewById(R.id.recyclerSongsByArtist);
+        playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
 
         // Set name and image
         tvArtistName.setText(artistName);
@@ -103,9 +119,22 @@ public class SongsByArtistFragment extends Fragment {
 
         // Setup RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        songAdapter = new SongAdapter(song -> {
-            // Xử lý khi nhấn bài hát (nếu cần)
+        songAdapter = new SongsByArtistAdapter(requireContext(), new ArrayList<>(), song -> {
+            List<Song> songList = songAdapter.getSongs();
+            int index = songList.indexOf(song);
+
+            Intent intent = new Intent(requireContext(), PlaybackService.class);
+            intent.putExtra("song_list", new ArrayList<>(songList));
+            intent.putExtra("index", index);
+            requireContext().startService(intent);
+
+            playerViewModel.setCurrentSong(song);
+            playerViewModel.setIsPlaying(true);
+            songViewModel.increaseListenCount(song);
+            new RecentlyPlayedManager(requireContext(), 1).addSongId(song.getSongId());
         });
+
+
         recyclerView.setAdapter(songAdapter);
 
 
