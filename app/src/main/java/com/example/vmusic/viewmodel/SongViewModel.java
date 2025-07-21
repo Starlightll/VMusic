@@ -1,12 +1,15 @@
 package com.example.vmusic.viewmodel;
 
 import android.app.Application;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.vmusic.database.AppDatabase;
 import com.example.vmusic.entity.Song;
 import com.example.vmusic.models.SongWithArtists;
 import com.example.vmusic.models.SongWithGenres;
@@ -14,27 +17,35 @@ import com.example.vmusic.models.SongWithPlaylists;
 import com.example.vmusic.repository.PlaylistRepository;
 import com.example.vmusic.repository.SongRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
 public class SongViewModel extends AndroidViewModel{
     private SongRepository repository;
     private PlaylistRepository playlistRepository;
     private List<Song> allSongs;
-
+    private final MutableLiveData<Integer> favoriteChangedSongId = new MutableLiveData<>();
     private SongWithPlaylists songWithPlaylists;
+    public LiveData<Integer> getFavoriteChangedSongId() {
+        return favoriteChangedSongId;
+    }
+
+    private final MutableLiveData<Boolean> currentSongFavorite = new MutableLiveData<>();
+    public LiveData<Boolean> getCurrentSongFavorite() {
+        return currentSongFavorite;
+    }
+
+    PlayerViewModel playerViewModel = new PlayerViewModel(getApplication());
 
     private final MutableLiveData<Boolean> isFavorite = new MutableLiveData<>(false);
 
-    public LiveData<Boolean> getIsFavorite() {
-        return isFavorite;
-    }
     public SongViewModel(@NonNull Application application) {
         super(application);
         repository = new SongRepository(application);
         playlistRepository = new PlaylistRepository(application);
     }
-
     public LiveData<List<Song>> getAllSongs() {
         return repository.getAllSongs();
     }
@@ -83,21 +94,44 @@ public class SongViewModel extends AndroidViewModel{
     public void updateSongWithGenres(Song song, List<Integer> genreIds) {
         repository.updateSongWithGenres(song, genreIds);
     }
-    public void checkIfFavorite(int songId, int userId) {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            boolean result = playlistRepository.isFavorite(songId, userId);
-            isFavorite.postValue(result);
+
+    public void addToFavorite(int songId, int userId) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            playlistRepository.addToFavorite(songId, userId);
+
+            List<Integer> currentIds = favoriteSongIds.getValue();
+            if (currentIds == null) currentIds = new ArrayList<>();
+            if (!currentIds.contains(songId)) {
+                currentIds = new ArrayList<>(currentIds);
+                currentIds.add(songId);
+                favoriteSongIds.postValue(currentIds);
+            }
         });
     }
-    public void addToFavorite(int songId, int userId) {
-        playlistRepository.addToFavorite(songId, userId);
-        isFavorite.setValue(true);
-    }
-
 
     public void removeFromFavorite(int songId, int userId) {
-        playlistRepository.removeFromFavorite(songId, userId);
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            playlistRepository.removeFromFavorite(songId, userId);
+
+            List<Integer> currentIds = favoriteSongIds.getValue();
+            if (currentIds != null && currentIds.contains(songId)) {
+                currentIds = new ArrayList<>(currentIds);
+                currentIds.remove((Integer) songId);
+                favoriteSongIds.postValue(currentIds);
+            }
+        });
     }
+
+    private final MutableLiveData<List<Integer>> favoriteSongIds = new MutableLiveData<>(new ArrayList<>());
+
+    public LiveData<List<Integer>> getFavoriteSongIds() {
+        return favoriteSongIds;
+    }
+
+    public void loadFavoriteSongs(int userId) {
+        playlistRepository.getFavoriteSongIds(userId, result -> {
+            favoriteSongIds.postValue(result);
+        });
     public LiveData<SongWithArtists> getSongWithArtists(int songId) {
         return repository.getSongWithArtists(songId);
     }

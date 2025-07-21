@@ -57,7 +57,13 @@ public interface PlaylistDao {
             ")")
     boolean isFavorite(int songId, int userId);
     //Delete song from playlist
-    @Query("DELETE FROM playlistsongcrossref WHERE playListId = :playlistId AND songId = :songId")
+    @Query("DELETE FROM PlaylistSongCrossRef WHERE playListId = :playlistId AND songId = :songId")
     void deleteSongFromPlaylist(int playlistId, int songId);
+
+    @Query("SELECT ps.songId " +
+            "FROM PlaylistSongCrossRef ps " +
+            "INNER JOIN playlists p ON p.playListId = ps.playListId " +
+            "WHERE p.userOwnerId = :userId AND p.type = 'Favorite'")
+    List<Integer> getFavoriteSongIds(int userId);
 
 }
