@@ -18,8 +18,11 @@ public class UserRepository {
         userDao = db.userDao();
     }
 
-    public void register(User user) {
-        Executors.newSingleThreadExecutor().execute(() -> userDao.insert(user));
+    public void register(User user, MutableLiveData<Long> registerResult) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            long id = userDao.insert(user);
+            registerResult.postValue(id);
+        });
     }
 
     public void login(String email, String passwordHash, MutableLiveData<User> userLiveData) {

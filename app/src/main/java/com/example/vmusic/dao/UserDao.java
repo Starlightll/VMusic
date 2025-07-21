@@ -14,7 +14,7 @@ import java.util.List;
 @Dao
 public interface UserDao {
     @Insert
-    void insert(User user);
+    long insert(User user);
     @Query("SELECT * FROM users")
     LiveData<List<User>> getAllUserLive();
 

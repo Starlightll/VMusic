@@ -47,21 +47,11 @@
         android:id="@+id/songHeart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_favorite_full"
-        app:tint="#1DB954"
         android:layout_marginEnd="16dp"
-        app:layout_constraintEnd_toStartOf="@id/songMoreOptions"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
-
-    <ImageView
-        android:id="@+id/songMoreOptions"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_more_vert" app:tint="#B3B3B3"
-        android:layout_marginEnd="8dp"
+        android:src="@drawable/ic_favorite_full"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:tint="#1DB954" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
