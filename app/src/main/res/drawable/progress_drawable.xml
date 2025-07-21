@@ -10,7 +10,7 @@
     <item android:id="@android:id/progress">
         <clip>
             <shape android:shape="rectangle">
-                <corners android:radius="8dp"/> <!-- Bo góc 8dp -->
+                <corners android:radius="0dp"/> <!-- Bo góc 8dp -->
                 <solid android:color="#1DB954"/> <!-- Màu xanh Spotify -->
             </shape>
         </clip>

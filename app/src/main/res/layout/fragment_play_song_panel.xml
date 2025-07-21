@@ -32,7 +32,7 @@
             android:paddingEnd="25dp"
             android:src="@drawable/chevron_left_solid"
             android:contentDescription="Back"
-            app:tint="@color/light_grey" />
+            app:tint="?attr/iconColor" />
     </androidx.appcompat.widget.Toolbar>
 
     <androidx.viewpager.widget.ViewPager
@@ -66,7 +66,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Em Của Ngày Hôm Qua"
-                android:textColor="@android:color/white"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -86,7 +85,7 @@
             android:layout_gravity="center_vertical"
             android:contentDescription="Favorite"
             android:src="@drawable/ic_favorite"
-            app:tint="@color/white" />
+            app:tint="?attr/iconColor" />
     </LinearLayout>
 
     <!-- SeekBar + Time -->
@@ -107,7 +106,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="00:00"
-            android:textColor="@android:color/white"
             android:textSize="14sp" />
 
         <SeekBar
@@ -124,7 +122,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="00:00"
-            android:textColor="@android:color/white"
             android:textSize="14sp" />
     </LinearLayout>
 
@@ -153,7 +150,7 @@
             app:layout_constraintEnd_toStartOf="@+id/img_btn_back"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/light_grey" />
+            app:tint="?attr/iconColor" />
 
         <ImageButton
             android:id="@+id/img_btn_back"
@@ -167,7 +164,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/img_btn_play"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/light_grey" />
+            app:tint="?attr/iconColor" />
 
         <ImageButton
             android:id="@+id/img_btn_play"
@@ -180,7 +177,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:tint="@color/white" />
+            app:tint="?attr/iconColor" />
 
         <ImageButton
             android:id="@+id/img_btn_next"
@@ -194,7 +191,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/img_btn_play"
             app:layout_constraintStart_toEndOf="@+id/img_btn_play"
             app:layout_constraintTop_toTopOf="@+id/img_btn_play"
-            app:tint="@color/light_grey" />
+            app:tint="?attr/iconColor" />
 
         <ImageButton
             android:id="@+id/img_btn_repeat"
@@ -207,6 +204,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/img_btn_next"
             app:layout_constraintTop_toTopOf="@+id/img_btn_next"
-            app:tint="@color/light_grey" />
+            app:tint="?attr/iconColor" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
