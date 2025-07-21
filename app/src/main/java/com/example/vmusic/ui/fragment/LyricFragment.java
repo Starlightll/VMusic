@@ -87,12 +87,12 @@ public class LyricFragment extends Fragment {
                         int firstVisible = layoutManager.findFirstVisibleItemPosition();
                         int lastVisible = layoutManager.findLastVisibleItemPosition();
 
-                        if (currentIndex != -1 && (currentIndex < firstVisible || currentIndex > lastVisible ||
-                                currentIndex < layoutManager.findFirstCompletelyVisibleItemPosition() ||
-                                currentIndex > layoutManager.findLastCompletelyVisibleItemPosition())) {
-                            int scrollToPosition = Math.max(0, currentIndex - (layoutManager.getChildCount() / 2));
-                            recyclerView.smoothScrollToPosition(scrollToPosition);
-                        }
+//                        if (currentIndex != -1 && (currentIndex < firstVisible || currentIndex > lastVisible ||
+//                                currentIndex < layoutManager.findFirstCompletelyVisibleItemPosition() ||
+//                                currentIndex > layoutManager.findLastCompletelyVisibleItemPosition())) {
+//                            int scrollToPosition = Math.max(0, currentIndex - (layoutManager.getChildCount() / 2));
+//                            recyclerView.smoothScrollToPosition(scrollToPosition);
+//                        }
                     }
                 }
                 handler.postDelayed(this, 100);
