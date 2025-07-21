@@ -124,6 +124,8 @@ public class MainFragment extends Fragment {
             return false;
         });
 
+
+
         PlayerViewModel playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
         playerViewModel.getCurrentSong().observe(getViewLifecycleOwner(), song -> {
             View miniContainer = view.findViewById(R.id.miniPlayerContainer);

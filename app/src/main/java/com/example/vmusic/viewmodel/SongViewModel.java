@@ -5,23 +5,34 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.example.vmusic.entity.Song;
+import com.example.vmusic.models.SongWithArtists;
 import com.example.vmusic.models.SongWithGenres;
 import com.example.vmusic.models.SongWithPlaylists;
+import com.example.vmusic.repository.PlaylistRepository;
 import com.example.vmusic.repository.SongRepository;
 
 import java.util.List;
+import java.util.concurrent.Executors;
 
 public class SongViewModel extends AndroidViewModel{
     private SongRepository repository;
+    private PlaylistRepository playlistRepository;
     private List<Song> allSongs;
 
     private SongWithPlaylists songWithPlaylists;
+
+    private final MutableLiveData<Boolean> isFavorite = new MutableLiveData<>(false);
+
+    public LiveData<Boolean> getIsFavorite() {
+        return isFavorite;
+    }
     public SongViewModel(@NonNull Application application) {
         super(application);
         repository = new SongRepository(application);
-
+        playlistRepository = new PlaylistRepository(application);
     }
 
     public LiveData<List<Song>> getAllSongs() {
@@ -43,6 +54,9 @@ public class SongViewModel extends AndroidViewModel{
 
     public LiveData<List<Song>> searchSongs(String query) {
         return repository.searchSongs(query); // gọi hàm mới hỗ trợ name + artist
+    }
+    public LiveData<List<Song>> getSongsByArtistId(int artistId) {
+        return repository.getSongsByArtistId(artistId);
     }
 
 
@@ -69,5 +83,28 @@ public class SongViewModel extends AndroidViewModel{
     public void updateSongWithGenres(Song song, List<Integer> genreIds) {
         repository.updateSongWithGenres(song, genreIds);
     }
+    public void checkIfFavorite(int songId, int userId) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            boolean result = playlistRepository.isFavorite(songId, userId);
+            isFavorite.postValue(result);
+        });
+    }
+    public void addToFavorite(int songId, int userId) {
+        playlistRepository.addToFavorite(songId, userId);
+        isFavorite.setValue(true);
+    }
 
+
+    public void removeFromFavorite(int songId, int userId) {
+        playlistRepository.removeFromFavorite(songId, userId);
+    }
+    public LiveData<SongWithArtists> getSongWithArtists(int songId) {
+        return repository.getSongWithArtists(songId);
+    }
+    public void insertSongWithRelationships(Song song, List<Integer> genreIds, List<Integer> artistIds) {
+        repository.insertSongWithRelationships(song, genreIds, artistIds);
+    }
+    public void updateSongWithRelationships(Song song, List<Integer> genreIds, List<Integer> artistIds) {
+        repository.updateSongWithRelationships(song, genreIds, artistIds);
+    }
 }
