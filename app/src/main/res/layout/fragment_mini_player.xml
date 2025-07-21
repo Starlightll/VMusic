@@ -5,7 +5,6 @@
     android:id="@+id/mini_player"
     android:layout_width="match_parent"
     android:layout_height="60dp"
-    android:background="#1E1E1E"
     tools:context=".ui.fragment.MiniPlayerFragment">
 
     <!-- Ảnh bài hát -->
@@ -37,7 +36,6 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:text="Tên bài hát"
-        android:textColor="#FFFFFF"
         android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@+id/tvMiniArtist"
         app:layout_constraintEnd_toStartOf="@+id/btnPlay"
@@ -56,7 +54,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:text="Tên nghệ sĩ"
-        android:textColor="#AAAAAA"
+        android:textColor="@color/gray"
         android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@+id/progressBar"
         app:layout_constraintEnd_toStartOf="@+id/btnPlay"
@@ -72,7 +70,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.5"
-        app:tint="#FFFFFF" />
+        app:tint="?attr/iconColor" />
 
     <ProgressBar
         android:id="@+id/progressBar"
