@@ -135,47 +135,6 @@ public class PlaybackService extends Service implements MusicController {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        ArrayList<Song> songList = (ArrayList<Song>) intent.getSerializableExtra("song_list");
-        int index = intent.getIntExtra("index", 0);
-
-//        if (songList != null && !songList.isEmpty()) {
-//            player.clearMediaItems(); // Xoá bài cũ (nếu có)
-//            mediaItems.clear();
-//            for(Song s: songList){
-//                MediaItem mediaItem = MediaItem.fromUri(Uri.fromFile(new File(s.getAudioUrl())));
-//                Bundle customExtras = new Bundle();
-//                customExtras.putString("lyric_url", s.getUrlLyric());
-//                // Thêm metadata cho bài hát
-//                mediaItem = mediaItem.buildUpon()
-//                        .setMediaMetadata(
-//                                new androidx.media3.common.MediaMetadata.Builder()
-//                                        .setTitle(s.getName())
-//                                        .setArtist(s.getArtist())
-//                                        .setArtworkUri(Uri.parse(s.getImage()))
-//                                        .setExtras(customExtras)
-//                                        .build()
-//                        )
-//                        .build();
-//                mediaItems.add(mediaItem);
-//            }
-//            player.setMediaItems(mediaItems);
-//            AudioAttributes audioAttributes = new AudioAttributes.Builder()
-//                    .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
-//                    .setUsage(C.USAGE_MEDIA)
-//                    .build();
-//
-//            player.setAudioAttributes(audioAttributes, true);
-//            player.prepare();
-//            player.seekTo(index, 0);
-//            player.play();
-//
-//
-//
-//            currentSongList = songList;
-//            updateCurrentSongInViewModel(index);
-//
-//        }
-
         return START_NOT_STICKY;
     }
 
