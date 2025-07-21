@@ -73,6 +73,7 @@ public class SongsByArtistFragment extends Fragment {
     private PlayerViewModel playerViewModel;
     private List<Song> artistSongs = new ArrayList<>(); // Lưu danh sách bài hát nghệ sĩ
     private PlaylistRepository playlistRepository;
+
     private SessionManager sessionManager;
 
 
@@ -157,8 +158,7 @@ public class SongsByArtistFragment extends Fragment {
                 intent.putExtra("index", 0);
                 requireContext().startService(intent);
 
-                playerViewModel.setCurrentSong(shuffledList.get(0));
-                playerViewModel.setIsPlaying(true);
+                playerViewModel.playSong(shuffledList.get(0));
                 songViewModel.increaseListenCount(shuffledList.get(0));
                 new RecentlyPlayedManager(requireContext(), 1).addSongId(shuffledList.get(0).getSongId());
             }
@@ -178,8 +178,7 @@ public class SongsByArtistFragment extends Fragment {
                     intent.putExtra("index", index);
                     requireContext().startService(intent);
 
-                    playerViewModel.setCurrentSong(song);
-                    playerViewModel.setIsPlaying(true);
+                    playerViewModel.playSong(song);
                     songViewModel.increaseListenCount(song);
                     new RecentlyPlayedManager(requireContext(), 1).addSongId(song.getSongId());
                 },
