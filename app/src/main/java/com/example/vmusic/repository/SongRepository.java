@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData;
 
 import com.example.vmusic.dao.SongDao;
 import com.example.vmusic.database.AppDatabase;
+import com.example.vmusic.entity.Artist;
 import com.example.vmusic.entity.Song;
 import com.example.vmusic.models.SongWithArtists;
 import com.example.vmusic.models.SongWithGenres;
@@ -103,4 +104,9 @@ public class SongRepository {
             songDao.updateSongWithGenres(song, genreIds);
         });
     }
+
+    public List<SongWithArtists> getSongsWithArtists () {
+        return songDao.getSongsWithArtists();
+    }
+
 }
