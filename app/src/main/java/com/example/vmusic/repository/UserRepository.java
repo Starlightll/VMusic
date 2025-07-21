@@ -38,4 +38,8 @@ public class UserRepository {
             userLiveData.postValue(user);
         });
     }
+
+    public User getUserByEmail(String email) {
+        return userDao.getUserByEmail(email);
+    }
 }

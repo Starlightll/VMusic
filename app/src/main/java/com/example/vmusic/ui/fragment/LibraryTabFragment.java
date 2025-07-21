@@ -78,13 +78,11 @@ public class LibraryTabFragment extends Fragment {
             public void onPlaylistClick(Playlist playlist) {
                 if(playlist.getType().equals("Playlist")) {
                     //TODO: Mở playlist cá nhân
-                }
-                if(playlist.getType().equals("Favorite")) {
+                }else if(playlist.getType().equals("Favorite")) {
                     //TODO: Mở playlist yêu thích
                     NavController navController = NavHostFragment.findNavController(LibraryTabFragment.this);
                     navController.navigate(R.id.action_libraryTabFragment_to_favoritesFragment);
-                }
-                if(playlist.getType().equals("System")) {
+                }else if(playlist.getType().equals("System")) {
                     //TODO: Mở playlist hệ thống
                 }else{
                     Toast.makeText(requireContext(), "Playlist không hợp lệ", Toast.LENGTH_SHORT).show();

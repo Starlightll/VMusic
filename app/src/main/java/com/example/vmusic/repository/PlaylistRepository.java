@@ -10,6 +10,7 @@ import com.example.vmusic.dao.PlaylistDao;
 import com.example.vmusic.database.AppDatabase;
 import com.example.vmusic.entity.Playlist;
 import com.example.vmusic.models.PlaylistSongCrossRef;
+import com.example.vmusic.models.PlaylistWithSongs;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -97,6 +98,10 @@ public class PlaylistRepository {
                 callback.accept(result);
             });
         });
+    }
+    
+    public LiveData<List<PlaylistWithSongs>> getFavoritePlaylistByUserId(int userId) {
+        return playlistDao.getFavoritePlaylistByUserId(userId);
     }
 
 }

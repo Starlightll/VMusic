@@ -11,6 +11,7 @@ import androidx.room.Update;
 import com.example.vmusic.entity.Playlist;
 import com.example.vmusic.models.PlaylistSongCrossRef;
 import com.example.vmusic.models.PlaylistWithSongs;
+import com.example.vmusic.models.SongWithArtists;
 
 import java.util.List;
 
@@ -65,5 +66,8 @@ public interface PlaylistDao {
             "INNER JOIN playlists p ON p.playListId = ps.playListId " +
             "WHERE p.userOwnerId = :userId AND p.type = 'Favorite'")
     List<Integer> getFavoriteSongIds(int userId);
+
+    @Query("SELECT * FROM playlists WHERE type = 'Favorite' AND userOwnerId = :userId LIMIT 1")
+    LiveData<List<PlaylistWithSongs>> getFavoritePlaylistByUserId(int userId);
 
 }

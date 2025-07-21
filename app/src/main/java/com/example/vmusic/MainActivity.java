@@ -11,10 +11,12 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.example.vmusic.database.GenreSeeder;
 import com.example.vmusic.database.UserSeeder;
 import com.example.vmusic.helper.SessionManager;
+import com.example.vmusic.repository.UserRepository;
 import com.example.vmusic.viewmodel.SongViewModel;
 
 public class MainActivity extends AppCompatActivity {
     public SongViewModel songViewModel;
+    private UserRepository userRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +28,17 @@ public class MainActivity extends AppCompatActivity {
         UserSeeder.seedUsers(this);
         SessionManager session = new SessionManager(this);
         if (session.isLoggedIn()) {
+            userRepository = new UserRepository(this.getApplication());
+            Thread thread = new Thread(() -> {
+                if (userRepository.getUserByEmail(session.getEmail()) == null) {
+                    session.logout();
+                    runOnUiThread(() -> {
+                        switchToAuthNavGraph();
+                    });
+                }
+            });
+            thread.start();
+
             // Navigate to the main screen
             if(session.getRole().toLowerCase().equals("admin")) {
                 NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
