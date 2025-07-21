@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.media.session.MediaSessionCompat;
 
@@ -18,7 +19,6 @@ import androidx.annotation.Nullable;
 import androidx.media3.common.AudioAttributes;
 import androidx.media3.common.C;
 import androidx.media3.common.MediaItem;
-import androidx.media3.common.MediaMetadata;
 import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
@@ -28,11 +28,11 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.vmusic.Interface.MusicController;
+import com.example.vmusic.MainActivity;
 import com.example.vmusic.R;
 import com.example.vmusic.entity.Song;
 import com.example.vmusic.helper.ViewModelProviderHelper;
 import com.example.vmusic.models.PlayerManager;
-import com.example.vmusic.ui.activity.PlaySongActivity;
 import com.example.vmusic.viewmodel.PlayerViewModel;
 
 import java.io.File;
@@ -52,6 +52,7 @@ public class PlaybackService extends Service implements MusicController {
     private String songTitle = "";
     private String songArtist = "";
     private String songImage = "";
+    private PlayerViewModel playerViewModel;
 
     private ArrayList<Song> currentSongList = new ArrayList<>();
     private List<MediaItem> mediaItems = new ArrayList<>();
@@ -72,7 +73,7 @@ public class PlaybackService extends Service implements MusicController {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        playerViewModel = ViewModelProviderHelper.getPlayerViewModel();
         player = PlayerManager.getPlayer();
         player.setAudioAttributes(
                 new AudioAttributes.Builder()
@@ -116,10 +117,7 @@ public class PlaybackService extends Service implements MusicController {
                 int index = player.getCurrentMediaItemIndex();
                 updateCurrentSongInViewModel(index);
             }
-
-
         });
-
 
     }
 
@@ -129,43 +127,43 @@ public class PlaybackService extends Service implements MusicController {
         ArrayList<Song> songList = (ArrayList<Song>) intent.getSerializableExtra("song_list");
         int index = intent.getIntExtra("index", 0);
 
-        if (songList != null && !songList.isEmpty()) {
-            player.clearMediaItems(); // Xoá bài cũ (nếu có)
-            mediaItems.clear();
-            for(Song s: songList){
-                mediaItems.add(MediaItem.fromUri(Uri.fromFile(new File(s.getAudioUrl()))));
-            }
-            player.setMediaItems(mediaItems);
-//            for (Song s : songList) {
-//                File audioFile = new File(s.getAudioUrl());
-//                Uri localUri = Uri.fromFile(audioFile);
-//                MediaItem mediaItem = new MediaItem.Builder()
-//                        .setUri(localUri)
+//        if (songList != null && !songList.isEmpty()) {
+//            player.clearMediaItems(); // Xoá bài cũ (nếu có)
+//            mediaItems.clear();
+//            for(Song s: songList){
+//                MediaItem mediaItem = MediaItem.fromUri(Uri.fromFile(new File(s.getAudioUrl())));
+//                Bundle customExtras = new Bundle();
+//                customExtras.putString("lyric_url", s.getUrlLyric());
+//                // Thêm metadata cho bài hát
+//                mediaItem = mediaItem.buildUpon()
 //                        .setMediaMetadata(
-//                                new MediaMetadata.Builder()
+//                                new androidx.media3.common.MediaMetadata.Builder()
 //                                        .setTitle(s.getName())
 //                                        .setArtist(s.getArtist())
 //                                        .setArtworkUri(Uri.parse(s.getImage()))
+//                                        .setExtras(customExtras)
 //                                        .build()
 //                        )
 //                        .build();
-//                player.addMediaItem(mediaItem);
+//                mediaItems.add(mediaItem);
 //            }
-            AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                    .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
-                    .setUsage(C.USAGE_MEDIA)
-                    .build();
-
-            player.setAudioAttributes(audioAttributes, true);
-            player.prepare();
-            player.seekTo(index, 0);
-            player.play();
-
-
-            currentSongList = songList;
-            updateCurrentSongInViewModel(index);
-
-        }
+//            player.setMediaItems(mediaItems);
+//            AudioAttributes audioAttributes = new AudioAttributes.Builder()
+//                    .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+//                    .setUsage(C.USAGE_MEDIA)
+//                    .build();
+//
+//            player.setAudioAttributes(audioAttributes, true);
+//            player.prepare();
+//            player.seekTo(index, 0);
+//            player.play();
+//
+//
+//
+//            currentSongList = songList;
+//            updateCurrentSongInViewModel(index);
+//
+//        }
 
         return START_NOT_STICKY;
     }
@@ -231,13 +229,84 @@ public class PlaybackService extends Service implements MusicController {
     }
 
     @Override
-    public void setPlaylist(List<String> paths) {
+    public void playSong(Song song) {
+        MediaItem mediaItem = MediaItem.fromUri(Uri.fromFile(new File(song.getAudioUrl())));
+        Bundle customExtras = new Bundle();
+        customExtras.putString("lyric_url", song.getUrlLyric());
+        customExtras.putInt("song_id", song.getSongId());
+        customExtras.putSerializable("song", song);
+        // Thêm metadata cho bài hát
+        mediaItem = mediaItem.buildUpon()
+                .setMediaMetadata(
+                        new androidx.media3.common.MediaMetadata.Builder()
+                                .setTitle(song.getName())
+                                .setArtist(song.getArtist())
+                                .setArtworkUri(Uri.parse(song.getImage()))
+                                .setExtras(customExtras)
+                                .build()
+                )
+                .build();
+        player.setMediaItem(mediaItem);
+        player.prepare();
+        player.play();
+        updateCurrentSongInViewModel(player.getCurrentMediaItemIndex());
+    }
+
+    @Override
+    public void setPlaylist(List<Song> songs) {
         mediaItems.clear();
-        for (String path : paths) {
-            mediaItems.add(MediaItem.fromUri(Uri.fromFile(new File(path))));
+        currentSongList.clear();
+        currentSongList.addAll(songs);
+        for (Song song : songs) {
+            MediaItem mediaItem = MediaItem.fromUri(Uri.fromFile(new File(song.getAudioUrl())));
+            Bundle customExtras = new Bundle();
+            customExtras.putString("lyric_url", song.getUrlLyric());
+            customExtras.putInt("song_id", song.getSongId());
+            customExtras.putSerializable("song", song);
+            // Thêm metadata cho bài hát
+            mediaItem = mediaItem.buildUpon()
+                    .setMediaMetadata(
+                            new androidx.media3.common.MediaMetadata.Builder()
+                                    .setTitle(song.getName())
+                                    .setArtist(song.getArtist())
+                                    .setArtworkUri(Uri.parse(song.getImage()))
+                                    .setExtras(customExtras)
+                                    .build()
+                    )
+                    .build();
+            mediaItems.add(mediaItem);
         }
         player.setMediaItems(mediaItems);
         player.prepare();
+    }
+
+    @Override
+    public void setPlaylist(List<Song> songs, int position) {
+        mediaItems.clear();
+        currentSongList.clear();
+        currentSongList.addAll(songs);
+        for (Song song : songs) {
+            MediaItem mediaItem = MediaItem.fromUri(Uri.fromFile(new File(song.getAudioUrl())));
+            Bundle customExtras = new Bundle();
+            customExtras.putString("lyric_url", song.getUrlLyric());
+            customExtras.putInt("song_id", song.getSongId());
+            customExtras.putSerializable("song", song);
+            // Thêm metadata cho bài hát
+            mediaItem = mediaItem.buildUpon()
+                    .setMediaMetadata(
+                            new androidx.media3.common.MediaMetadata.Builder()
+                                    .setTitle(song.getName())
+                                    .setArtist(song.getArtist())
+                                    .setArtworkUri(Uri.parse(song.getImage()))
+                                    .setExtras(customExtras)
+                                    .build()
+                    )
+                    .build();
+            mediaItems.add(mediaItem);
+        }
+        player.setMediaItems(mediaItems);
+        player.prepare();
+        player.seekTo(position, 0);
     }
 
     @Override
@@ -275,6 +344,15 @@ public class PlaybackService extends Service implements MusicController {
     @Override
     public int getCurrentPosition() {
         return (int) player.getCurrentPosition();
+    }
+
+    @Override
+    public MediaItem getCurrentMediaItem() {
+        if (player.getCurrentMediaItem() != null) {
+            return player.getCurrentMediaItem();
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -340,7 +418,7 @@ public class PlaybackService extends Service implements MusicController {
         @Override
         public PendingIntent createCurrentContentIntent(Player player) {
             // Mở app khi click notification
-            Intent intent = new Intent(PlaybackService.this, PlaySongActivity.class);
+            Intent intent = new Intent(PlaybackService.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             return PendingIntent.getActivity(PlaybackService.this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
         }

@@ -1,6 +1,5 @@
 package com.example.vmusic.ui.fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,14 +13,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.vmusic.R;
+import com.example.vmusic.helper.SessionManager;
 import com.example.vmusic.models.PlayerManager;
-import com.example.vmusic.ui.activity.PlaySongActivity;
 import com.example.vmusic.ui.adapter.ListSongAdapter;
 import com.example.vmusic.viewmodel.PlayerViewModel;
 import com.example.vmusic.viewmodel.SongViewModel;
 
 import java.util.ArrayList;
-
 
 public class ListSongFragment extends Fragment {
 
@@ -37,26 +35,39 @@ public class ListSongFragment extends Fragment {
         recyclerView = view.findViewById(R.id.rec_song);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-
+        // ViewModel
         PlayerViewModel playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
+        songViewModel = new ViewModelProvider(requireActivity()).get(SongViewModel.class);
 
-        listSongAdapter = new ListSongAdapter(requireContext(), new ArrayList<>(), song -> {
+        // Lấy userId từ Session
+        SessionManager session = new SessionManager(requireContext());
+        int userId = session.getUserId();
 
-            ExoPlayer player = PlayerManager.getPlayer(requireContext());
-            player.setMediaItem(MediaItem.fromUri(song.getAudioUrl()));
-            player.prepare();
-            player.play();
+        // Load danh sách yêu thích từ DB
+        songViewModel.loadFavoriteSongs(userId);
 
+        // Adapter
+        listSongAdapter = new ListSongAdapter(
+                requireContext(),
+                new ArrayList<>(),
+                song -> {
+                    ExoPlayer player = PlayerManager.getPlayer(requireContext());
+                    player.setMediaItem(MediaItem.fromUri(song.getAudioUrl()));
+                    player.prepare();
+                    player.play();
 
-            Intent intent = new Intent(requireContext(), PlaySongActivity.class);
-            intent.putExtra("song", song);
-            requireContext().startActivity(intent);
-        });
-
+                    playerViewModel.setCurrentSong(song);
+                },
+                songViewModel,
+                userId
+        );
 
         recyclerView.setAdapter(listSongAdapter);
-        songViewModel = new ViewModelProvider(this).get(SongViewModel.class);
 
+        // Gọi observer để theo dõi danh sách yêu thích và tự động cập nhật UI trái tim
+        listSongAdapter.initFavoriteObserver();
+
+        // Observer danh sách bài hát
         songViewModel.getAllSongs().observe(getViewLifecycleOwner(), songs -> {
             if (songs != null) {
                 listSongAdapter.setSongs(songs);

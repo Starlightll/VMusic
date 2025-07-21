@@ -73,8 +73,36 @@
                 android:textColor="@color/white"
                 android:paddingStart="12dp"
                 android:inputType="textPersonName"/>
+            <LinearLayout
+                android:id="@+id/layout_song_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="24dp"
+                android:visibility="gone"
+                tools:visibility="visible"> <!-- visibility="gone" để ẩn ban đầu -->
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Các bài hát của nghệ sĩ"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_view_artist_songs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/admin_song_item"
+                    tools:itemCount="3"/>
+
+            </LinearLayout>
         </LinearLayout>
+
     </ScrollView>
 
     <Button

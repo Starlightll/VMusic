@@ -6,12 +6,14 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -33,6 +35,8 @@ import com.example.vmusic.ui.adapter.PlaySongPagerAdapter;
 import com.example.vmusic.viewmodel.PlayerViewModel;
 import com.example.vmusic.viewmodel.SongViewModel;
 
+import java.util.List;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link PlaySongPanelFragment#newInstance} factory method to
@@ -49,12 +53,12 @@ public class PlaySongPanelFragment extends Fragment {
     private boolean isShuffle = false;
     private int repeatMode = 0;
     private int songId=0;
-    private ObjectAnimator discAnimator;
+
 
     public static PlaySongPanelFragment newInstance(Song song) {
         PlaySongPanelFragment fragment = new PlaySongPanelFragment();
         Bundle args = new Bundle();
-        args.putSerializable("song", song);
+        //args.putSerializable("song", song);
         fragment.setArguments(args);
         return fragment;
     }
@@ -102,6 +106,14 @@ public class PlaySongPanelFragment extends Fragment {
                 }
             }
         });
+
+        ImageView btnBack = view.findViewById(R.id.btnback);
+        btnBack.setOnClickListener(v -> {
+
+            if (getParentFragment() instanceof MainFragment) {
+                ((MainFragment) getParentFragment()).hidePlayerPanel();
+            }
+        });
     }
 
     private void observeViewModel() {
@@ -110,38 +122,27 @@ public class PlaySongPanelFragment extends Fragment {
 
             binding.tvName.setText(song.getName());
             binding.tvSinger.setText(song.getArtist());
+            MediaItem mediaItem = playerViewModel.getCurrentMediaItem();
 
             PlaySongPagerAdapter adapter = new PlaySongPagerAdapter(
                     getChildFragmentManager(),
-                    song.getImage(),
-                    player,
-                    song.getUrlLyric()
+                    mediaItem.mediaMetadata.artworkUri.toString()
             );
             binding.viewPlayMusic.setAdapter(adapter);
             binding.viewPlayMusic.setCurrentItem(1, false);
 
             if (player.getPlaybackState() == Player.STATE_IDLE || player.getMediaItemCount() == 0) {
-                MediaItem mediaItem = MediaItem.fromUri(song.getAudioUrl());
                 player.setMediaItem(mediaItem);
                 player.prepare();
                 player.play();
                 playerViewModel.setIsPlaying(true);
             }
-            songId= song.getSongId();
+            songId = song.getSongId();
         });
 
         playerViewModel.getIsPlaying().observe(getViewLifecycleOwner(), playing -> {
             if (playing != null) {
                 binding.imgBtnPlay.setImageResource(playing ? R.drawable.pause_ic : R.drawable.play_ic);
-                if (playing) {
-                    if (discAnimator == null || !discAnimator.isRunning()) {
-                        startDiscAnimation();
-                    } else {
-                        resumeDiscAnimation();
-                    }
-                } else {
-                    pauseDiscAnimation();
-                }
             }
         });
 
@@ -188,33 +189,39 @@ public class PlaySongPanelFragment extends Fragment {
         SessionManager session = new SessionManager(requireContext());
         int userId = session.getUserId();
 
+        songViewModel.getFavoriteSongIds().observe(getViewLifecycleOwner(), ids -> {
+            Song current = playerViewModel.getCurrentSong().getValue();
+            if (current != null && ids != null) {
+                boolean isFav = ids.contains(current.getSongId());
+                updateFavoriteIcon(isFav);
+            }
+        });
 
-            binding.imgBtnFavorite.setVisibility(View.VISIBLE);
+        binding.imgBtnFavorite.setOnClickListener(v -> {
+            Song song = playerViewModel.getCurrentSong().getValue();
+            if (song != null) {
+                int songId = song.getSongId();
+                List<Integer> favIds = songViewModel.getFavoriteSongIds().getValue();
+                boolean isFav = favIds != null && favIds.contains(songId);
 
-            songViewModel.getIsFavorite().observe(getViewLifecycleOwner(), isFav -> {
-                if (isFav != null && isFav) {
-                    binding.imgBtnFavorite.setImageResource(R.drawable.ic_favorite_full);
+                if (isFav) {
+                    songViewModel.removeFromFavorite(songId, userId);
                 } else {
-                    binding.imgBtnFavorite.setImageResource(R.drawable.ic_favorite);
+                    songViewModel.addToFavorite(songId, userId);
                 }
-            });
-
-            binding.imgBtnFavorite.setOnClickListener(v -> {
-                if (userId == 0) {
-                    Toast.makeText(requireContext(), "Vui lòng đăng nhập để sử dụng tính năng này", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                Song currentSong = playerViewModel.getCurrentSong().getValue();
-                if (currentSong != null) {
-                    if (songViewModel.getIsFavorite().getValue() != null && songViewModel.getIsFavorite().getValue()) {
-                        songViewModel.removeFromFavorite(currentSong.getSongId(), userId);
-                    } else {
-                        songViewModel.addToFavorite(currentSong.getSongId(), userId);
-                    }
-                }
-            });
+            }
+        });
 
 
+
+    }
+
+    private void updateFavoriteIcon(Boolean isFav) {
+        if (isFav != null && isFav) {
+            binding.imgBtnFavorite.setImageResource(R.drawable.ic_favorite_full);
+        } else {
+            binding.imgBtnFavorite.setImageResource(R.drawable.ic_favorite);
+        }
     }
 
     private void setupSeekBar() {
@@ -261,27 +268,4 @@ public class PlaySongPanelFragment extends Fragment {
         handler.removeCallbacksAndMessages(null);
     }
 
-
-    private void startDiscAnimation() {
-        if (discAnimator == null) {
-            discAnimator = ObjectAnimator.ofFloat(binding.viewPlayMusic, "rotation", 0f, 360f);
-            discAnimator.setDuration(23000);
-            discAnimator.setInterpolator(new LinearInterpolator());
-            discAnimator.setRepeatCount(ValueAnimator.INFINITE);
-            discAnimator.setRepeatMode(ValueAnimator.RESTART);
-        }
-        discAnimator.start();
-    }
-
-    private void pauseDiscAnimation() {
-        if (discAnimator != null && discAnimator.isRunning()) {
-            discAnimator.pause();
-        }
-    }
-
-    private void resumeDiscAnimation() {
-        if (discAnimator != null && discAnimator.isPaused()) {
-            discAnimator.resume();
-        }
-    }
 }

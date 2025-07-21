@@ -80,6 +80,7 @@
             android:id="@+id/action_adminArtistListFragment_to_artistDetailsActivity"
             app:destination="@id/artistDetailsActivity" />
     </fragment>
+
     <activity
         android:id="@+id/artistDetailsActivity"
         android:name="com.example.vmusic.ui.activity.ArtistDetailsActivity"

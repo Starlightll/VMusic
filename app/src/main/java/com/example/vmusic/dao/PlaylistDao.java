@@ -11,6 +11,7 @@ import androidx.room.Update;
 import com.example.vmusic.entity.Playlist;
 import com.example.vmusic.models.PlaylistSongCrossRef;
 import com.example.vmusic.models.PlaylistWithSongs;
+import com.example.vmusic.models.SongWithArtists;
 
 import java.util.List;
 
@@ -57,7 +58,26 @@ public interface PlaylistDao {
             ")")
     boolean isFavorite(int songId, int userId);
     //Delete song from playlist
-    @Query("DELETE FROM playlistsongcrossref WHERE playListId = :playlistId AND songId = :songId")
+    @Query("DELETE FROM PlaylistSongCrossRef WHERE playListId = :playlistId AND songId = :songId")
     void deleteSongFromPlaylist(int playlistId, int songId);
+
+    @Query("SELECT ps.songId " +
+            "FROM PlaylistSongCrossRef ps " +
+            "INNER JOIN playlists p ON p.playListId = ps.playListId " +
+            "WHERE p.userOwnerId = :userId AND p.type = 'Favorite'")
+    List<Integer> getFavoriteSongIds(int userId);
+
+
+
+    @Query("SELECT *" +
+            "FROM songs s " +
+            "INNER JOIN PlaylistSongCrossRef ps ON s.songId = ps.songId " +
+            "INNER JOIN playlists p ON ps.playListId = p.playListId " +
+            "INNER JOIN SongArtistCrossRef sa ON s.songId = sa.songId " +
+            "INNER JOIN artists a ON sa.artistId = a.artistId " +
+            "WHERE p.userOwnerId = :userId AND p.type = 'Favorite' " +
+            "GROUP BY s.songId")
+    LiveData<List<SongWithArtists>> getSongsInFavoritePlaylist(int userId);
+
 
 }

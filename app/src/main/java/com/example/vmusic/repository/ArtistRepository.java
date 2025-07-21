@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData;
 import com.example.vmusic.dao.ArtistDao;
 import com.example.vmusic.database.AppDatabase;
 import com.example.vmusic.entity.Artist;
+import com.example.vmusic.models.ArtistWithSongs;
 
 import java.util.List;
 
@@ -34,5 +35,12 @@ public class ArtistRepository {
 
     public void delete(Artist artist) {
         AppDatabase.databaseWriteExecutor.execute(() -> artistDao.deleteArtist(artist));
+    }
+    public LiveData<ArtistWithSongs> getArtistWithSongs(int artistId) {
+        return artistDao.getArtistWithSongs(artistId);
+    }
+
+    public Artist getArtistById(int artistId) {
+        return artistDao.getArtistById(artistId);
     }
 }
