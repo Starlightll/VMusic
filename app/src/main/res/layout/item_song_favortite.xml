@@ -1,0 +1,67 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingVertical="8dp"
+    android:paddingHorizontal="16dp"
+    >
+
+    <ImageView
+        android:id="@+id/songAlbumArt"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/camgiaclucayserasao"
+        android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <TextView
+        android:id="@+id/songTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Nekozilla"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintStart_toEndOf="@id/songAlbumArt"
+        app:layout_constraintEnd_toStartOf="@id/songHeart"
+        app:layout_constraintTop_toTopOf="@id/songAlbumArt" />
+
+    <TextView
+        android:id="@+id/songArtist"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Different Heaven • Top 50 NCS"
+        android:textColor="@color/gray"
+        android:textSize="14sp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintStart_toEndOf="@id/songAlbumArt"
+        app:layout_constraintEnd_toStartOf="@id/songHeart"
+        app:layout_constraintTop_toBottomOf="@id/songTitle" />
+
+    <ImageView
+        android:id="@+id/songHeart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_favorite_full"
+        app:tint="#1DB954"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toStartOf="@id/songMoreOptions"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <ImageView
+        android:id="@+id/songMoreOptions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_more_vert" app:tint="#B3B3B3"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
