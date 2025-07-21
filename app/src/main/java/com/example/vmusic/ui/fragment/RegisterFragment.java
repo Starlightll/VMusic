@@ -92,6 +92,14 @@ public class RegisterFragment extends Fragment {
             String email = emailEditText.getText().toString();
             String password = passwordEditText.getText().toString();
             String confirmPassword = confirmPasswordEditText.getText().toString();
+            if(email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+                Toast.makeText(getContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!password.equals(confirmPassword)) {
+                Toast.makeText(getContext(), "Passwords do not match", Toast.LENGTH_SHORT).show();
+                return;
+            }
             registerVM.register(email, password);
         });
 

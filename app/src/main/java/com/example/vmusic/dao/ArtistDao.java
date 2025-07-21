@@ -35,4 +35,5 @@ public interface ArtistDao {
      @Transaction
      @Query("SELECT * FROM artists WHERE artistId = :artistId")
      LiveData<ArtistWithSongs> getArtistWithSongs(int artistId);
+
 }

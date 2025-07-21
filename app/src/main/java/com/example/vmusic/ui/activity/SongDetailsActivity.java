@@ -185,14 +185,14 @@ public class SongDetailsActivity extends AppCompatActivity {
             return;
         }
         selectedArtists.put(artist.getArtistId(), artist.getName());
-        Chip chip = new Chip(this);
-        chip.setText(artist.getName());
-        chip.setCloseIconVisible(true);
-        chip.setOnCloseIconClickListener(v -> {
-            chipGroupArtists.removeView(chip);
-            selectedArtists.remove(artist.getArtistId());
-        });
-        chipGroupArtists.addView(chip);
+//        Chip chip = new Chip(this);
+//        chip.setText(artist.getName());
+//        chip.setCloseIconVisible(true);
+//        chip.setOnCloseIconClickListener(v -> {
+//            chipGroupArtists.removeView(chip);
+//            selectedArtists.remove(artist.getArtistId());
+//        });
+//        chipGroupArtists.addView(chip);
     }
 
     private void loadSongDataForEdit() {

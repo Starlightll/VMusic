@@ -131,8 +131,9 @@ public class HomeTabFragment extends Fragment {
             intent.putExtra("index", startIndex);
             requireContext().startService(intent);
 
-            playerViewModel.setCurrentSong(song);
-            playerViewModel.setIsPlaying(true);
+//            playerViewModel.setCurrentSong(song);
+//            playerViewModel.setIsPlaying(true);
+            playerViewModel.playSong(song);
             songViewModel.increaseListenCount(song);
             recentlyPlayedManager.addSongId(song.getSongId());
         });
@@ -155,8 +156,9 @@ public class HomeTabFragment extends Fragment {
             intent.putExtra("index", startIndex);
             requireContext().startService(intent);
 
-            playerViewModel.setCurrentSong(song);
-            playerViewModel.setIsPlaying(true);
+//            playerViewModel.setCurrentSong(song);
+//            playerViewModel.setIsPlaying(true);
+            playerViewModel.playSong(song);
             songViewModel.increaseListenCount(song);
             recentlyPlayedManager.addSongId(song.songId);
         });
@@ -179,8 +181,9 @@ public class HomeTabFragment extends Fragment {
             intent.putExtra("index", startIndex);
             requireContext().startService(intent);
 
-            playerViewModel.setCurrentSong(song);
-            playerViewModel.setIsPlaying(true);
+//            playerViewModel.setCurrentSong(song);
+//            playerViewModel.setIsPlaying(true);
+            playerViewModel.playSong(song);
             songViewModel.increaseListenCount(song);
             recentlyPlayedManager.addSongId(song.songId);
         });
