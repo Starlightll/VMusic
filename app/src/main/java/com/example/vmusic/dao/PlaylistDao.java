@@ -67,7 +67,17 @@ public interface PlaylistDao {
             "WHERE p.userOwnerId = :userId AND p.type = 'Favorite'")
     List<Integer> getFavoriteSongIds(int userId);
 
-    @Query("SELECT * FROM playlists WHERE type = 'Favorite' AND userOwnerId = :userId LIMIT 1")
-    LiveData<List<PlaylistWithSongs>> getFavoritePlaylistByUserId(int userId);
+
+
+    @Query("SELECT *" +
+            "FROM songs s " +
+            "INNER JOIN PlaylistSongCrossRef ps ON s.songId = ps.songId " +
+            "INNER JOIN playlists p ON ps.playListId = p.playListId " +
+            "INNER JOIN SongArtistCrossRef sa ON s.songId = sa.songId " +
+            "INNER JOIN artists a ON sa.artistId = a.artistId " +
+            "WHERE p.userOwnerId = :userId AND p.type = 'Favorite' " +
+            "GROUP BY s.songId")
+    LiveData<List<SongWithArtists>> getSongsInFavoritePlaylist(int userId);
+
 
 }

@@ -13,14 +13,10 @@ import com.example.vmusic.ui.fragment.LyricFragment;
 public class PlaySongPagerAdapter extends FragmentPagerAdapter {
 
     private final String imageUrl;
-    private final ExoPlayer player;
-    private final String lyricPath;
 
-    public PlaySongPagerAdapter(@NonNull FragmentManager fm, String imageUrl, ExoPlayer player, String lyricPath) {
+    public PlaySongPagerAdapter(@NonNull FragmentManager fm, String imageUrl) {
         super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         this.imageUrl = imageUrl;
-        this.player = player;
-        this.lyricPath = lyricPath;
     }
 
     @NonNull

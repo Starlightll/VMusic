@@ -11,6 +11,7 @@ import com.example.vmusic.database.AppDatabase;
 import com.example.vmusic.entity.Playlist;
 import com.example.vmusic.models.PlaylistSongCrossRef;
 import com.example.vmusic.models.PlaylistWithSongs;
+import com.example.vmusic.models.SongWithArtists;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -100,8 +101,9 @@ public class PlaylistRepository {
         });
     }
     
-    public LiveData<List<PlaylistWithSongs>> getFavoritePlaylistByUserId(int userId) {
-        return playlistDao.getFavoritePlaylistByUserId(userId);
+    public LiveData<List<SongWithArtists>> getFavoriteSongsByUserId(int userId) {
+        //TODO: Get favorite songs by userId
+        return playlistDao.getSongsInFavoritePlaylist(userId);
     }
 
 }

@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.media3.common.MediaItem;
 
 import com.example.vmusic.Interface.MusicController;
 import com.example.vmusic.entity.Song;
@@ -33,6 +34,18 @@ public class PlayerViewModel extends AndroidViewModel {
 
     public LiveData<Song> getCurrentSong() {
         return currentSong;
+    }
+
+    public MediaItem getCurrentMediaItem() {
+        return musicController != null ? musicController.getCurrentMediaItem() : null;
+    }
+
+    public void playSong(Song song) {
+        if (musicController != null) {
+            musicController.playSong(song);
+            currentSong.setValue(song);
+            isPlaying.setValue(true);
+        }
     }
 
     public void setIsPlaying(boolean playing) {
@@ -70,6 +83,13 @@ public class PlayerViewModel extends AndroidViewModel {
         }
     }
 
+    public void play() {
+        if (musicController != null) {
+            musicController.play();
+            isPlaying.setValue(true);
+        }
+    }
+
     public void next() {
         if (musicController != null) {
             musicController.next();
@@ -88,9 +108,15 @@ public class PlayerViewModel extends AndroidViewModel {
         }
     }
 
-    public void setPlaylist(List<String> paths) {
+    public void setPlaylist(List<Song> songs) {
         if (musicController != null) {
-            musicController.setPlaylist(paths);
+            musicController.setPlaylist(songs);
+        }
+    }
+
+    public void setPlaylist(List<Song> songs, int position) {
+        if (musicController != null) {
+            musicController.setPlaylist(songs, position);
         }
     }
 

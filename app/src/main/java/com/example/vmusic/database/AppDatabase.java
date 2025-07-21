@@ -34,7 +34,7 @@ import java.util.concurrent.Executors;
         PlaylistSongCrossRef.class,
         SongGenreCrossRef.class,
         SongArtistCrossRef.class},
-        version = 1)
+        version = 2)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static volatile AppDatabase INSTANCE;

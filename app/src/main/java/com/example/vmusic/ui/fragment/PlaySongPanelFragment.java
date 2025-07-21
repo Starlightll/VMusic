@@ -122,18 +122,16 @@ public class PlaySongPanelFragment extends Fragment {
 
             binding.tvName.setText(song.getName());
             binding.tvSinger.setText(song.getArtist());
+            MediaItem mediaItem = playerViewModel.getCurrentMediaItem();
 
             PlaySongPagerAdapter adapter = new PlaySongPagerAdapter(
                     getChildFragmentManager(),
-                    song.getImage(),
-                    player,
-                    song.getUrlLyric()
+                    mediaItem.mediaMetadata.artworkUri.toString()
             );
             binding.viewPlayMusic.setAdapter(adapter);
             binding.viewPlayMusic.setCurrentItem(1, false);
 
             if (player.getPlaybackState() == Player.STATE_IDLE || player.getMediaItemCount() == 0) {
-                MediaItem mediaItem = MediaItem.fromUri(song.getAudioUrl());
                 player.setMediaItem(mediaItem);
                 player.prepare();
                 player.play();

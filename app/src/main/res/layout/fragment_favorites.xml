@@ -56,7 +56,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
-        android:text="187 bài hát"
+        android:text="0 bài hát"
         android:textColor="#B3B3B3"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"

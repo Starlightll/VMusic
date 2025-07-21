@@ -3,22 +3,31 @@ package com.example.vmusic.ui.fragment;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.vmusic.R;
+import com.example.vmusic.entity.Artist;
 import com.example.vmusic.entity.Song;
 import com.example.vmusic.helper.SessionManager;
 import com.example.vmusic.models.SongWithArtists;
 import com.example.vmusic.ui.adapter.FavoriteSongAdapter;
 import com.example.vmusic.viewmodel.FavoriteViewModel;
+import com.example.vmusic.viewmodel.PlayerViewModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -30,7 +39,10 @@ public class FavoritesFragment extends Fragment {
     private FavoriteViewModel favoriteVM;
     private RecyclerView recyclerView;
     private FavoriteSongAdapter favoriteSongAdapter;
+    private PlayerViewModel playerVM;
     private ImageView backButton;
+    private TextView tvSongCount;
+    private ImageButton btnPlayAll;
     private int userId;
 
     // TODO: Rename parameter arguments, choose names that match
@@ -77,7 +89,13 @@ public class FavoritesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_favorites, container, false);
+        View view = inflater.inflate(R.layout.fragment_favorites, container, false);
+        recyclerView = view.findViewById(R.id.songsRecyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        tvSongCount = view.findViewById(R.id.songCount);
+        btnPlayAll = view.findViewById(R.id.playAllButton);
+
+        return view;
     }
 
     @Override
@@ -100,16 +118,39 @@ public class FavoritesFragment extends Fragment {
             NavController navController = NavHostFragment.findNavController(FavoritesFragment.this);
             navController.navigateUp();
         });
-        recyclerView = view.findViewById(R.id.songsRecyclerView);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(favoriteSongAdapter);
+
 
         userId = getCurrentUserId();
         favoriteVM = new FavoriteViewModel(requireActivity().getApplication(), userId);
+        playerVM = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
 
-        favoriteVM.getFavoritePlaylist().observe(getViewLifecycleOwner(), playlists -> {
+        favoriteVM.getFavoritePlaylist().observe(getViewLifecycleOwner(), playlist -> {
             //TODO: Update adapter with the list of favorite playlists
+            if(playlist != null && !playlist.isEmpty()) {
+                favoriteSongAdapter.setSongs(playlist);
+                recyclerView.setAdapter(favoriteSongAdapter);
+                tvSongCount.setText(String.format("%d bài hát", playlist.size()));
+            } else {
+                // Handle empty playlist case
+                favoriteSongAdapter.setSongs(new ArrayList<>());
+            }
+        });
 
+        btnPlayAll.setOnClickListener(v -> {
+            List<SongWithArtists> songsWithArtist = favoriteVM.getFavoritePlaylist().getValue();
+            if (songsWithArtist == null || songsWithArtist.isEmpty()) {
+                return;
+            }
+            List<Song> songs = new ArrayList<>();
+            for (SongWithArtists songWithArtist : songsWithArtist) {
+                songs.add(songWithArtist.song);
+            }
+
+            playerVM.setPlaylist(songs, 0);
+            Song firstSong = favoriteVM.getFavoritePlaylist().getValue().get(0).song;
+            playerVM.setCurrentSong(firstSong);
+            playerVM.setIsPlaying(true);
+            playerVM.play();
         });
 
         // Initialize your UI components and observe LiveData from favoriteVM here
