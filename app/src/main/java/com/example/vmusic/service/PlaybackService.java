@@ -18,7 +18,6 @@ import androidx.annotation.Nullable;
 import androidx.media3.common.AudioAttributes;
 import androidx.media3.common.C;
 import androidx.media3.common.MediaItem;
-import androidx.media3.common.MediaMetadata;
 import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
@@ -28,11 +27,11 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.vmusic.Interface.MusicController;
+import com.example.vmusic.MainActivity;
 import com.example.vmusic.R;
 import com.example.vmusic.entity.Song;
 import com.example.vmusic.helper.ViewModelProviderHelper;
 import com.example.vmusic.models.PlayerManager;
-import com.example.vmusic.ui.activity.PlaySongActivity;
 import com.example.vmusic.viewmodel.PlayerViewModel;
 
 import java.io.File;
@@ -340,7 +339,7 @@ public class PlaybackService extends Service implements MusicController {
         @Override
         public PendingIntent createCurrentContentIntent(Player player) {
             // Mở app khi click notification
-            Intent intent = new Intent(PlaybackService.this, PlaySongActivity.class);
+            Intent intent = new Intent(PlaybackService.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             return PendingIntent.getActivity(PlaybackService.this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
         }

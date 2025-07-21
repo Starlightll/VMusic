@@ -28,9 +28,7 @@ public class PlaySongPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                LyricFragment lyricFragment = LyricFragment.newInstance(lyricPath);
-                lyricFragment.setPlayer(player);
-                return lyricFragment;
+                return new LyricFragment();
             case 1:
                 return ImagePlayFragment.newInstance(imageUrl);
             case 2:

@@ -6,9 +6,11 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Transaction;
 import androidx.room.Update;
 
 import com.example.vmusic.entity.Artist;
+import com.example.vmusic.models.ArtistWithSongs;
 
 import java.util.List;
 
@@ -30,4 +32,7 @@ public interface ArtistDao {
      void deleteArtist(Artist artist);
      @Query("SELECT * FROM artists ORDER BY name ASC")
      LiveData<List<Artist>> getAllArtistsLive();
+     @Transaction
+     @Query("SELECT * FROM artists WHERE artistId = :artistId")
+     LiveData<ArtistWithSongs> getArtistWithSongs(int artistId);
 }

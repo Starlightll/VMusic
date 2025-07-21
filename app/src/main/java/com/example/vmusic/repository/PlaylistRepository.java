@@ -1,6 +1,8 @@
 package com.example.vmusic.repository;
 
 import android.app.Application;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.lifecycle.LiveData;
 
@@ -12,6 +14,7 @@ import com.example.vmusic.models.PlaylistSongCrossRef;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
 public class PlaylistRepository {
     private PlaylistDao playlistDao;
@@ -86,4 +89,14 @@ public class PlaylistRepository {
             }
         });
     }
+
+    public void getFavoriteSongIds(int userId, Consumer<List<Integer>> callback) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            List<Integer> result = playlistDao.getFavoriteSongIds(userId);
+            new Handler(Looper.getMainLooper()).post(() -> {
+                callback.accept(result);
+            });
+        });
+    }
+
 }

@@ -26,6 +26,7 @@ public interface SongDao {
     @Query("SELECT * FROM songs WHERE songId = :id")
     LiveData<SongWithGenres> getSongWithGenreLive(int id);
 
+
     @Query("SELECT * FROM songs WHERE songId = :songid")
     LiveData<Song> getSongById(int songid);
 
@@ -67,11 +68,12 @@ public interface SongDao {
             }
         }
     }
-    @Query("SELECT * FROM songs WHERE name LIKE '%' || :query || '%'")
-    LiveData<List<Song>> searchSongsByName(String query);
+
 
     @Query("SELECT * FROM songs ORDER BY listenCounts DESC LIMIT 10")
     LiveData<List<Song>> getPopularSongs();
+    @Query("SELECT * FROM songs WHERE name LIKE '%' || :query || '%' OR artist LIKE '%' || :query || '%'")
+    LiveData<List<Song>> searchSongs(String query);
 
     @Query("SELECT * FROM songs ORDER BY songId DESC LIMIT 20")
     LiveData<List<Song>> getRecentSongs();

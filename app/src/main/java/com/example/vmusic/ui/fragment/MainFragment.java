@@ -181,7 +181,7 @@ public class MainFragment extends Fragment {
         }
     }
 
-    private void showFragment(Fragment fragment) {
+    public void showFragment(Fragment fragment) {
         getChildFragmentManager().beginTransaction()
                 .show(fragment)
                 .commit();
@@ -196,7 +196,7 @@ public class MainFragment extends Fragment {
                 .start();
     }
 
-    private void hidePlayerPanel() {
+    public void hidePlayerPanel() {
         View playSongPanel = binding.getRoot().findViewById(R.id.playSongPanel);
         playSongPanel.animate()
                 .translationY(playSongPanel.getHeight())

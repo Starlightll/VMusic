@@ -7,16 +7,20 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.vmusic.R;
 import com.example.vmusic.entity.Artist;
+import com.example.vmusic.ui.adapter.ArtistSongAdapter;
 import com.example.vmusic.viewmodel.ArtistViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
 
@@ -38,6 +42,9 @@ public class ArtistDetailsActivity extends AppCompatActivity {
     private ArtistViewModel artistViewModel;
     private Uri imageUri = null;
     private Artist artistToEdit = null;
+    private LinearLayout layoutSongList;
+    private RecyclerView recyclerViewArtistSongs;
+    private ArtistSongAdapter songAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +58,8 @@ public class ArtistDetailsActivity extends AppCompatActivity {
         btnSave = findViewById(R.id.btn_save_artist);
         progressBar = findViewById(R.id.progress_bar_artist);
         MaterialToolbar toolbar = findViewById(R.id.toolbar_artist_details);
+        layoutSongList = findViewById(R.id.layout_song_list);
+        recyclerViewArtistSongs = findViewById(R.id.recycler_view_artist_songs);
 
         // ViewModel
         artistViewModel = new ViewModelProvider(this).get(ArtistViewModel.class);
@@ -69,13 +78,34 @@ public class ArtistDetailsActivity extends AppCompatActivity {
     }
 
     private void loadArtistData() {
-        if (artistToEdit != null) {
-            editArtistName.setText(artistToEdit.getName());
-            File imageFile = new File(artistToEdit.getImage());
-            if (imageFile.exists()) {
-                Glide.with(this).load(imageFile).into(imageArtist);
-            }
+        if (artistToEdit == null) {
+            return;
         }
+
+        editArtistName.setText(artistToEdit.getName());
+        File imageFile = new File(artistToEdit.getImage());
+        if (imageFile.exists()) {
+            Glide.with(this)
+                    .load(imageFile)
+                    .placeholder(R.drawable.ic_person) // Ảnh chờ
+                    .into(imageArtist);
+        }
+
+        //    Vì trong XML nó có android:visibility="gone", chúng ta cần đổi nó thành VISIBLE.
+        layoutSongList.setVisibility(View.VISIBLE);
+
+        //    Đây là bước chuẩn bị để RecyclerView sẵn sàng nhận dữ liệu.
+        songAdapter = new ArtistSongAdapter(this);
+        recyclerViewArtistSongs.setAdapter(songAdapter);
+        recyclerViewArtistSongs.setLayoutManager(new LinearLayoutManager(this));
+
+        //    Chúng ta lấy về một đối tượng LiveData<ArtistWithSongs>.
+        artistViewModel.getArtistWithSongs(artistToEdit.getArtistId()).observe(this, artistWithSongs -> {
+
+            if (artistWithSongs != null && artistWithSongs.songs != null) {
+                songAdapter.setSongs(artistWithSongs.songs);
+            }
+        });
     }
 
     private void pickImage() {
