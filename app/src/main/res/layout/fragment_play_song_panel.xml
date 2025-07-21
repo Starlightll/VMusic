@@ -28,7 +28,9 @@
             android:layout_height="56dp"
             android:layout_gravity="start|center_vertical"
             android:paddingTop="10dp"
-            android:src="@drawable/ic_arrow_back"
+            android:paddingBottom="10dp"
+            android:paddingEnd="25dp"
+            android:src="@drawable/chevron_left_solid"
             android:contentDescription="Back"
             app:tint="@color/light_grey" />
     </androidx.appcompat.widget.Toolbar>
