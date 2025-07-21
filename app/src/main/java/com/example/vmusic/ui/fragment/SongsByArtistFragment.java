@@ -19,6 +19,14 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.app.AlertDialog;
+import android.widget.EditText;
+import android.widget.Toast;
+import android.widget.PopupMenu;
+import com.example.vmusic.entity.Playlist;
+import com.example.vmusic.helper.SessionManager;
+import com.example.vmusic.repository.PlaylistRepository;
+import androidx.lifecycle.Observer;
 
 import com.bumptech.glide.Glide;
 import com.example.vmusic.R;
@@ -32,6 +40,7 @@ import com.example.vmusic.viewmodel.SongViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections; // Thêm import cho shuffle
 
 /**
  * A simple {@link Fragment} subclass.
@@ -53,10 +62,15 @@ public class SongsByArtistFragment extends Fragment {
     private SongsByArtistAdapter songAdapter;
     private TextView tvArtistName;
     private ImageView imgArtistBackground;
+    private ImageView imgArtistAvatar; // Avatar tròn nhỏ
+    private TextView tvSongSummary; // TextView tổng quan
     private ImageButton btnBack;
     private ImageButton btnPlay; // Thêm biến cho nút play
+    private ImageButton btnMore; // Thêm biến cho nút ba chấm
     private PlayerViewModel playerViewModel;
     private List<Song> artistSongs = new ArrayList<>(); // Lưu danh sách bài hát nghệ sĩ
+    private PlaylistRepository playlistRepository;
+    private SessionManager sessionManager;
 
 
     // TODO: Rename and change types of parameters
@@ -109,39 +123,50 @@ public class SongsByArtistFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         tvArtistName = view.findViewById(R.id.tvArtistName);
         imgArtistBackground = view.findViewById(R.id.imgArtistBackground);
+        imgArtistAvatar = view.findViewById(R.id.imgArtistAvatar); // Avatar tròn nhỏ
+        tvSongSummary = view.findViewById(R.id.tvSongSummary); // Tổng quan
         btnBack = view.findViewById(R.id.btnBack);
         btnPlay = view.findViewById(R.id.btnPlay); // Ánh xạ nút play
         recyclerView = view.findViewById(R.id.recyclerSongsByArtist);
         playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
+        btnMore = view.findViewById(R.id.btnMenu);
+        playlistRepository = new PlaylistRepository(requireActivity().getApplication());
+        sessionManager = new SessionManager(requireContext());
+        int userId = sessionManager.getUserId();
 
         // Set name and image
         tvArtistName.setText(artistName);
         Glide.with(requireContext()).load(artistImage).into(imgArtistBackground);
+        Glide.with(requireContext()).load(artistImage).circleCrop().into(imgArtistAvatar); // Avatar tròn
 
         // Back button
         btnBack.setOnClickListener(v -> {
             NavHostFragment.findNavController(this).navigateUp();
         });
 
-        // Nút play toàn bộ danh sách bài hát nghệ sĩ
+        // play button
         btnPlay.setOnClickListener(v -> {
             if (artistSongs != null && !artistSongs.isEmpty()) {
+                List<Song> shuffledList = new ArrayList<>(artistSongs);
+                Collections.shuffle(shuffledList);
+
                 Intent intent = new Intent(requireContext(), PlaybackService.class);
-                intent.putExtra("song_list", new ArrayList<>(artistSongs));
-                intent.putExtra("index", 0); // Phát từ bài đầu tiên
+                intent.putExtra("song_list", new ArrayList<>(shuffledList));
+                intent.putExtra("index", 0);
                 requireContext().startService(intent);
 
                 // Cập nhật ViewModel
-                playerViewModel.setCurrentSong(artistSongs.get(0));
+                playerViewModel.setCurrentSong(shuffledList.get(0));
                 playerViewModel.setIsPlaying(true);
-                songViewModel.increaseListenCount(artistSongs.get(0));
-                new RecentlyPlayedManager(requireContext(), 1).addSongId(artistSongs.get(0).getSongId());
+                songViewModel.increaseListenCount(shuffledList.get(0));
+                new RecentlyPlayedManager(requireContext(), 1).addSongId(shuffledList.get(0).getSongId());
             }
         });
 
-
-        // Setup RecyclerView
+        // Setup RecyclerViewS
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        songViewModel = new ViewModelProvider(this).get(SongViewModel.class);
+        // Truyền thêm songViewModel và userId vào Adapter
         songAdapter = new SongsByArtistAdapter(requireContext(), new ArrayList<>(), song -> {
             List<Song> songList = songAdapter.getSongs();
             int index = songList.indexOf(song);
@@ -155,7 +180,7 @@ public class SongsByArtistFragment extends Fragment {
             playerViewModel.setIsPlaying(true);
             songViewModel.increaseListenCount(song);
             new RecentlyPlayedManager(requireContext(), 1).addSongId(song.getSongId());
-        });
+        }, songViewModel, userId);
 
 
         recyclerView.setAdapter(songAdapter);
@@ -168,7 +193,9 @@ public class SongsByArtistFragment extends Fragment {
         if (artistId != -1) {
             songViewModel.getSongsByArtistId(artistId).observe(getViewLifecycleOwner(), songs -> {
                 songAdapter.setSongs(songs);
-                artistSongs = songs; // Lưu lại danh sách bài hát nghệ sĩ
+                artistSongs = songs;
+                int totalSongs = songs.size();
+                tvSongSummary.setText(totalSongs + " bài hát • ");
             });
         }
     }
