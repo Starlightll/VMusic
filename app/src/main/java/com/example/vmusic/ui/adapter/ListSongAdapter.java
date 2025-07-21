@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -79,8 +80,10 @@ public class ListSongAdapter extends RecyclerView.Adapter<ListSongAdapter.ListSo
 
         if (favoriteSongIds.contains(songId)) {
             holder.imgFavorite.setImageResource(R.drawable.ic_favorite_full);
+            holder.imgFavorite.setColorFilter(ContextCompat.getColor(context, R.color.primary));
         } else {
             holder.imgFavorite.setImageResource(R.drawable.ic_favorite);
+            holder.imgFavorite.setColorFilter(ContextCompat.getColor(context, R.color.white));
         }
 
         holder.imgFavorite.setOnClickListener(v -> {

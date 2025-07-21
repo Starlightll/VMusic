@@ -132,6 +132,7 @@ public class FavoritesFragment extends Fragment {
                 tvSongCount.setText(String.format("%d bài hát", playlist.size()));
             } else {
                 // Handle empty playlist case
+                tvSongCount.setText(String.format("%d bài hát", 0));
                 favoriteSongAdapter.setSongs(new ArrayList<>());
             }
         });
