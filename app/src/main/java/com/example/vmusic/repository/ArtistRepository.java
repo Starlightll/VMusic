@@ -39,4 +39,8 @@ public class ArtistRepository {
     public LiveData<ArtistWithSongs> getArtistWithSongs(int artistId) {
         return artistDao.getArtistWithSongs(artistId);
     }
+
+    public Artist getArtistById(int artistId) {
+        return artistDao.getArtistById(artistId);
+    }
 }

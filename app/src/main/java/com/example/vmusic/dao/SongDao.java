@@ -9,6 +9,7 @@ import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
 
+import com.example.vmusic.entity.Artist;
 import com.example.vmusic.entity.Song;
 import com.example.vmusic.models.SongArtistCrossRef;
 import com.example.vmusic.models.SongGenreCrossRef;
@@ -161,4 +162,13 @@ public interface SongDao {
             }
         }
     }
+
+    @Transaction
+    @Query("SELECT * FROM songs")
+    List<SongWithArtists> getSongsWithArtists();
+
+    @Transaction
+    @Query("SELECT * FROM songs WHERE songId = :songId")
+    SongWithArtists getSongWithArtists(long songId);
+
 }

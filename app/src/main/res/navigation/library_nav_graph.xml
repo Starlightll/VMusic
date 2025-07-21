@@ -16,6 +16,9 @@
             app:destination="@id/settingsFragment"
             app:enterAnim="@anim/slide_in_right"  app:exitAnim="@anim/stay_still"   app:popEnterAnim="@anim/stay_still_back"
             app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_libraryTabFragment_to_favoritesFragment"
+            app:destination="@id/favoritesFragment" />
     </fragment>
 
     <fragment
@@ -59,4 +62,9 @@
             app:enterAnim="@anim/stay_still_back"   app:exitAnim="@anim/slide_out_right"  app:popEnterAnim="@anim/stay_still_back"
             app:popExitAnim="@anim/slide_out_right" />
     </fragment>
+    <fragment
+        android:id="@+id/favoritesFragment"
+        android:name="com.example.vmusic.ui.fragment.FavoritesFragment"
+        android:label="fragment_favorites"
+        tools:layout="@layout/fragment_favorites" />
 </navigation>

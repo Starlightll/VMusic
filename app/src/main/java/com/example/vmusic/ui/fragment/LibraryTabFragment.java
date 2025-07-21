@@ -76,7 +76,18 @@ public class LibraryTabFragment extends Fragment {
         playlistAdapter = new PlaylistAdapter(new PlaylistAdapter.OnPlaylistClickListener() {
             @Override
             public void onPlaylistClick(Playlist playlist) {
-                // TODO: Mở chi tiết playlist
+                if(playlist.getType().equals("Playlist")) {
+                    //TODO: Mở playlist cá nhân
+                }else if(playlist.getType().equals("Favorite")) {
+                    //TODO: Mở playlist yêu thích
+                    NavController navController = NavHostFragment.findNavController(LibraryTabFragment.this);
+                    navController.navigate(R.id.action_libraryTabFragment_to_favoritesFragment);
+                }else if(playlist.getType().equals("System")) {
+                    //TODO: Mở playlist hệ thống
+                }else{
+                    Toast.makeText(requireContext(), "Playlist không hợp lệ", Toast.LENGTH_SHORT).show();
+                    Log.e("LibraryTabFragment", "Invalid playlist type: " + playlist.getType());
+                }
             }
 
             @Override

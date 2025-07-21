@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.example.vmusic.entity.User;
+import com.example.vmusic.repository.UserRepository;
 
 public class SessionManager {
     private static final String PREF_NAME = "user_session";
@@ -46,6 +47,7 @@ public class SessionManager {
     public boolean isLoggedIn() {
         return getEmail() != null;
     }
+
 
     public void logout() {
         editor.clear();
