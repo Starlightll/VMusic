@@ -130,6 +130,7 @@ public class PlaybackService extends Service implements MusicController {
 
         if (songList != null && !songList.isEmpty()) {
             player.clearMediaItems(); // Xoá bài cũ (nếu có)
+            mediaItems.clear();
             for(Song s: songList){
                 mediaItems.add(MediaItem.fromUri(Uri.fromFile(new File(s.getAudioUrl()))));
             }

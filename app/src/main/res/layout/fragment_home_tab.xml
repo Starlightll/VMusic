@@ -79,6 +79,34 @@
                 app:layout_constraintTop_toBottomOf="@id/tvRecent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
+            <!-- Tiêu đề mục Nghệ sĩ yêu thích của bạn -->
+            <TextView
+                android:id="@+id/tvFavoriteArtists"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginStart="16dp"
+                android:text="Nghệ sĩ yêu thích của bạn"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintTop_toBottomOf="@id/recyclerRecent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <!-- Danh sách Nghệ sĩ yêu thích -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerFavoriteArtists"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:nestedScrollingEnabled="false"
+                android:clipToPadding="false"
+                app:layout_constraintTop_toBottomOf="@id/tvFavoriteArtists"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:orientation="horizontal"/>
 
             <!-- Tiêu đề mục Bài nghe nhiều -->
             <TextView
@@ -90,7 +118,7 @@
                 android:text="Bài nghe nhiều"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                app:layout_constraintTop_toBottomOf="@id/recyclerRecent"
+                app:layout_constraintTop_toBottomOf="@id/recyclerFavoriteArtists"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <!-- Danh sách Bài nghe nhiều -->

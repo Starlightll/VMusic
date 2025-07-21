@@ -11,6 +11,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.vmusic.database.AppDatabase;
 import com.example.vmusic.entity.Song;
+import com.example.vmusic.models.SongWithArtists;
 import com.example.vmusic.models.SongWithGenres;
 import com.example.vmusic.models.SongWithPlaylists;
 import com.example.vmusic.repository.PlaylistRepository;
@@ -63,8 +64,13 @@ public class SongViewModel extends AndroidViewModel{
     }
 
     public LiveData<List<Song>> searchSongs(String query) {
-        return repository.searchSongsByName(query);
+        return repository.searchSongs(query); // gọi hàm mới hỗ trợ name + artist
     }
+    public LiveData<List<Song>> getSongsByArtistId(int artistId) {
+        return repository.getSongsByArtistId(artistId);
+    }
+
+
     public LiveData<Song> getSong(int id){
         return repository.getSong(id);
     }
@@ -77,6 +83,9 @@ public class SongViewModel extends AndroidViewModel{
     }
     public LiveData<List<Song>> getSongsByIds(List<Integer> songIds) {
         return repository.getSongsByIds(songIds);
+    }
+    public LiveData<List<Song>> getSongsByGenreId(int genreId) {
+        return repository.getSongsByGenreId(genreId);
     }
 
     public void increaseListenCount(Song song) {
@@ -123,5 +132,13 @@ public class SongViewModel extends AndroidViewModel{
         playlistRepository.getFavoriteSongIds(userId, result -> {
             favoriteSongIds.postValue(result);
         });
+    public LiveData<SongWithArtists> getSongWithArtists(int songId) {
+        return repository.getSongWithArtists(songId);
+    }
+    public void insertSongWithRelationships(Song song, List<Integer> genreIds, List<Integer> artistIds) {
+        repository.insertSongWithRelationships(song, genreIds, artistIds);
+    }
+    public void updateSongWithRelationships(Song song, List<Integer> genreIds, List<Integer> artistIds) {
+        repository.updateSongWithRelationships(song, genreIds, artistIds);
     }
 }

@@ -19,12 +19,13 @@ import com.example.vmusic.entity.Playlist;
 import com.example.vmusic.entity.Song;
 import com.example.vmusic.entity.User;
 import com.example.vmusic.models.PlaylistSongCrossRef;
+import com.example.vmusic.models.SongArtistCrossRef;
 import com.example.vmusic.models.SongGenreCrossRef;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {Song.class , Playlist.class, Artist.class , Genre.class , User.class, PlaylistSongCrossRef.class , SongGenreCrossRef.class} , version = 1)
+@Database(entities = {Song.class , Playlist.class, Artist.class , Genre.class , User.class, PlaylistSongCrossRef.class , SongGenreCrossRef.class, SongArtistCrossRef.class} , version = 2)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static volatile AppDatabase INSTANCE;

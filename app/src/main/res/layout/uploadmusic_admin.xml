@@ -66,20 +66,29 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp"
-                android:text="Tên ca sĩ*"
+                android:text="Nghệ sĩ*"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
 
-            <EditText
-                android:id="@+id/editAdditionalArtist"
+            <!-- Ô tìm kiếm nghệ sĩ -->
+            <AutoCompleteTextView
+                android:id="@+id/autocomplete_artist"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:hint="Nhập tên các nghệ sĩ"
+                android:hint="Tìm kiếm và thêm nghệ sĩ..."
                 android:background="@color/dark_gray"
                 android:textColor="@color/white"
                 android:textColorHint="@color/gray_hint"
                 android:paddingStart="12dp"
-                android:inputType="textCapSentences|textMultiLine" />
+                android:inputType="text" />
+
+            <!-- Khu vực hiển thị các nghệ sĩ đã chọn -->
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipgroup_artists"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:chipSpacingVertical="4dp"/>
             <!-- Cover Image -->
             <TextView
                 android:layout_width="match_parent"

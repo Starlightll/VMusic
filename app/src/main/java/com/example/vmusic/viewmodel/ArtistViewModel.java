@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.example.vmusic.entity.Artist;
+import com.example.vmusic.models.ArtistWithSongs;
 import com.example.vmusic.repository.ArtistRepository;
 
 import java.util.List;
@@ -35,5 +36,8 @@ public class ArtistViewModel extends AndroidViewModel {
 
     public void delete(Artist artist) {
         repository.delete(artist);
+    }
+    public LiveData<ArtistWithSongs> getArtistWithSongs(int artistId) {
+        return repository.getArtistWithSongs(artistId);
     }
 }
