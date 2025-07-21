@@ -114,8 +114,19 @@ public class PlaybackService extends Service implements MusicController {
 
             @Override
             public void onMediaItemTransition(@Nullable MediaItem mediaItem, int reason) {
-                int index = player.getCurrentMediaItemIndex();
-                updateCurrentSongInViewModel(index);
+                if (mediaItem != null) {
+                    Bundle extras = mediaItem.mediaMetadata.extras;
+                    if (extras != null) {
+                        Song song = (Song) extras.getSerializable("song");
+                        if (song != null) {
+                            updateCurrentSongInViewModel(song);
+                        }
+                    }
+                } else {
+                    songTitle = "";
+                    songArtist = "";
+                    songImage = "";
+                }
             }
         });
 
@@ -124,63 +135,19 @@ public class PlaybackService extends Service implements MusicController {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        ArrayList<Song> songList = (ArrayList<Song>) intent.getSerializableExtra("song_list");
-        int index = intent.getIntExtra("index", 0);
-
-//        if (songList != null && !songList.isEmpty()) {
-//            player.clearMediaItems(); // Xoá bài cũ (nếu có)
-//            mediaItems.clear();
-//            for(Song s: songList){
-//                MediaItem mediaItem = MediaItem.fromUri(Uri.fromFile(new File(s.getAudioUrl())));
-//                Bundle customExtras = new Bundle();
-//                customExtras.putString("lyric_url", s.getUrlLyric());
-//                // Thêm metadata cho bài hát
-//                mediaItem = mediaItem.buildUpon()
-//                        .setMediaMetadata(
-//                                new androidx.media3.common.MediaMetadata.Builder()
-//                                        .setTitle(s.getName())
-//                                        .setArtist(s.getArtist())
-//                                        .setArtworkUri(Uri.parse(s.getImage()))
-//                                        .setExtras(customExtras)
-//                                        .build()
-//                        )
-//                        .build();
-//                mediaItems.add(mediaItem);
-//            }
-//            player.setMediaItems(mediaItems);
-//            AudioAttributes audioAttributes = new AudioAttributes.Builder()
-//                    .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
-//                    .setUsage(C.USAGE_MEDIA)
-//                    .build();
-//
-//            player.setAudioAttributes(audioAttributes, true);
-//            player.prepare();
-//            player.seekTo(index, 0);
-//            player.play();
-//
-//
-//
-//            currentSongList = songList;
-//            updateCurrentSongInViewModel(index);
-//
-//        }
 
         return START_NOT_STICKY;
     }
 
-    private void updateCurrentSongInViewModel(int index) {
-        if (index >= 0 && index < currentSongList.size()) {
-            Song song = currentSongList.get(index);
+    private void updateCurrentSongInViewModel(Song song) {
             songTitle = song.getName();
             songArtist = song.getArtist();
             songImage = song.getImage();
-
             PlayerViewModel viewModel = ViewModelProviderHelper.getPlayerViewModel();
             if (viewModel != null) {
                 viewModel.setCurrentSong(song);
                 viewModel.setIsPlaying(player.isPlaying());
             }
-        }
     }
 
     @Override
@@ -220,7 +187,6 @@ public class PlaybackService extends Service implements MusicController {
     @Override
     public void next() {
         player.seekToNext();
-        updateCurrentSongInViewModel(player.getCurrentMediaItemIndex());
     }
 
     @Override
@@ -249,7 +215,6 @@ public class PlaybackService extends Service implements MusicController {
         player.setMediaItem(mediaItem);
         player.prepare();
         player.play();
-        updateCurrentSongInViewModel(player.getCurrentMediaItemIndex());
     }
 
     @Override

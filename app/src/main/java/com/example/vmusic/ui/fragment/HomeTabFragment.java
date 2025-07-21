@@ -183,7 +183,9 @@ public class HomeTabFragment extends Fragment {
 
 //            playerViewModel.setCurrentSong(song);
 //            playerViewModel.setIsPlaying(true);
-            playerViewModel.playSong(song);
+            List<Song> songs = new ArrayList<>();
+            songs.add(song);
+            playerViewModel.setPlaylist(songs, 0);
             songViewModel.increaseListenCount(song);
             recentlyPlayedManager.addSongId(song.songId);
         });
