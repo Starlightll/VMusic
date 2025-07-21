@@ -17,6 +17,7 @@ import java.util.List;
 
 public class PlayerViewModel extends AndroidViewModel {
     private final MutableLiveData<Song> currentSong = new MutableLiveData<>();
+    private final MutableLiveData<MediaItem> currentMediaItem = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isPlaying = new MutableLiveData<>(false);
     private MusicController musicController;
 
@@ -30,6 +31,13 @@ public class PlayerViewModel extends AndroidViewModel {
 
     public void setCurrentSong(Song song) {
         currentSong.setValue(song);
+    }
+    public void setCurrentMediaItem(MediaItem mediaItem) {
+        currentMediaItem.setValue(mediaItem);
+    }
+
+    public LiveData<MediaItem> getCurrentMediaItemLiveData() {
+        return currentMediaItem;
     }
 
     public LiveData<Song> getCurrentSong() {

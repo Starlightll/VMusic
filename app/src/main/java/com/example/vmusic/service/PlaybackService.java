@@ -114,8 +114,19 @@ public class PlaybackService extends Service implements MusicController {
 
             @Override
             public void onMediaItemTransition(@Nullable MediaItem mediaItem, int reason) {
-                int index = player.getCurrentMediaItemIndex();
-                updateCurrentSongInViewModel(index);
+                if (mediaItem != null) {
+                    Bundle extras = mediaItem.mediaMetadata.extras;
+                    if (extras != null) {
+                        Song song = (Song) extras.getSerializable("song");
+                        if (song != null) {
+                            updateCurrentSongInViewModel(song);
+                        }
+                    }
+                } else {
+                    songTitle = "";
+                    songArtist = "";
+                    songImage = "";
+                }
             }
         });
 
@@ -168,19 +179,15 @@ public class PlaybackService extends Service implements MusicController {
         return START_NOT_STICKY;
     }
 
-    private void updateCurrentSongInViewModel(int index) {
-        if (index >= 0 && index < currentSongList.size()) {
-            Song song = currentSongList.get(index);
+    private void updateCurrentSongInViewModel(Song song) {
             songTitle = song.getName();
             songArtist = song.getArtist();
             songImage = song.getImage();
-
             PlayerViewModel viewModel = ViewModelProviderHelper.getPlayerViewModel();
             if (viewModel != null) {
                 viewModel.setCurrentSong(song);
                 viewModel.setIsPlaying(player.isPlaying());
             }
-        }
     }
 
     @Override
@@ -220,7 +227,6 @@ public class PlaybackService extends Service implements MusicController {
     @Override
     public void next() {
         player.seekToNext();
-        updateCurrentSongInViewModel(player.getCurrentMediaItemIndex());
     }
 
     @Override
@@ -249,7 +255,6 @@ public class PlaybackService extends Service implements MusicController {
         player.setMediaItem(mediaItem);
         player.prepare();
         player.play();
-        updateCurrentSongInViewModel(player.getCurrentMediaItemIndex());
     }
 
     @Override

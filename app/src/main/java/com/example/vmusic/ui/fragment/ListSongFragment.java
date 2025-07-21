@@ -51,12 +51,7 @@ public class ListSongFragment extends Fragment {
                 requireContext(),
                 new ArrayList<>(),
                 song -> {
-                    ExoPlayer player = PlayerManager.getPlayer(requireContext());
-                    player.setMediaItem(MediaItem.fromUri(song.getAudioUrl()));
-                    player.prepare();
-                    player.play();
-
-                    playerViewModel.setCurrentSong(song);
+                    playerViewModel.playSong(song);
                 },
                 songViewModel,
                 userId
