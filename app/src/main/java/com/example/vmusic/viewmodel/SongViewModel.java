@@ -132,6 +132,7 @@ public class SongViewModel extends AndroidViewModel{
         playlistRepository.getFavoriteSongIds(userId, result -> {
             favoriteSongIds.postValue(result);
         });
+    }
     public LiveData<SongWithArtists> getSongWithArtists(int songId) {
         return repository.getSongWithArtists(songId);
     }
