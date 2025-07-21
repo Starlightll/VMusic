@@ -23,8 +23,11 @@ import android.app.AlertDialog;
 import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.PopupMenu;
+
+import com.example.vmusic.Interface.OnSongMenuClickListener;
 import com.example.vmusic.entity.Playlist;
 import com.example.vmusic.helper.SessionManager;
+import com.example.vmusic.models.LibraryViewModel;
 import com.example.vmusic.repository.PlaylistRepository;
 import androidx.lifecycle.Observer;
 
@@ -121,30 +124,29 @@ public class SongsByArtistFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         tvArtistName = view.findViewById(R.id.tvArtistName);
         imgArtistBackground = view.findViewById(R.id.imgArtistBackground);
-        imgArtistAvatar = view.findViewById(R.id.imgArtistAvatar); // Avatar tròn nhỏ
-        tvSongSummary = view.findViewById(R.id.tvSongSummary); // Tổng quan
+        imgArtistAvatar = view.findViewById(R.id.imgArtistAvatar);
+        tvSongSummary = view.findViewById(R.id.tvSongSummary);
         btnBack = view.findViewById(R.id.btnBack);
-        btnPlay = view.findViewById(R.id.btnPlay); // Ánh xạ nút play
+        btnPlay = view.findViewById(R.id.btnPlay);
         recyclerView = view.findViewById(R.id.recyclerSongsByArtist);
+        LibraryViewModel libraryViewModel = new ViewModelProvider(requireActivity()).get(LibraryViewModel.class);
+
+
         playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
-        btnMore = view.findViewById(R.id.btnMenu);
+        songViewModel = new ViewModelProvider(this).get(SongViewModel.class);
         playlistRepository = new PlaylistRepository(requireActivity().getApplication());
         sessionManager = new SessionManager(requireContext());
         int userId = sessionManager.getUserId();
 
-        // Set name and image
         tvArtistName.setText(artistName);
         Glide.with(requireContext()).load(artistImage).into(imgArtistBackground);
-        Glide.with(requireContext()).load(artistImage).circleCrop().into(imgArtistAvatar); // Avatar tròn
+        Glide.with(requireContext()).load(artistImage).circleCrop().into(imgArtistAvatar);
 
-        // Back button
-        btnBack.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigateUp();
-        });
+        btnBack.setOnClickListener(v -> NavHostFragment.findNavController(this).navigateUp());
 
-        // play button
         btnPlay.setOnClickListener(v -> {
             if (artistSongs != null && !artistSongs.isEmpty()) {
                 List<Song> shuffledList = new ArrayList<>(artistSongs);
@@ -155,7 +157,6 @@ public class SongsByArtistFragment extends Fragment {
                 intent.putExtra("index", 0);
                 requireContext().startService(intent);
 
-                // Cập nhật ViewModel
                 playerViewModel.setCurrentSong(shuffledList.get(0));
                 playerViewModel.setIsPlaying(true);
                 songViewModel.increaseListenCount(shuffledList.get(0));
@@ -163,40 +164,83 @@ public class SongsByArtistFragment extends Fragment {
             }
         });
 
-        // Setup RecyclerViewS
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        songViewModel = new ViewModelProvider(this).get(SongViewModel.class);
-        // Truyền thêm songViewModel và userId vào Adapter
-        songAdapter = new SongsByArtistAdapter(requireContext(), new ArrayList<>(), song -> {
-            List<Song> songList = songAdapter.getSongs();
-            int index = songList.indexOf(song);
 
-            Intent intent = new Intent(requireContext(), PlaybackService.class);
-            intent.putExtra("song_list", new ArrayList<>(songList));
-            intent.putExtra("index", index);
-            requireContext().startService(intent);
+        songAdapter = new SongsByArtistAdapter(
+                requireContext(),
+                new ArrayList<>(),
+                song -> {
+                    List<Song> songList = songAdapter.getSongs();
+                    int index = songList.indexOf(song);
 
-            playerViewModel.setCurrentSong(song);
-            playerViewModel.setIsPlaying(true);
-            songViewModel.increaseListenCount(song);
-            new RecentlyPlayedManager(requireContext(), 1).addSongId(song.getSongId());
-        }, songViewModel, userId);
+                    Intent intent = new Intent(requireContext(), PlaybackService.class);
+                    intent.putExtra("song_list", new ArrayList<>(songList));
+                    intent.putExtra("index", index);
+                    requireContext().startService(intent);
+
+                    playerViewModel.setCurrentSong(song);
+                    playerViewModel.setIsPlaying(true);
+                    songViewModel.increaseListenCount(song);
+                    new RecentlyPlayedManager(requireContext(), 1).addSongId(song.getSongId());
+                },
+                songViewModel,
+                userId,
+                new OnSongMenuClickListener() {
+                    @Override
+                    public void onAddToFavorite(Song song) {
+                        songViewModel.addToFavorite(song.getSongId(), userId);
+                        Toast.makeText(requireContext(), "Đã thêm \"" + song.getName() + "\" vào yêu thích", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onAddToPlaylist(Song song) {
+                        showAddToPlaylistDialog(song);
+                    }
+                }
+
+        );
 
 
         recyclerView.setAdapter(songAdapter);
 
-
-        // ViewModel
-        songViewModel = new ViewModelProvider(this).get(SongViewModel.class);
-
-        // Load songs by artist
         if (artistId != -1) {
             songViewModel.getSongsByArtistId(artistId).observe(getViewLifecycleOwner(), songs -> {
                 songAdapter.setSongs(songs);
                 artistSongs = songs;
-                int totalSongs = songs.size();
-                tvSongSummary.setText(totalSongs + " bài hát • ");
+                tvSongSummary.setText(songs.size() + " bài hát • ");
             });
         }
     }
+
+    private void showAddToPlaylistDialog(Song song) {
+        int userId = sessionManager.getUserId();
+        LibraryViewModel libraryViewModel = new ViewModelProvider(requireActivity()).get(LibraryViewModel.class);
+        libraryViewModel.getPlaylistsByUser(userId).observe(getViewLifecycleOwner(), playlists -> {
+            if (playlists == null || playlists.isEmpty()) {
+                Toast.makeText(requireContext(), "Bạn chưa có playlist nào", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String[] playlistNames = new String[playlists.size()];
+            for (int i = 0; i < playlists.size(); i++) {
+                playlistNames[i] = playlists.get(i).getName();
+            }
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setTitle("Thêm vào playlist");
+
+            builder.setItems(playlistNames, (dialog, which) -> {
+                int selectedPlaylistId = playlists.get(which).getPlayListId();
+                libraryViewModel.addSongToPlaylist(song.getSongId(), selectedPlaylistId);
+                Toast.makeText(requireContext(), "Đã thêm vào \"" + playlists.get(which).getName() + "\"", Toast.LENGTH_SHORT).show();
+            });
+
+            builder.setNegativeButton("Hủy", null);
+            builder.show();
+        });
+    }
+
+
+
+
 }

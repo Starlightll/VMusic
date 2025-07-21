@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -31,16 +32,22 @@ public class SongsByArtistAdapter extends RecyclerView.Adapter<SongsByArtistAdap
     private int currentSongId = -1;
     private SongViewModel songViewModel;
     private int userId;
+    private OnSongMenuClickListener menuClickListener;
 
-
-    public SongsByArtistAdapter(Context context, List<Song> songList, OnSongClickListener listener, SongViewModel songViewModel, int userId) {
+    public SongsByArtistAdapter(Context context, List<Song> songs,
+                                OnSongClickListener itemClickListener,
+                                SongViewModel songViewModel, int userId,
+                                OnSongMenuClickListener menuClickListener) {
         this.context = context;
-        this.songList = songList;
-        this.listener = listener;
+        this.songList = songs;
+        this.listener = itemClickListener;
         this.songViewModel = songViewModel;
         this.userId = userId;
-
+        this.menuClickListener = menuClickListener;
     }
+
+
+
 
     public void setCurrentSongId(int songId) {
         this.currentSongId = songId;
@@ -93,25 +100,36 @@ public class SongsByArtistAdapter extends RecyclerView.Adapter<SongsByArtistAdap
             }
         });
 
-        // Xử lý popup menu trực tiếp trong Adapter
         holder.btnMenu.setOnClickListener(v -> {
             PopupMenu popup = new PopupMenu(context, holder.btnMenu);
+
+            // Tạo menu động bằng code
             popup.getMenu().add("Thêm vào yêu thích");
             popup.getMenu().add("Thêm vào playlist");
+
             popup.setOnMenuItemClickListener(item -> {
-                if (item.getTitle().equals("Thêm vào yêu thích")) {
-                    songViewModel.addToFavorite(song.getSongId(), userId);
-                    Toast.makeText(context, "Đã thêm vào yêu thích!", Toast.LENGTH_SHORT).show();
+                String title = item.getTitle().toString();
+                if (title.equals("Thêm vào yêu thích")) {
+                    if (menuClickListener != null) {
+                        menuClickListener.onAddToFavorite(song);
+                    }
                     return true;
-                } else if (item.getTitle().equals("Thêm vào playlist")) {
-                    Toast.makeText(context, "Đã thêm vào playlist!", Toast.LENGTH_SHORT).show();
+                } else if (title.equals("Thêm vào playlist")) {
+                    if (menuClickListener != null) {
+                        menuClickListener.onAddToPlaylist(song);
+                    }
                     return true;
                 }
                 return false;
             });
+
             popup.show();
         });
+
+
     }
+
+
 
     @Override
     public int getItemCount() {
