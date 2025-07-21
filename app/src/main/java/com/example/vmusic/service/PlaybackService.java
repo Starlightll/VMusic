@@ -135,7 +135,6 @@ public class PlaybackService extends Service implements MusicController {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
         return START_NOT_STICKY;
     }
 
