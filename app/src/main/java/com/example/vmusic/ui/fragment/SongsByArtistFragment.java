@@ -54,7 +54,9 @@ public class SongsByArtistFragment extends Fragment {
     private TextView tvArtistName;
     private ImageView imgArtistBackground;
     private ImageButton btnBack;
+    private ImageButton btnPlay; // Thêm biến cho nút play
     private PlayerViewModel playerViewModel;
+    private List<Song> artistSongs = new ArrayList<>(); // Lưu danh sách bài hát nghệ sĩ
 
 
     // TODO: Rename and change types of parameters
@@ -108,6 +110,7 @@ public class SongsByArtistFragment extends Fragment {
         tvArtistName = view.findViewById(R.id.tvArtistName);
         imgArtistBackground = view.findViewById(R.id.imgArtistBackground);
         btnBack = view.findViewById(R.id.btnBack);
+        btnPlay = view.findViewById(R.id.btnPlay); // Ánh xạ nút play
         recyclerView = view.findViewById(R.id.recyclerSongsByArtist);
         playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
 
@@ -120,6 +123,21 @@ public class SongsByArtistFragment extends Fragment {
             NavHostFragment.findNavController(this).navigateUp();
         });
 
+        // Nút play toàn bộ danh sách bài hát nghệ sĩ
+        btnPlay.setOnClickListener(v -> {
+            if (artistSongs != null && !artistSongs.isEmpty()) {
+                Intent intent = new Intent(requireContext(), PlaybackService.class);
+                intent.putExtra("song_list", new ArrayList<>(artistSongs));
+                intent.putExtra("index", 0); // Phát từ bài đầu tiên
+                requireContext().startService(intent);
+
+                // Cập nhật ViewModel
+                playerViewModel.setCurrentSong(artistSongs.get(0));
+                playerViewModel.setIsPlaying(true);
+                songViewModel.increaseListenCount(artistSongs.get(0));
+                new RecentlyPlayedManager(requireContext(), 1).addSongId(artistSongs.get(0).getSongId());
+            }
+        });
 
 
         // Setup RecyclerView
@@ -150,6 +168,7 @@ public class SongsByArtistFragment extends Fragment {
         if (artistId != -1) {
             songViewModel.getSongsByArtistId(artistId).observe(getViewLifecycleOwner(), songs -> {
                 songAdapter.setSongs(songs);
+                artistSongs = songs; // Lưu lại danh sách bài hát nghệ sĩ
             });
         }
     }
