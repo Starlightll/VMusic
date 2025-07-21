@@ -35,6 +35,8 @@ import com.example.vmusic.ui.adapter.PlaySongPagerAdapter;
 import com.example.vmusic.viewmodel.PlayerViewModel;
 import com.example.vmusic.viewmodel.SongViewModel;
 
+import java.util.List;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link PlaySongPanelFragment#newInstance} factory method to
@@ -51,7 +53,7 @@ public class PlaySongPanelFragment extends Fragment {
     private boolean isShuffle = false;
     private int repeatMode = 0;
     private int songId=0;
-    private ObjectAnimator discAnimator;
+
 
     public static PlaySongPanelFragment newInstance(Song song) {
         PlaySongPanelFragment fragment = new PlaySongPanelFragment();
@@ -104,6 +106,14 @@ public class PlaySongPanelFragment extends Fragment {
                 }
             }
         });
+
+        ImageView btnBack = view.findViewById(R.id.btnback);
+        btnBack.setOnClickListener(v -> {
+
+            if (getParentFragment() instanceof MainFragment) {
+                ((MainFragment) getParentFragment()).hidePlayerPanel();
+            }
+        });
     }
 
     private void observeViewModel() {
@@ -129,21 +139,12 @@ public class PlaySongPanelFragment extends Fragment {
                 player.play();
                 playerViewModel.setIsPlaying(true);
             }
-            songId= song.getSongId();
+            songId = song.getSongId();
         });
 
         playerViewModel.getIsPlaying().observe(getViewLifecycleOwner(), playing -> {
             if (playing != null) {
                 binding.imgBtnPlay.setImageResource(playing ? R.drawable.pause_ic : R.drawable.play_ic);
-//                if (playing) {
-//                    if (discAnimator == null || !discAnimator.isRunning()) {
-//                        startDiscAnimation();
-//                    } else {
-//                        resumeDiscAnimation();
-//                    }
-//                } else {
-//                    pauseDiscAnimation();
-//                }
             }
         });
 
@@ -190,37 +191,39 @@ public class PlaySongPanelFragment extends Fragment {
         SessionManager session = new SessionManager(requireContext());
         int userId = session.getUserId();
 
-        playerViewModel.getCurrentSong().observe(getViewLifecycleOwner(), song -> {
-            if (song != null) {
-                songViewModel.checkIfFavorite(song.songId, userId);
-            }
-        });
-        songViewModel.getIsFavorite().observe(getViewLifecycleOwner(), isFav -> {
-            if (isFav != null && isFav) {
-                binding.imgBtnFavorite.setImageResource(R.drawable.ic_favorite_full);
-            } else {
-                binding.imgBtnFavorite.setImageResource(R.drawable.ic_favorite);
+        songViewModel.getFavoriteSongIds().observe(getViewLifecycleOwner(), ids -> {
+            Song current = playerViewModel.getCurrentSong().getValue();
+            if (current != null && ids != null) {
+                boolean isFav = ids.contains(current.getSongId());
+                updateFavoriteIcon(isFav);
             }
         });
 
         binding.imgBtnFavorite.setOnClickListener(v -> {
-            if (userId == 0) {
-                Toast.makeText(requireContext(), "Vui lòng đăng nhập để sử dụng tính năng này", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            Song currentSong = playerViewModel.getCurrentSong().getValue();
-            if (currentSong != null) {
-                if (songViewModel.getIsFavorite().getValue() != null && songViewModel.getIsFavorite().getValue()) {
-                    songViewModel.removeFromFavorite(currentSong.getSongId(), userId);
-                } else {
-                    songViewModel.addToFavorite(currentSong.getSongId(), userId);
-                }
-                songViewModel.checkIfFavorite(currentSong.getSongId(), userId);
-            }
+            Song song = playerViewModel.getCurrentSong().getValue();
+            if (song != null) {
+                int songId = song.getSongId();
+                List<Integer> favIds = songViewModel.getFavoriteSongIds().getValue();
+                boolean isFav = favIds != null && favIds.contains(songId);
 
+                if (isFav) {
+                    songViewModel.removeFromFavorite(songId, userId);
+                } else {
+                    songViewModel.addToFavorite(songId, userId);
+                }
+            }
         });
 
 
+
+    }
+
+    private void updateFavoriteIcon(Boolean isFav) {
+        if (isFav != null && isFav) {
+            binding.imgBtnFavorite.setImageResource(R.drawable.ic_favorite_full);
+        } else {
+            binding.imgBtnFavorite.setImageResource(R.drawable.ic_favorite);
+        }
     }
 
     private void setupSeekBar() {
@@ -267,27 +270,4 @@ public class PlaySongPanelFragment extends Fragment {
         handler.removeCallbacksAndMessages(null);
     }
 
-
-//    private void startDiscAnimation() {
-//        if (discAnimator == null) {
-//            discAnimator = ObjectAnimator.ofFloat(binding.viewPlayMusic, "rotation", 0f, 360f);
-//            discAnimator.setDuration(230);
-//            discAnimator.setInterpolator(new LinearInterpolator());
-//            discAnimator.setRepeatCount(ValueAnimator.INFINITE);
-//            discAnimator.setRepeatMode(ValueAnimator.RESTART);
-//        }
-//        discAnimator.start();
-//    }
-
-//    private void pauseDiscAnimation() {
-//        if (discAnimator != null && discAnimator.isRunning()) {
-//            discAnimator.pause();
-//        }
-//    }
-//
-//    private void resumeDiscAnimation() {
-//        if (discAnimator != null && discAnimator.isPaused()) {
-//            discAnimator.resume();
-//        }
-//    }
 }
