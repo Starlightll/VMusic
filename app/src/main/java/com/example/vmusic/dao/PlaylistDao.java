@@ -11,13 +11,14 @@ import androidx.room.Update;
 import com.example.vmusic.entity.Playlist;
 import com.example.vmusic.models.PlaylistSongCrossRef;
 import com.example.vmusic.models.PlaylistWithSongs;
+import com.example.vmusic.models.SongWithArtists;
 
 import java.util.List;
 
 @Dao
 public interface PlaylistDao {
 
-    @Query("SELECT * FROM playlist")
+    @Query("SELECT * FROM playlists")
     LiveData<List<Playlist>> getAllPlaylistLive();
 
     @Insert
@@ -33,6 +34,50 @@ public interface PlaylistDao {
 
 
     @Transaction
-    @Query("SELECT * FROM playlist WHERE playlistId = :playlistId")
+    @Query("SELECT * FROM playlists WHERE playlistId = :playlistId")
     LiveData<PlaylistWithSongs> getPlaylistWithSongs(int playlistId);
+    @Query("SELECT * FROM playlists WHERE type != 'system'")
+    LiveData<List<Playlist>> getAllUserPlaylists();
+    // ✅ Lấy playlist theo type
+    @Query("SELECT * FROM playlists WHERE type = :type LIMIT 1")
+    Playlist getPlaylistByType(String type);
+
+    // ✅ Kiểm tra nếu 1 bài hát đã có trong playlist
+    @Query("SELECT COUNT(*) FROM playlistsongcrossref WHERE playListId = :playlistId AND songId = :songId")
+    int isSongInPlaylist(int playlistId, int songId);
+    @Query("SELECT * FROM playlists WHERE type = :type AND userOwnerId = :userOwnerId LIMIT 1")
+    Playlist getPlaylistByTypeAndUser(String type, int userOwnerId);
+
+    @Query("SELECT * FROM playlists WHERE userOwnerId = :userOwnerId")
+    LiveData<List<Playlist>> getAllPlaylistsByUser(int userOwnerId);
+
+    @Query("SELECT EXISTS(" +
+            "SELECT 1 FROM PlaylistSongCrossRef ps " +
+            "INNER JOIN playlists p ON p.playListId = ps.playListId " +
+            "WHERE ps.songId = :songId AND p.userOwnerId = :userId AND p.type = 'Favorite'" +
+            ")")
+    boolean isFavorite(int songId, int userId);
+    //Delete song from playlist
+    @Query("DELETE FROM PlaylistSongCrossRef WHERE playListId = :playlistId AND songId = :songId")
+    void deleteSongFromPlaylist(int playlistId, int songId);
+
+    @Query("SELECT ps.songId " +
+            "FROM PlaylistSongCrossRef ps " +
+            "INNER JOIN playlists p ON p.playListId = ps.playListId " +
+            "WHERE p.userOwnerId = :userId AND p.type = 'Favorite'")
+    List<Integer> getFavoriteSongIds(int userId);
+
+
+
+    @Query("SELECT *" +
+            "FROM songs s " +
+            "INNER JOIN PlaylistSongCrossRef ps ON s.songId = ps.songId " +
+            "INNER JOIN playlists p ON ps.playListId = p.playListId " +
+            "INNER JOIN SongArtistCrossRef sa ON s.songId = sa.songId " +
+            "INNER JOIN artists a ON sa.artistId = a.artistId " +
+            "WHERE p.userOwnerId = :userId AND p.type = 'Favorite' " +
+            "GROUP BY s.songId")
+    LiveData<List<SongWithArtists>> getSongsInFavoritePlaylist(int userId);
+
+
 }

@@ -3,21 +3,12 @@ package com.example.vmusic.entity;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
-
-@Entity(
-        tableName = "playlist",
-        foreignKeys = @ForeignKey(
-                entity = User.class,
-                parentColumns = "userId",
-                childColumns = "userOwnerId",
-                onDelete = ForeignKey.CASCADE
-        )
-)
+@Entity(tableName = "playlists")
 public class Playlist {
 
     @PrimaryKey(autoGenerate = true)
-
     public int playListId;
+
     public String name;
     public String type;
     public int userOwnerId;
@@ -26,7 +17,7 @@ public class Playlist {
         this.playListId = playListId;
         this.name = name;
         this.type = type;
-        this.userOwnerId = userOwnerId;
+        this.userOwnerId = userOwnerId; // lưu userId
     }
 
     public int getPlayListId() {
@@ -61,3 +52,4 @@ public class Playlist {
         this.userOwnerId = userOwnerId;
     }
 }
+

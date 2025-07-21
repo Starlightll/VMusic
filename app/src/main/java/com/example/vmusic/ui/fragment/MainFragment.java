@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.vmusic.R;
@@ -77,6 +78,11 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = com.example.vmusic.databinding.FragmentMainBinding.inflate(inflater, container, false);
+        if (getChildFragmentManager().findFragmentById(R.id.playSongPanel) == null) {
+            getChildFragmentManager().beginTransaction()
+                    .replace(R.id.playSongPanel, new PlaySongPanelFragment())
+                    .commit();
+        }
         return binding.getRoot();
     }
 
@@ -93,6 +99,16 @@ public class MainFragment extends Fragment {
 
         BottomNavigationView bottomNav = view.findViewById(R.id.bottomNavigationView);
 
+        View playSongPanel = view.findViewById(R.id.playSongPanel);
+
+        binding.miniPlayerContainer.setOnClickListener(v -> {
+            showPlayerPanel();
+        });
+
+        playSongPanel.setOnClickListener(v -> {
+            hidePlayerPanel();
+        });
+
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_home) {
@@ -108,10 +124,7 @@ public class MainFragment extends Fragment {
             return false;
         });
 
-//        NavHostFragment navHostFragment = (NavHostFragment)
-//                getChildFragmentManager().findFragmentById(R.id.bottom_nav_host_fragment);
-//        NavController navController = navHostFragment.getNavController();
-//        NavigationUI.setupWithNavController(bottomNav, navController);
+
 
         PlayerViewModel playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
         playerViewModel.getCurrentSong().observe(getViewLifecycleOwner(), song -> {
@@ -168,10 +181,28 @@ public class MainFragment extends Fragment {
         }
     }
 
-    private void showFragment(Fragment fragment) {
+    public void showFragment(Fragment fragment) {
         getChildFragmentManager().beginTransaction()
                 .show(fragment)
                 .commit();
+    }
+
+    private void showPlayerPanel() {
+        View playSongPanel = binding.getRoot().findViewById(R.id.playSongPanel);
+        playSongPanel.setVisibility(View.VISIBLE);
+        playSongPanel.animate()
+                .translationY(0)
+                .setDuration(300)
+                .start();
+    }
+
+    public void hidePlayerPanel() {
+        View playSongPanel = binding.getRoot().findViewById(R.id.playSongPanel);
+        playSongPanel.animate()
+                .translationY(playSongPanel.getHeight())
+                .setDuration(300)
+                .withEndAction(() -> playSongPanel.setVisibility(View.GONE))
+                .start();
     }
 
 

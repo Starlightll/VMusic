@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bottom_nav_graph"
     app:startDestination="@id/homeTabFragment">
 
     <fragment
         android:id="@+id/homeTabFragment"
         android:name="com.example.vmusic.ui.fragment.HomeTabFragment"
-        android:label="Home" />
+        android:label="Home" >
+    </fragment>
 
     <fragment
         android:id="@+id/searchTabFragment"
@@ -23,8 +25,19 @@
             app:destination="@id/settingsFragment" />
     </fragment>
 
+
+
+
+
+
+
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.example.vmusic.ui.fragment.SettingsFragment"
         android:label="Settings" />
+    <fragment
+        android:id="@+id/songsByArtistFragment"
+        android:name="com.example.vmusic.ui.fragment.SongsByArtistFragment"
+        android:label="fragment_songs_by_artist"
+        tools:layout="@layout/fragment_songs_by_artist" />
 </navigation>

@@ -1,6 +1,5 @@
 package com.example.vmusic.ui.fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -19,8 +18,8 @@ import androidx.media3.exoplayer.ExoPlayer;
 
 import com.bumptech.glide.Glide;
 import com.example.vmusic.R;
+import com.example.vmusic.databinding.FragmentMiniPlayerBinding;
 import com.example.vmusic.models.PlayerManager;
-import com.example.vmusic.ui.activity.PlaySongActivity;
 import com.example.vmusic.viewmodel.PlayerViewModel;
 
 public class MiniPlayerFragment extends Fragment {
@@ -32,6 +31,8 @@ public class MiniPlayerFragment extends Fragment {
     private TextView tvTitle, tvArtist;
     private ProgressBar progressBar;
     private View miniPlayerLayout;
+
+    private FragmentMiniPlayerBinding binding;
 
     private ExoPlayer player;
     private PlayerViewModel playerViewModel;
@@ -51,7 +52,9 @@ public class MiniPlayerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_mini_player, container, false);
+        binding = FragmentMiniPlayerBinding.inflate(inflater, container, false);
+//        return inflater.inflate(R.layout.fragment_mini_player, container, false);
+        return binding.getRoot();
     }
 
     @Override
@@ -63,6 +66,7 @@ public class MiniPlayerFragment extends Fragment {
         tvTitle = view.findViewById(R.id.tvMiniTitle);
         tvArtist = view.findViewById(R.id.tvMiniArtist);
         btnPlay = view.findViewById(R.id.btnPlay);
+
         progressBar = view.findViewById(R.id.progressBar);
         miniPlayerLayout = view.findViewById(R.id.mini_player);
 
@@ -85,14 +89,16 @@ public class MiniPlayerFragment extends Fragment {
         observePlayerViewModel();
 
         // icon
-        btnPlay.setOnClickListener(v -> togglePlayPause());
+        btnPlay.setOnClickListener(v -> playerViewModel.togglePlayPause());
 
 
-        miniPlayerLayout.setOnClickListener(v -> {
-            Intent intent = new Intent(requireContext(), PlaySongActivity.class);
-            intent.putExtra("song", playerViewModel.getCurrentSong().getValue());
-            startActivity(intent);
-        });
+//        miniPlayerLayout.setOnClickListener(v -> {
+////            Intent intent = new Intent(requireContext(), PlaySongActivity.class);
+////            intent.putExtra("song", playerViewModel.getCurrentSong().getValue());
+////            startActivity(intent);
+//            NavController navController = NavHostFragment.findNavController(this);
+//            navController.navigate(R.id.action_miniPlayer_to_playerSongFragment);
+//        });
 
 
         //progress

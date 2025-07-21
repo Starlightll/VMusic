@@ -8,14 +8,17 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Binder;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.media.session.MediaSessionCompat;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.media3.common.AudioAttributes;
+import androidx.media3.common.C;
 import androidx.media3.common.MediaItem;
-import androidx.media3.common.MediaMetadata;
 import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
@@ -24,17 +27,20 @@ import androidx.media3.ui.PlayerNotificationManager;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.example.vmusic.Interface.MusicController;
+import com.example.vmusic.MainActivity;
 import com.example.vmusic.R;
 import com.example.vmusic.entity.Song;
 import com.example.vmusic.helper.ViewModelProviderHelper;
 import com.example.vmusic.models.PlayerManager;
-import com.example.vmusic.ui.activity.PlaySongActivity;
 import com.example.vmusic.viewmodel.PlayerViewModel;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 @UnstableApi
-public class PlaybackService extends Service {
+public class PlaybackService extends Service implements MusicController {
 
     private static final String CHANNEL_ID = "music_channel";
     private static final int NOTIFICATION_ID = 1;
@@ -46,14 +52,36 @@ public class PlaybackService extends Service {
     private String songTitle = "";
     private String songArtist = "";
     private String songImage = "";
+    private PlayerViewModel playerViewModel;
 
     private ArrayList<Song> currentSongList = new ArrayList<>();
+    private List<MediaItem> mediaItems = new ArrayList<>();
+    private final IBinder binder = new LocalBinder();
+
+    public class LocalBinder extends Binder {
+        public PlaybackService getService() {
+            return PlaybackService.this;
+        }
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return binder;
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
-
+        playerViewModel = ViewModelProviderHelper.getPlayerViewModel();
         player = PlayerManager.getPlayer();
+        player.setAudioAttributes(
+                new AudioAttributes.Builder()
+                        .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+                        .setUsage(C.USAGE_MEDIA)
+                        .build(),
+                true
+        );
 
         mediaSession = new MediaSessionCompat(this, "PlaybackService");
 
@@ -67,6 +95,8 @@ public class PlaybackService extends Service {
         notificationManager.setUseRewindAction(false);
         notificationManager.setUseFastForwardAction(false);
         notificationManager.setUseStopAction(false);
+
+        mediaItems = new ArrayList<>();
 
         notificationManager.setPlayer(player);
         notificationManager.setMediaSessionToken(mediaSession.getSessionToken());
@@ -87,10 +117,7 @@ public class PlaybackService extends Service {
                 int index = player.getCurrentMediaItemIndex();
                 updateCurrentSongInViewModel(index);
             }
-
-
         });
-
 
     }
 
@@ -100,30 +127,43 @@ public class PlaybackService extends Service {
         ArrayList<Song> songList = (ArrayList<Song>) intent.getSerializableExtra("song_list");
         int index = intent.getIntExtra("index", 0);
 
-        if (songList != null && !songList.isEmpty()) {
-            player.clearMediaItems(); // Xoá bài cũ (nếu có)
-            for (Song s : songList) {
-                MediaItem mediaItem = new MediaItem.Builder()
-                        .setUri(s.getAudioUrl())
-                        .setMediaMetadata(
-                                new MediaMetadata.Builder()
-                                        .setTitle(s.getName())
-                                        .setArtist(s.getArtist())
-                                        .setArtworkUri(Uri.parse(s.getImage()))
-                                        .build()
-                        )
-                        .build();
-                player.addMediaItem(mediaItem);
-            }
-            player.prepare();
-            player.seekTo(index, 0);
-            player.play();
-
-
-            currentSongList = songList;
-            updateCurrentSongInViewModel(index);
-
-        }
+//        if (songList != null && !songList.isEmpty()) {
+//            player.clearMediaItems(); // Xoá bài cũ (nếu có)
+//            mediaItems.clear();
+//            for(Song s: songList){
+//                MediaItem mediaItem = MediaItem.fromUri(Uri.fromFile(new File(s.getAudioUrl())));
+//                Bundle customExtras = new Bundle();
+//                customExtras.putString("lyric_url", s.getUrlLyric());
+//                // Thêm metadata cho bài hát
+//                mediaItem = mediaItem.buildUpon()
+//                        .setMediaMetadata(
+//                                new androidx.media3.common.MediaMetadata.Builder()
+//                                        .setTitle(s.getName())
+//                                        .setArtist(s.getArtist())
+//                                        .setArtworkUri(Uri.parse(s.getImage()))
+//                                        .setExtras(customExtras)
+//                                        .build()
+//                        )
+//                        .build();
+//                mediaItems.add(mediaItem);
+//            }
+//            player.setMediaItems(mediaItems);
+//            AudioAttributes audioAttributes = new AudioAttributes.Builder()
+//                    .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+//                    .setUsage(C.USAGE_MEDIA)
+//                    .build();
+//
+//            player.setAudioAttributes(audioAttributes, true);
+//            player.prepare();
+//            player.seekTo(index, 0);
+//            player.play();
+//
+//
+//
+//            currentSongList = songList;
+//            updateCurrentSongInViewModel(index);
+//
+//        }
 
         return START_NOT_STICKY;
     }
@@ -159,10 +199,184 @@ public class PlaybackService extends Service {
         super.onDestroy();
     }
 
-    @Nullable
+
+
     @Override
-    public IBinder onBind(Intent intent) {
-        return null;
+    public void play() {
+        player.play();
+    }
+
+    @Override
+    public void pause() {
+        player.pause();
+    }
+
+    @Override
+    public void seekTo(int milliseconds) {
+        player.seekTo(milliseconds);
+
+    }
+
+    @Override
+    public void next() {
+        player.seekToNext();
+        updateCurrentSongInViewModel(player.getCurrentMediaItemIndex());
+    }
+
+    @Override
+    public void previous() {
+        player.seekToPrevious();
+    }
+
+    @Override
+    public void playSong(Song song) {
+        MediaItem mediaItem = MediaItem.fromUri(Uri.fromFile(new File(song.getAudioUrl())));
+        Bundle customExtras = new Bundle();
+        customExtras.putString("lyric_url", song.getUrlLyric());
+        customExtras.putInt("song_id", song.getSongId());
+        customExtras.putSerializable("song", song);
+        // Thêm metadata cho bài hát
+        mediaItem = mediaItem.buildUpon()
+                .setMediaMetadata(
+                        new androidx.media3.common.MediaMetadata.Builder()
+                                .setTitle(song.getName())
+                                .setArtist(song.getArtist())
+                                .setArtworkUri(Uri.parse(song.getImage()))
+                                .setExtras(customExtras)
+                                .build()
+                )
+                .build();
+        player.setMediaItem(mediaItem);
+        player.prepare();
+        player.play();
+        updateCurrentSongInViewModel(player.getCurrentMediaItemIndex());
+    }
+
+    @Override
+    public void setPlaylist(List<Song> songs) {
+        mediaItems.clear();
+        currentSongList.clear();
+        currentSongList.addAll(songs);
+        for (Song song : songs) {
+            MediaItem mediaItem = MediaItem.fromUri(Uri.fromFile(new File(song.getAudioUrl())));
+            Bundle customExtras = new Bundle();
+            customExtras.putString("lyric_url", song.getUrlLyric());
+            customExtras.putInt("song_id", song.getSongId());
+            customExtras.putSerializable("song", song);
+            // Thêm metadata cho bài hát
+            mediaItem = mediaItem.buildUpon()
+                    .setMediaMetadata(
+                            new androidx.media3.common.MediaMetadata.Builder()
+                                    .setTitle(song.getName())
+                                    .setArtist(song.getArtist())
+                                    .setArtworkUri(Uri.parse(song.getImage()))
+                                    .setExtras(customExtras)
+                                    .build()
+                    )
+                    .build();
+            mediaItems.add(mediaItem);
+        }
+        player.setMediaItems(mediaItems);
+        player.prepare();
+    }
+
+    @Override
+    public void setPlaylist(List<Song> songs, int position) {
+        mediaItems.clear();
+        currentSongList.clear();
+        currentSongList.addAll(songs);
+        for (Song song : songs) {
+            MediaItem mediaItem = MediaItem.fromUri(Uri.fromFile(new File(song.getAudioUrl())));
+            Bundle customExtras = new Bundle();
+            customExtras.putString("lyric_url", song.getUrlLyric());
+            customExtras.putInt("song_id", song.getSongId());
+            customExtras.putSerializable("song", song);
+            // Thêm metadata cho bài hát
+            mediaItem = mediaItem.buildUpon()
+                    .setMediaMetadata(
+                            new androidx.media3.common.MediaMetadata.Builder()
+                                    .setTitle(song.getName())
+                                    .setArtist(song.getArtist())
+                                    .setArtworkUri(Uri.parse(song.getImage()))
+                                    .setExtras(customExtras)
+                                    .build()
+                    )
+                    .build();
+            mediaItems.add(mediaItem);
+        }
+        player.setMediaItems(mediaItems);
+        player.prepare();
+        player.seekTo(position, 0);
+    }
+
+    @Override
+    public boolean isPlaying() {
+        return player.isPlaying();
+    }
+
+    @Override
+    public boolean isShuffleEnabled() {
+        return player.getShuffleModeEnabled();
+    }
+
+    @Override
+    public void enableShuffle() {
+        player.setShuffleModeEnabled(true);
+    }
+
+    @Override
+    public void disableShuffle() {
+        player.setShuffleModeEnabled(false);
+    }
+
+    @Override
+    public void changeRepeatMode() {
+        int currentMode = player.getRepeatMode();
+        if (currentMode == Player.REPEAT_MODE_OFF) {
+            player.setRepeatMode(Player.REPEAT_MODE_ONE);
+        } else if (currentMode == Player.REPEAT_MODE_ONE) {
+            player.setRepeatMode(Player.REPEAT_MODE_ALL);
+        } else {
+            player.setRepeatMode(Player.REPEAT_MODE_OFF);
+        }
+    }
+
+    @Override
+    public int getCurrentPosition() {
+        return (int) player.getCurrentPosition();
+    }
+
+    @Override
+    public MediaItem getCurrentMediaItem() {
+        if (player.getCurrentMediaItem() != null) {
+            return player.getCurrentMediaItem();
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public int getDuration() {
+        return (int) player.getDuration();
+    }
+
+    @Override
+    public void toggleShuffle(boolean shuffle) {
+        if (shuffle) {
+            player.setShuffleModeEnabled(true);
+        } else {
+            player.setShuffleModeEnabled(false);
+        }
+    }
+
+    @Override
+    public void toggleRepeat(boolean repeat) {
+        if (repeat) {
+            player.setRepeatMode(Player.REPEAT_MODE_ONE);
+        } else {
+            player.setRepeatMode(Player.REPEAT_MODE_OFF);
+        }
+
     }
 
     private class DescriptionAdapter implements PlayerNotificationManager.MediaDescriptionAdapter {
@@ -204,7 +418,7 @@ public class PlaybackService extends Service {
         @Override
         public PendingIntent createCurrentContentIntent(Player player) {
             // Mở app khi click notification
-            Intent intent = new Intent(PlaybackService.this, PlaySongActivity.class);
+            Intent intent = new Intent(PlaybackService.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             return PendingIntent.getActivity(PlaybackService.this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
         }

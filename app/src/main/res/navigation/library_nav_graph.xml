@@ -5,17 +5,6 @@
     android:id="@+id/library_nav_graph"
     app:startDestination="@id/libraryTabFragment">
 
-    <fragment
-        android:id="@+id/settingsFragment"
-        android:name="com.example.vmusic.ui.fragment.SettingsFragment"
-        android:label="fragment_settings"
-        tools:layout="@layout/fragment_settings" >
-        <action
-            android:id="@+id/action_settingsFragment_to_libraryTabFragment"
-            app:destination="@id/libraryTabFragment"
-            app:enterAnim="@anim/stay_still_back"   app:exitAnim="@anim/slide_out_right"  app:popEnterAnim="@anim/stay_still_back"
-            app:popExitAnim="@anim/slide_out_right" />
-    </fragment>
 
     <fragment
         android:id="@+id/libraryTabFragment"
@@ -27,5 +16,55 @@
             app:destination="@id/settingsFragment"
             app:enterAnim="@anim/slide_in_right"  app:exitAnim="@anim/stay_still"   app:popEnterAnim="@anim/stay_still_back"
             app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_libraryTabFragment_to_favoritesFragment"
+            app:destination="@id/favoritesFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.vmusic.ui.fragment.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" >
+        <action
+            android:id="@+id/action_settingsFragment_to_libraryTabFragment"
+            app:destination="@id/libraryTabFragment"
+            app:enterAnim="@anim/stay_still_back"   app:exitAnim="@anim/slide_out_right"  app:popEnterAnim="@anim/stay_still_back"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_settingsFragment_to_profileFragment"
+            app:destination="@id/profileFragment"
+            app:enterAnim="@anim/slide_in_right"  app:exitAnim="@anim/stay_still"   app:popEnterAnim="@anim/stay_still_back"
+            app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_settingsFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:enterAnim="@anim/slide_in_right"  app:exitAnim="@anim/stay_still"   app:popEnterAnim="@anim/stay_still_back"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.vmusic.ui.fragment.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login" >
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.vmusic.ui.fragment.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profileFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment"
+            app:enterAnim="@anim/stay_still_back"   app:exitAnim="@anim/slide_out_right"  app:popEnterAnim="@anim/stay_still_back"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/favoritesFragment"
+        android:name="com.example.vmusic.ui.fragment.FavoritesFragment"
+        android:label="fragment_favorites"
+        tools:layout="@layout/fragment_favorites" />
 </navigation>

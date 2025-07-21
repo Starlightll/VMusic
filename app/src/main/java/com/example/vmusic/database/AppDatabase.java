@@ -8,21 +8,33 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import com.example.vmusic.dao.ArtistDao;
 import com.example.vmusic.dao.GenreDao;
 import com.example.vmusic.dao.PlaylistDao;
 import com.example.vmusic.dao.SongDao;
 import com.example.vmusic.dao.UserDao;
+import com.example.vmusic.entity.Artist;
 import com.example.vmusic.entity.Genre;
 import com.example.vmusic.entity.Playlist;
 import com.example.vmusic.entity.Song;
 import com.example.vmusic.entity.User;
 import com.example.vmusic.models.PlaylistSongCrossRef;
+import com.example.vmusic.models.SongArtistCrossRef;
 import com.example.vmusic.models.SongGenreCrossRef;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {Song.class , Playlist.class , Genre.class , User.class, PlaylistSongCrossRef.class , SongGenreCrossRef.class} , version = 1)
+@Database(entities = {
+        Song.class,
+        Playlist.class,
+        Artist.class,
+        Genre.class,
+        User.class,
+        PlaylistSongCrossRef.class,
+        SongGenreCrossRef.class,
+        SongArtistCrossRef.class},
+        version = 2)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static volatile AppDatabase INSTANCE;
@@ -92,6 +104,7 @@ public abstract class AppDatabase extends RoomDatabase {
     // Khai báo các abstract Dao của bạn
     public abstract UserDao userDao();
     public abstract SongDao songDao();
+    public abstract ArtistDao artistDao();
     public abstract GenreDao genreDao();
     public abstract PlaylistDao playlistDao();
 }

@@ -25,7 +25,9 @@
         android:text="TextView"
         android:textColor="@color/white"
         app:layout_constraintStart_toEndOf="@+id/imv_img"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:textSize="17sp"
+        android:textStyle="bold"/>
 
     <TextView
         android:id="@+id/tv_singer"
@@ -46,12 +48,14 @@
         android:layout_marginBottom="36dp"
         android:contentDescription="Favorite"
         android:src="@drawable/ic_favorite"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintBottom_toTopOf="@+id/item_settings_profile"
         app:layout_constraintEnd_toEndOf="parent"
         app:tint="@color/white"/>
 
     <LinearLayout
-        android:id="@+id/linearLayout"
+        android:id="@+id/item_settings_profile"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="10dp"

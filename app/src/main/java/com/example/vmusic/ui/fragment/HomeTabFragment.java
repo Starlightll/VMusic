@@ -13,6 +13,9 @@ import androidx.annotation.OptIn;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.util.UnstableApi;
+import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,9 +25,11 @@ import com.example.vmusic.entity.Song;
 import com.example.vmusic.helper.RecentlyPlayedManager;
 import com.example.vmusic.helper.SessionManager;
 import com.example.vmusic.service.PlaybackService;
+import com.example.vmusic.ui.adapter.ArtistAdapter;
 import com.example.vmusic.ui.adapter.PopularSongAdapter;
 import com.example.vmusic.ui.adapter.RecentSongAdapter;
 import com.example.vmusic.ui.adapter.RecentlyPlayedAdapter;
+import com.example.vmusic.viewmodel.ArtistViewModel;
 import com.example.vmusic.viewmodel.PlayerViewModel;
 import com.example.vmusic.viewmodel.SongViewModel;
 
@@ -40,9 +45,13 @@ public class HomeTabFragment extends Fragment {
     private RecentlyPlayedAdapter recentlyPlayedAdapter;
 
     private SongViewModel songViewModel;
+
+    private ArtistViewModel artistViewModel;
     private PlayerViewModel playerViewModel;
     private SessionManager sessionManager;
     private RecentlyPlayedManager recentlyPlayedManager;
+    private RecyclerView recyclerArtists;
+    private ArtistAdapter artistAdapter;
 
     private String userName = "";
 
@@ -82,7 +91,7 @@ public class HomeTabFragment extends Fragment {
         // ViewModels
         playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
         songViewModel = new ViewModelProvider(this).get(SongViewModel.class);
-
+        artistViewModel = new ViewModelProvider(this).get(ArtistViewModel.class);
         // Setup UI
         setupRecyclerViews(view);
         setupAdapters();
@@ -98,6 +107,9 @@ public class HomeTabFragment extends Fragment {
 
         recyclerRecentlyPlayed = view.findViewById(R.id.recyclerRecentlyPlayed);
         recyclerRecentlyPlayed.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+
+        recyclerArtists = view.findViewById(R.id.recyclerFavoriteArtists);
+        recyclerArtists.setLayoutManager( new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
     }
 
     @OptIn(markerClass = UnstableApi.class)
@@ -119,8 +131,9 @@ public class HomeTabFragment extends Fragment {
             intent.putExtra("index", startIndex);
             requireContext().startService(intent);
 
-            playerViewModel.setCurrentSong(song);
-            playerViewModel.setIsPlaying(true);
+//            playerViewModel.setCurrentSong(song);
+//            playerViewModel.setIsPlaying(true);
+            playerViewModel.playSong(song);
             songViewModel.increaseListenCount(song);
             recentlyPlayedManager.addSongId(song.getSongId());
         });
@@ -143,8 +156,9 @@ public class HomeTabFragment extends Fragment {
             intent.putExtra("index", startIndex);
             requireContext().startService(intent);
 
-            playerViewModel.setCurrentSong(song);
-            playerViewModel.setIsPlaying(true);
+//            playerViewModel.setCurrentSong(song);
+//            playerViewModel.setIsPlaying(true);
+            playerViewModel.playSong(song);
             songViewModel.increaseListenCount(song);
             recentlyPlayedManager.addSongId(song.songId);
         });
@@ -167,12 +181,26 @@ public class HomeTabFragment extends Fragment {
             intent.putExtra("index", startIndex);
             requireContext().startService(intent);
 
-            playerViewModel.setCurrentSong(song);
-            playerViewModel.setIsPlaying(true);
+//            playerViewModel.setCurrentSong(song);
+//            playerViewModel.setIsPlaying(true);
+            playerViewModel.playSong(song);
             songViewModel.increaseListenCount(song);
             recentlyPlayedManager.addSongId(song.songId);
         });
         recyclerRecentlyPlayed.setAdapter(recentlyPlayedAdapter);
+
+        // Artists
+        artistAdapter = new ArtistAdapter(requireContext(), new ArrayList<>(), artist -> {
+            Bundle bundle = new Bundle();
+            bundle.putInt("artistId", artist.getArtistId());
+            bundle.putString("artistName", artist.getName());
+            bundle.putString("artistImage", artist.getImage());
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(R.id.action_homeTabFragment_to_songsByArtistFragment,bundle);
+        });
+
+        recyclerArtists.setAdapter(artistAdapter);
+
     }
 
     private void observeData() {
@@ -191,10 +219,22 @@ public class HomeTabFragment extends Fragment {
         songViewModel.getSongsByIds(recentIds).observe(getViewLifecycleOwner(), songs -> {
             if (songs != null) recentlyPlayedAdapter.setSongs(songs);
         });
+
+        // Nghệ sĩ
+        artistViewModel.getAllArtists().observe(getViewLifecycleOwner(), artists -> {
+            if (artists != null) {
+                artistAdapter.setArtists(artists);
+                if (artists.isEmpty()) {
+                    recyclerArtists.setVisibility(View.GONE);
+                } else {
+                    recyclerArtists.setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
 
     private String getGreetingMessage() {
-        userName = sessionManager.getUsername();
+        userName = sessionManager.getUsername() != null ? sessionManager.getUsername() : "";
         int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
 
         if (hour >= 5 && hour < 12) {
