@@ -38,8 +38,18 @@ public class PlaylistDialogAdapter extends RecyclerView.Adapter<PlaylistDialogAd
     @Override
     public void onBindViewHolder(@NonNull PlaylistViewHolder holder, int position) {
         Playlist playlist = playlists.get(position);
-        holder.tvPlaylistName.setText(playlist.getName());
-        // Nếu có ảnh playlist thì load vào imgPlaylist, ví dụ dùng Glide
+        // Nếu là mục tạo playlist mới thì chỉ hiển thị icon ic_add và tên 'Tạo playlist mới'
+        if ("➕ Tạo playlist mới".equals(playlist.getName()) || "Tạo playlist mới".equals(playlist.getName())) {
+            holder.imgPlaylist.setImageResource(R.drawable.ic_add);
+            holder.tvPlaylistName.setText("Tạo playlist mới");
+            holder.tvPlaylistName.setTextColor(holder.itemView.getContext().getResources().getColor(R.color.spotify_green));
+            holder.tvPlaylistName.setTypeface(null, android.graphics.Typeface.BOLD);
+        } else {
+            holder.imgPlaylist.setImageResource(R.drawable.ic_playlist_add);
+            holder.tvPlaylistName.setText(playlist.getName());
+            holder.tvPlaylistName.setTextColor(holder.itemView.getContext().getResources().getColor(android.R.color.black));
+            holder.tvPlaylistName.setTypeface(null, android.graphics.Typeface.NORMAL);
+        }
         holder.itemView.setOnClickListener(v -> listener.onPlaylistClick(playlist));
     }
 

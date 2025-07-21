@@ -41,6 +41,7 @@ import com.example.vmusic.ui.adapter.SongAdapter;
 import com.example.vmusic.ui.adapter.SongsByArtistAdapter;
 import com.example.vmusic.viewmodel.PlayerViewModel;
 import com.example.vmusic.viewmodel.SongViewModel;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -215,13 +216,11 @@ public class SongsByArtistFragment extends Fragment {
     private void showAddToPlaylistDialog(Song song) {
         int userId = sessionManager.getUserId();
         LibraryViewModel libraryViewModel = new ViewModelProvider(requireActivity()).get(LibraryViewModel.class);
-        libraryViewModel.getPlaylistsByUser(userId).observe(getViewLifecycleOwner(), playlists -> {
-            if (playlists == null || playlists.isEmpty()) {
-                Toast.makeText(requireContext(), "Bạn chưa có playlist nào", Toast.LENGTH_SHORT).show();
-                return;
-            }
 
-            // Lọc bỏ playlist có type là "Favorite"
+        libraryViewModel.getPlaylistsByUser(userId).observe(getViewLifecycleOwner(), playlists -> {
+            if (playlists == null) playlists = new ArrayList<>();
+
+            // Bỏ playlist Favorite
             List<Playlist> filteredPlaylists = new ArrayList<>();
             for (Playlist p : playlists) {
                 if (p.getType() == null || !p.getType().equalsIgnoreCase("Favorite")) {
@@ -229,12 +228,22 @@ public class SongsByArtistFragment extends Fragment {
                 }
             }
 
-            if (filteredPlaylists.isEmpty()) {
-                Toast.makeText(requireContext(), "Không có playlist nào hợp lệ", Toast.LENGTH_SHORT).show();
+            // Thêm "Tạo playlist mới" vào đầu danh sách
+            Playlist createNew = new Playlist();
+            createNew.setName("➕ Tạo playlist mới");
+            filteredPlaylists.add(0, createNew);
+
+            // Nếu chỉ còn mục "Tạo playlist mới" thì chuyển sang tab Library
+            if (filteredPlaylists.size() == 1) {
+                Toast.makeText(requireContext(), "Bạn chưa có playlist nào", Toast.LENGTH_SHORT).show();
+                BottomNavigationView bottomNav = requireActivity().findViewById(R.id.bottomNavigationView);
+                if (bottomNav != null) {
+                    bottomNav.setSelectedItemId(R.id.nav_library);
+                }
                 return;
             }
 
-            // Tạo dialog custom
+            // Hiển thị dialog
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
             View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_playlist_list, null);
             builder.setView(dialogView);
@@ -242,15 +251,48 @@ public class SongsByArtistFragment extends Fragment {
             RecyclerView rvPlaylists = dialogView.findViewById(R.id.rvPlaylists);
             rvPlaylists.setLayoutManager(new LinearLayoutManager(requireContext()));
             PlaylistDialogAdapter adapter = new PlaylistDialogAdapter(filteredPlaylists, playlist -> {
-                libraryViewModel.addSongToPlaylist(song.getSongId(), playlist.getPlayListId());
-                Toast.makeText(requireContext(), "Đã thêm vào \"" + playlist.getName() + "\"", Toast.LENGTH_SHORT).show();
-            });
-            rvPlaylists.setAdapter(adapter);
+                if ("➕ Tạo playlist mới".equals(playlist.getName())) {
+                    // Hiển thị dialog nhập tên playlist
+                    AlertDialog.Builder inputDialog = new AlertDialog.Builder(requireContext());
+                    inputDialog.setTitle("Tạo Playlist mới");
 
+                    final EditText input = new EditText(requireContext());
+                    input.setHint("Nhập tên playlist");
+                    inputDialog.setView(input);
+
+                    inputDialog.setPositiveButton("Tạo", (d, which) -> {
+                        String name = input.getText().toString().trim();
+                        if (!name.isEmpty()) {
+                            Playlist newPlaylist = new Playlist();
+                            newPlaylist.setName(name);
+                            newPlaylist.setUserOwnerId(userId);
+
+                            libraryViewModel.createPlaylist(newPlaylist).observe(getViewLifecycleOwner(), playlistId -> {
+                                if (playlistId != null && playlistId > 0) {
+                                    libraryViewModel.addSongToPlaylist(song.getSongId(),  (int)(long)playlistId);
+                                    Toast.makeText(requireContext(), "Đã thêm vào \"" + name + "\"", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(requireContext(), "Tạo playlist thất bại", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    });
+
+                    inputDialog.setNegativeButton("Hủy", null);
+                    inputDialog.show();
+
+                } else {
+                    libraryViewModel.addSongToPlaylist(song.getSongId(), playlist.getPlayListId());
+                    Toast.makeText(requireContext(), "Đã thêm vào \"" + playlist.getName() + "\"", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            rvPlaylists.setAdapter(adapter);
             builder.setNegativeButton("Hủy", null);
             builder.show();
         });
     }
+
 
 
 
