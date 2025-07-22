@@ -7,6 +7,15 @@
     tools:context=".ui.fragment.FavoritesFragment">
 
     <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="match_parent"
+        android:layout_height="231dp"
+        android:src="@drawable/purple_gradient"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
         android:id="@+id/backArrow"
         android:layout_width="20dp"
         android:layout_height="20dp"
@@ -26,6 +35,7 @@
         android:layout_marginEnd="16dp"
         android:background="@drawable/edittext_search_background"
         android:drawableStart="@drawable/ic_search"
+        android:drawableTint="@color/white"
         android:drawablePadding="8dp"
         android:hint="Tìm trong mục Bài hát đã thích"
         android:paddingStart="12dp"
@@ -33,7 +43,7 @@
         android:paddingEnd="12dp"
         android:paddingBottom="8dp"
         android:textColor="@android:color/white"
-        android:textColorHint="#B3B3B3"
+        android:textColorHint="#F2F2F2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/backArrow" />
@@ -82,7 +92,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:backgroundTint="#333333"
         android:drawableStart="@drawable/ic_add"
         android:drawableTint="@android:color/white"
         android:paddingStart="16dp"
