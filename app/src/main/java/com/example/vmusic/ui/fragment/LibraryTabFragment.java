@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -22,6 +23,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.vmusic.R;
 import com.example.vmusic.databinding.FragmentLibraryTabBinding;
 import com.example.vmusic.entity.Genre;
@@ -44,6 +46,7 @@ public class LibraryTabFragment extends Fragment {
     private LibraryViewModel viewModel;
     private SongAdapter songAdapter;
     private PlaylistAdapter playlistAdapter;
+    private ImageView btnSetting;
 
     private EditText searchEditText;
     private Spinner genreSpinner, sortSpinner;
@@ -56,6 +59,13 @@ public class LibraryTabFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentLibraryTabBinding.inflate(inflater, container, false);
+
+        btnSetting = binding.btnSetting;
+        SessionManager sessionManager = new SessionManager(requireContext());
+        Glide.with(this)
+                .load(sessionManager.getUserAvatar())
+                .placeholder(R.drawable.ic_launcher_background)
+                .into(btnSetting);
 
         // Khởi tạo RecyclerView
         RecyclerView songRecyclerView = binding.songRecyclerView;
@@ -76,13 +86,22 @@ public class LibraryTabFragment extends Fragment {
         playlistAdapter = new PlaylistAdapter(new PlaylistAdapter.OnPlaylistClickListener() {
             @Override
             public void onPlaylistClick(Playlist playlist) {
-                if(playlist.getType().equals("Playlist")) {
+                if(playlist.getType().equalsIgnoreCase("playlist")) {
                     //TODO: Mở playlist cá nhân
-                }else if(playlist.getType().equals("Favorite")) {
-                    //TODO: Mở playlist yêu thích
+                    // Chuyển đến PlaylistFragment với ID của playlist
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("playlistId", playlist.getPlayListId());
+                    bundle.putSerializable("playlist", playlist);
                     NavController navController = NavHostFragment.findNavController(LibraryTabFragment.this);
-                    navController.navigate(R.id.action_libraryTabFragment_to_favoritesFragment);
-                }else if(playlist.getType().equals("System")) {
+                    navController.navigate(R.id.action_libraryTabFragment_to_playlistFragment, bundle);
+                }else if(playlist.getType().equalsIgnoreCase("favorite")) {
+                    //TODO: Mở playlist yêu thích
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("playlistId", playlist.getPlayListId());
+                    bundle.putSerializable("playlist", playlist);
+                    NavController navController = NavHostFragment.findNavController(LibraryTabFragment.this);
+                    navController.navigate(R.id.action_libraryTabFragment_to_favoritesFragment, bundle);
+                }else if(playlist.getType().equalsIgnoreCase("system")) {
                     //TODO: Mở playlist hệ thống
                 }else{
                     Toast.makeText(requireContext(), "Playlist không hợp lệ", Toast.LENGTH_SHORT).show();

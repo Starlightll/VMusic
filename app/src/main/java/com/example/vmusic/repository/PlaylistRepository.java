@@ -54,6 +54,10 @@ public class PlaylistRepository {
         return playlistDao.getAllPlaylistsByUser(userId);
     }
 
+    public LiveData<List<PlaylistWithSongs>> getPlaylistsByTypeAndUser(String type, int userId) {
+        return playlistDao.getAllPlaylistsWithSongsByTypeAndUser(type, userId);
+    }
+
     public void addSongToPlaylist(int songId, int playlistId) {
         executorService.execute(() -> {
             if (playlistDao.isSongInPlaylist(playlistId, songId) == 0) {
@@ -82,7 +86,7 @@ public class PlaylistRepository {
             }
         });
     }
-    public boolean isFavorite(int songId, int userId) {
+    public LiveData<Boolean> isFavorite(int songId, int userId) {
         return playlistDao.isFavorite(songId, userId);
     }
 
@@ -114,6 +118,10 @@ public class PlaylistRepository {
     public LiveData<List<SongWithArtists>> getFavoriteSongsByUserId(int userId) {
         //TODO: Get favorite songs by userId
         return playlistDao.getSongsInFavoritePlaylist(userId);
+    }
+
+    public LiveData<List<SongWithArtists>> getPlaylistSongs(int playlistId) {
+        return playlistDao.getSongsInPlaylist(playlistId);
     }
 
     public LiveData<Boolean> isSongFavorite(int songId, int userId) {

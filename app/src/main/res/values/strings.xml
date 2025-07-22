@@ -128,4 +128,27 @@
     <string name="Home">Trang chủ</string>
     <string name="Search">Tìm kiếm</string>
     <string name="Library">Thư viện</string>
+    <string name="l_u_ngh_s">Lưu nghệ sĩ</string>
+    <string name="artist_songs">Các bài hát của nghệ sĩ</string>
+    <string name="input_artist_name_txt">Nhập tên nghệ sĩ</string>
+    <string name="atistname">Tên nghệ sĩ*</string>
+    <string name="ch_n_nh">Chọn ảnh</string>
+    <string name="t_m_v_th_m_b_i_h_t">Tìm và Thêm Bài hát</string>
+    <string name="nh_p_t_n_b_i_h_t_ho_c_ngh_s">Nhập tên bài hát hoặc nghệ sĩ</string>
+    <string name="x_c_nh_n">Xác nhận</string>
+    <string name="different_heaven_top_50_ncs">Different Heaven • Top 50 NCS</string>
+    <string name="nekozilla">Nekozilla</string>
+    <string name="album_art">Album Art</string>
+    <string name="t_n_ngh_s">Tên nghệ sĩ</string>
+    <string name="_12_b_i_h_t">12 bài hát</string>
+    <string name="ph_bi_n">Phổ biến</string>
+    <string name="playlist_cover">Playlist Cover</string>
+    <string name="my_recommendation_playlist">My recommendation playlist</string>
+    <string name="c_a_starlight_11_b_n_nh_c">của StarLight • 11 bản nhạc</string>
+    <string name="nh_b_i_h_t">Ảnh bài hát</string>
+    <string name="t_n_b_i_h_t">Tên bài hát</string>
+    <string name="t_n_ca_s">Tên ca sĩ</string>
+    <string name="account">Account</string>
+    <string name="xem_h_s">Xem Hồ sơ</string>
+    <string name="starlight">StarLight</string>
 </resources>

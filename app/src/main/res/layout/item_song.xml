@@ -11,7 +11,7 @@
         android:layout_height="64dp"
         android:scaleType="centerCrop"
         android:background="?attr/selectableItemBackground"
-        android:contentDescription="Ảnh bài hát" />
+        android:contentDescription="@string/nh_b_i_h_t" />
 
     <LinearLayout
         android:layout_marginStart="12dp"
@@ -22,7 +22,7 @@
 
         <TextView
             android:id="@+id/songName"
-            android:text="Tên bài hát"
+            android:text="@string/t_n_b_i_h_t"
             android:textStyle="bold"
             android:textSize="16sp"
             android:textColor="#000000"
@@ -31,7 +31,7 @@
 
         <TextView
             android:id="@+id/songArtist"
-            android:text="Tên nghệ sĩ"
+            android:text="@string/t_n_ngh_s"
             android:textColor="#666666"
             android:textSize="14sp"
             android:layout_width="wrap_content"

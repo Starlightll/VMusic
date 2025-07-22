@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_libraryTabFragment_to_favoritesFragment"
             app:destination="@id/favoritesFragment" />
+        <action
+            android:id="@+id/action_libraryTabFragment_to_playlistFragment"
+            app:destination="@id/playlistFragment" />
     </fragment>
 
     <fragment
@@ -67,4 +70,9 @@
         android:name="com.example.vmusic.ui.fragment.FavoritesFragment"
         android:label="fragment_favorites"
         tools:layout="@layout/fragment_favorites" />
+    <fragment
+        android:id="@+id/playlistFragment"
+        android:name="com.example.vmusic.ui.fragment.PlaylistFragment"
+        android:label="fragment_playlist"
+        tools:layout="@layout/fragment_playlist" />
 </navigation>

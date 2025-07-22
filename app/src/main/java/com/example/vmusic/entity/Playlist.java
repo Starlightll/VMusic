@@ -3,8 +3,11 @@ package com.example.vmusic.entity;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
+
+import java.io.Serializable;
+
 @Entity(tableName = "playlists")
-public class Playlist {
+public class Playlist implements Serializable{
 
     @PrimaryKey(autoGenerate = true)
     public int playListId;
@@ -22,6 +25,7 @@ public class Playlist {
         this.type = type;
         this.userOwnerId = userOwnerId; // lưu userId
     }
+
 
     public int getPlayListId() {
         return playListId;
