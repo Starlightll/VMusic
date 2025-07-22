@@ -135,6 +135,12 @@ public class PlaybackService extends Service implements MusicController {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent != null && intent.hasExtra("song_list") && intent.hasExtra("index")) {
+            ArrayList<Song> songList = (ArrayList<Song>) intent.getSerializableExtra("song_list");
+            int index = intent.getIntExtra("index", 0);
+            setPlaylist(songList, index);
+            play();
+        }
         return START_NOT_STICKY;
     }
 

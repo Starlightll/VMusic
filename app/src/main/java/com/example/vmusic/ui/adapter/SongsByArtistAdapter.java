@@ -5,12 +5,10 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.PopupMenu;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,6 +18,7 @@ import com.example.vmusic.Interface.OnSongClickListener;
 import com.example.vmusic.Interface.OnSongMenuClickListener;
 import com.example.vmusic.R;
 import com.example.vmusic.entity.Song;
+import com.example.vmusic.models.LibraryViewModel;
 import com.example.vmusic.viewmodel.SongViewModel;
 
 import java.util.ArrayList;
@@ -30,18 +29,18 @@ public class SongsByArtistAdapter extends RecyclerView.Adapter<SongsByArtistAdap
     private List<Song> songList;
     private OnSongClickListener listener;
     private int currentSongId = -1;
-    private SongViewModel songViewModel;
+    private LibraryViewModel libraryViewModel;
     private int userId;
     private OnSongMenuClickListener menuClickListener;
 
     public SongsByArtistAdapter(Context context, List<Song> songs,
                                 OnSongClickListener itemClickListener,
-                                SongViewModel songViewModel, int userId,
+                                LibraryViewModel libraryViewModel, int userId,
                                 OnSongMenuClickListener menuClickListener) {
         this.context = context;
         this.songList = songs;
         this.listener = itemClickListener;
-        this.songViewModel = songViewModel;
+        this.libraryViewModel = libraryViewModel;
         this.userId = userId;
         this.menuClickListener = menuClickListener;
     }
@@ -87,9 +86,9 @@ public class SongsByArtistAdapter extends RecyclerView.Adapter<SongsByArtistAdap
                 .placeholder(R.drawable.ic_music_placeholder)
                 .into(holder.imgSongThumbnail);
 
-        // Highlight bài hát đang phát bằng màu nhẹ, không mất ripple
+
         if (song.getSongId() == currentSongId) {
-            holder.rootView.setBackgroundColor(Color.parseColor("#1A4CAF50")); // Xanh có alpha
+            holder.rootView.setBackgroundColor(Color.parseColor("#1A4CAF50"));
         } else {
             holder.rootView.setBackgroundResource(android.R.color.transparent);
         }
@@ -100,33 +99,35 @@ public class SongsByArtistAdapter extends RecyclerView.Adapter<SongsByArtistAdap
             }
         });
 
-        holder.btnMenu.setOnClickListener(v -> {
-            PopupMenu popup = new PopupMenu(context, holder.btnMenu);
-
-            // Tạo menu động bằng code
-            popup.getMenu().add("Thêm vào yêu thích");
-            popup.getMenu().add("Thêm vào playlist");
-
-            popup.setOnMenuItemClickListener(item -> {
-                String title = item.getTitle().toString();
-                if (title.equals("Thêm vào yêu thích")) {
-                    if (menuClickListener != null) {
-                        menuClickListener.onAddToFavorite(song);
+        // Kiểm tra trạng thái yêu thích và trạng thái playlist, tạo menu động
+        libraryViewModel.isSongFavorite(song.getSongId(), userId).observeForever(isFavorite -> {
+            // Giả sử bạn có playlistId (truyền vào adapter khi khởi tạo)
+            int playlistId = /* truyền playlistId phù hợp */ 0;
+            libraryViewModel.isSongInPlaylist(playlistId, song.getSongId()).observeForever(isInPlaylist -> {
+                holder.btnMenu.setOnClickListener(v -> {
+                    PopupMenu popup = new PopupMenu(context, holder.btnMenu);
+                    // Favorite
+                    if (isFavorite != null && isFavorite) {
+                        popup.getMenu().add("Xóa khỏi yêu thích");
+                    } else {
+                        popup.getMenu().add("Thêm vào yêu thích");
                     }
-                    return true;
-                } else if (title.equals("Thêm vào playlist")) {
-                    if (menuClickListener != null) {
-                        menuClickListener.onAddToPlaylist(song);
-                    }
-                    return true;
-                }
-                return false;
+
+
+                    popup.setOnMenuItemClickListener(item -> {
+                        String title = item.getTitle().toString();
+                        if (title.equals("Thêm vào yêu thích") || title.equals("Xóa khỏi yêu thích")) {
+                            if (menuClickListener != null) {
+                                menuClickListener.onAddToFavorite(song, isFavorite != null && isFavorite);
+                            }
+                            return true;
+                        }
+                        return false;
+                    });
+                    popup.show();
+                });
             });
-
-            popup.show();
         });
-
-
     }
 
 
