@@ -82,4 +82,14 @@ public interface PlaylistDao {
     LiveData<List<SongWithArtists>> getSongsInFavoritePlaylist(int userId);
 
 
+    @Query("SELECT EXISTS(" +
+            "SELECT 1 FROM PlaylistSongCrossRef ps " +
+            "INNER JOIN playlists p ON p.playListId = ps.playListId " +
+            "WHERE ps.songId = :songId AND p.userOwnerId = :userId AND p.type = 'Favorite'" +
+            ")")
+    LiveData<Boolean> isSongFavorite(int songId, int userId);
+    
+    @Query("SELECT EXISTS(SELECT 1 FROM PlaylistSongCrossRef WHERE playListId = :playlistId AND songId = :songId)")
+    LiveData<Boolean> isSongInPlaylistLive(int songId , int playlistId);
+
 }

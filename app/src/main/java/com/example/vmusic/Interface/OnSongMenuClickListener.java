@@ -5,6 +5,6 @@ import android.view.View;
 import com.example.vmusic.entity.Song;
 
 public interface OnSongMenuClickListener {
-    void onAddToFavorite(Song song);
-    void onAddToPlaylist(Song song);
+    void onAddToFavorite(Song song , boolean isFavorite);
+    void onAddToPlaylist(Song song , boolean isPlaylistAdded);
 }
