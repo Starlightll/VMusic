@@ -81,5 +81,13 @@ public interface PlaylistDao {
             "GROUP BY s.songId")
     LiveData<List<SongWithArtists>> getSongsInFavoritePlaylist(int userId);
 
+    @Query("SELECT * FROM songs s " +
+            "INNER JOIN PlaylistSongCrossRef ps ON s.songId = ps.songId " +
+            "INNER JOIN playlists p ON ps.playListId = p.playListId " +
+            "INNER JOIN SongArtistCrossRef sa ON s.songId = sa.songId " +
+            "INNER JOIN artists a ON sa.artistId = a.artistId " +
+            "WHERE p.playListId = :playlistId AND p.type == 'playlist' ")
+    LiveData<List<SongWithArtists>> getSongsInPlaylist(int playlistId);
+
 
 }

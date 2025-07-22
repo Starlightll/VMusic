@@ -109,4 +109,8 @@ public class PlaylistRepository {
         return playlistDao.getSongsInFavoritePlaylist(userId);
     }
 
+    public LiveData<List<SongWithArtists>> getPlaylistSongs(int playlistId) {
+        return playlistDao.getSongsInPlaylist(playlistId);
+    }
+
 }

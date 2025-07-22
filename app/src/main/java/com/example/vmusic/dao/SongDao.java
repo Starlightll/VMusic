@@ -171,4 +171,12 @@ public interface SongDao {
     @Query("SELECT * FROM songs WHERE songId = :songId")
     SongWithArtists getSongWithArtists(long songId);
 
+
+    @Query("SELECT * FROM songs" +
+            " INNER JOIN SongArtistCrossRef sa ON songs.songId = sa.songId" +
+            " INNER JOIN artists a ON sa.artistId = a.artistId" +
+            " WHERE songs.name LIKE '%' || :query || '%' OR a.name LIKE '%' || :query || '%'" +
+            " GROUP BY songs.songId")
+    LiveData<List<SongWithArtists>> searchSongsWithArtistsQuery(String query);
+
 }

@@ -105,6 +105,9 @@ public class SongRepository {
         });
     }
 
+    public LiveData<List<SongWithArtists>> searchSongsWithArtists(String query) {
+        return songDao.searchSongsWithArtistsQuery(query);
+    }
     public List<SongWithArtists> getSongsWithArtists () {
         return songDao.getSongsWithArtists();
     }

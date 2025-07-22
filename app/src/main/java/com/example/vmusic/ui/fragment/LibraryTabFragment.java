@@ -76,13 +76,22 @@ public class LibraryTabFragment extends Fragment {
         playlistAdapter = new PlaylistAdapter(new PlaylistAdapter.OnPlaylistClickListener() {
             @Override
             public void onPlaylistClick(Playlist playlist) {
-                if(playlist.getType().equals("Playlist")) {
+                if(playlist.getType().equalsIgnoreCase("playlist")) {
                     //TODO: Mở playlist cá nhân
-                }else if(playlist.getType().equals("Favorite")) {
-                    //TODO: Mở playlist yêu thích
+                    // Chuyển đến PlaylistFragment với ID của playlist
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("playlistId", playlist.getPlayListId());
+                    bundle.putSerializable("playlist", playlist);
                     NavController navController = NavHostFragment.findNavController(LibraryTabFragment.this);
-                    navController.navigate(R.id.action_libraryTabFragment_to_favoritesFragment);
-                }else if(playlist.getType().equals("System")) {
+                    navController.navigate(R.id.action_libraryTabFragment_to_playlistFragment, bundle);
+                }else if(playlist.getType().equalsIgnoreCase("favorite")) {
+                    //TODO: Mở playlist yêu thích
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("playlistId", playlist.getPlayListId());
+                    bundle.putSerializable("playlist", playlist);
+                    NavController navController = NavHostFragment.findNavController(LibraryTabFragment.this);
+                    navController.navigate(R.id.action_libraryTabFragment_to_favoritesFragment, bundle);
+                }else if(playlist.getType().equalsIgnoreCase("system")) {
                     //TODO: Mở playlist hệ thống
                 }else{
                     Toast.makeText(requireContext(), "Playlist không hợp lệ", Toast.LENGTH_SHORT).show();

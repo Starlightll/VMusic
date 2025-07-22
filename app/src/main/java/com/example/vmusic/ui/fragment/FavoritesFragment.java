@@ -19,12 +19,14 @@ import android.widget.TextView;
 
 import com.example.vmusic.R;
 import com.example.vmusic.entity.Artist;
+import com.example.vmusic.entity.Playlist;
 import com.example.vmusic.entity.Song;
 import com.example.vmusic.helper.SessionManager;
 import com.example.vmusic.models.SongWithArtists;
 import com.example.vmusic.ui.adapter.FavoriteSongAdapter;
 import com.example.vmusic.viewmodel.FavoriteViewModel;
 import com.example.vmusic.viewmodel.PlayerViewModel;
+import com.example.vmusic.viewmodel.PlaylistViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,9 +42,13 @@ public class FavoritesFragment extends Fragment {
     private RecyclerView recyclerView;
     private FavoriteSongAdapter favoriteSongAdapter;
     private PlayerViewModel playerVM;
+    private PlaylistViewModel playlistVM;
     private ImageView backButton;
     private TextView tvSongCount;
     private ImageButton btnPlayAll;
+    private Button addSongButton;
+    private int playlistId;
+    private Playlist playlist;
     private int userId;
 
     // TODO: Rename parameter arguments, choose names that match
@@ -82,6 +88,8 @@ public class FavoritesFragment extends Fragment {
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+            playlistId = getArguments().getInt("playlistId", -1);
+            playlist = (Playlist) getArguments().getSerializable("playlist");
         }
     }
 
@@ -94,7 +102,7 @@ public class FavoritesFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         tvSongCount = view.findViewById(R.id.songCount);
         btnPlayAll = view.findViewById(R.id.playAllButton);
-
+        addSongButton = view.findViewById(R.id.addSongButton);
         return view;
     }
 
@@ -106,6 +114,18 @@ public class FavoritesFragment extends Fragment {
             @Override
             public void onSongClick(SongWithArtists song) {
                 // Play bài hát
+                List<Song> songs = new ArrayList<>();
+                List<SongWithArtists> currentFavoriteSongs = favoriteVM.getFavoritePlaylist().getValue();
+                if (currentFavoriteSongs != null) {
+                    for (SongWithArtists s : currentFavoriteSongs) {
+                        songs.add(s.song);
+                    }
+                    int songIndex = songs.indexOf(song.song);
+                    if (songIndex != -1) {
+                        playerVM.setPlaylist(songs, songIndex);
+                        playerVM.play();
+                    }
+                }
             }
 
             @Override
@@ -154,7 +174,16 @@ public class FavoritesFragment extends Fragment {
             playerVM.play();
         });
 
-        // Initialize your UI components and observe LiveData from favoriteVM here
+        addSongButton.setOnClickListener(v -> {
+            int favoritePlaylistId = playlistId;
+            List<SongWithArtists> currentSongsInPlaylist = favoriteVM.getFavoritePlaylist().getValue();
+            if (currentSongsInPlaylist == null) {
+                currentSongsInPlaylist = new ArrayList<>();
+            }
+            SearchSongsBottomSheetFragment bottomSheet = SearchSongsBottomSheetFragment.newInstance(favoritePlaylistId, currentSongsInPlaylist);
+            bottomSheet.show(getChildFragmentManager(), bottomSheet.getTag()); // Sử dụng getChildFragmentManager()
+        });
+
     }
 
     private int getCurrentUserId() {

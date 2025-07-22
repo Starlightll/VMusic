@@ -32,6 +32,9 @@ public class SongViewModel extends AndroidViewModel{
         return favoriteChangedSongId;
     }
 
+    private MutableLiveData<List<SongWithArtists>> searchResults = new MutableLiveData<>();
+    private MutableLiveData<List<SongWithArtists>> selectedSongs = new MutableLiveData<>(new ArrayList<>());
+
     private final MutableLiveData<Boolean> currentSongFavorite = new MutableLiveData<>();
     public LiveData<Boolean> getCurrentSongFavorite() {
         return currentSongFavorite;
@@ -45,6 +48,14 @@ public class SongViewModel extends AndroidViewModel{
         super(application);
         repository = new SongRepository(application);
         playlistRepository = new PlaylistRepository(application);
+    }
+
+    public LiveData<List<SongWithArtists>> getSearchResults() {
+        return searchResults;
+    }
+
+    public LiveData<List<SongWithArtists>> getSelectedSongs() {
+        return selectedSongs;
     }
     public LiveData<List<Song>> getAllSongs() {
         return repository.getAllSongs();
@@ -64,7 +75,11 @@ public class SongViewModel extends AndroidViewModel{
     }
 
     public LiveData<List<Song>> searchSongs(String query) {
-        return repository.searchSongs(query); // gọi hàm mới hỗ trợ name + artist
+        return repository.searchSongs(query);
+    }
+
+    public void searchSongsWithArtists(String query) {
+        repository.searchSongsWithArtists(query).observeForever(songs -> searchResults.setValue(songs));
     }
     public LiveData<List<Song>> getSongsByArtistId(int artistId) {
         return repository.getSongsByArtistId(artistId);
@@ -141,5 +156,43 @@ public class SongViewModel extends AndroidViewModel{
     }
     public void updateSongWithRelationships(Song song, List<Integer> genreIds, List<Integer> artistIds) {
         repository.updateSongWithRelationships(song, genreIds, artistIds);
+    }
+
+    public void searchSongsWithArtistsByQuery(String query) {
+        LiveData<List<SongWithArtists>> searchLiveData = repository.searchSongsWithArtists(query);
+        searchLiveData.observeForever(newSongs -> {
+            searchResults.setValue(newSongs);
+            searchLiveData.removeObserver(this::searchSongsWithArtistsByQuery);
+        });
+    }
+
+    private void searchSongsWithArtistsByQuery(List<SongWithArtists> songWithArtists) {
+        searchResults.setValue(songWithArtists);
+    }
+
+    public void addSongToSelection(SongWithArtists song) {
+        List<SongWithArtists> currentSelection = selectedSongs.getValue();
+        if (currentSelection != null && !currentSelection.contains(song)) {
+            currentSelection.add(song);
+            selectedSongs.setValue(currentSelection); // Kích hoạt LiveData
+        }
+    }
+
+    public void removeSongFromSelection(SongWithArtists song) {
+        List<SongWithArtists> currentSelection = selectedSongs.getValue();
+        if (currentSelection != null) {
+            currentSelection.remove(song);
+            selectedSongs.setValue(currentSelection); // Kích hoạt LiveData
+        }
+    }
+
+    public void addSongsToPlaylist(int playlistId, List<SongWithArtists> songsToAdd) {
+        for (SongWithArtists song : songsToAdd) {
+            System.out.println("Adding song " + song.song.getName() + " to playlist " + playlistId);
+            AppDatabase.databaseWriteExecutor.execute(() -> {
+                playlistRepository.addSongToPlaylist(song.song.getSongId(), playlistId);
+            });
+        }
+        selectedSongs.setValue(new ArrayList<>());
     }
 }
