@@ -125,11 +125,11 @@ public class HomeTabFragment extends Fragment {
                 }
             }
 
-            ArrayList<Song> serializableList = new ArrayList<>(songList);
-            Intent intent = new Intent(requireContext(), PlaybackService.class);
-            intent.putExtra("song_list", serializableList);
-            intent.putExtra("index", startIndex);
-            requireContext().startService(intent);
+//            ArrayList<Song> serializableList = new ArrayList<>(songList);
+//            Intent intent = new Intent(requireContext(), PlaybackService.class);
+//            intent.putExtra("song_list", serializableList);
+//            intent.putExtra("index", startIndex);
+//            requireContext().startService(intent);
 
 //            playerViewModel.setCurrentSong(song);
 //            playerViewModel.setIsPlaying(true);

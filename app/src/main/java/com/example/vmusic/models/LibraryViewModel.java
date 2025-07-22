@@ -6,6 +6,7 @@ import android.app.Application;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.example.vmusic.entity.Genre;
 import com.example.vmusic.entity.Playlist;
@@ -18,6 +19,7 @@ import com.example.vmusic.repository.SongRepository;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.concurrent.Executors;
 
 public class LibraryViewModel extends AndroidViewModel {
     private SongRepository repository;
@@ -43,6 +45,15 @@ public class LibraryViewModel extends AndroidViewModel {
     public LiveData<List<Playlist>> getPlaylistsByUser(int userId) {
         return playlistRepository.getPlaylistsByUser(userId);
     }
+    public LiveData<Long> createPlaylist(Playlist playlist) {
+        MutableLiveData<Long> result = new MutableLiveData<>();
+        Executors.newSingleThreadExecutor().execute(() -> {
+            long id = playlistRepository.insertPlaylist(playlist);
+            result.postValue(id);
+        });
+        return result;
+    }
+
     public LiveData<List<Genre>> getAllGenres() {
         return genreRepository.getAllGenreLive();
     }

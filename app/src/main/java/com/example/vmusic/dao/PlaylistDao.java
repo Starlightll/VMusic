@@ -66,6 +66,8 @@ public interface PlaylistDao {
             "INNER JOIN playlists p ON p.playListId = ps.playListId " +
             "WHERE p.userOwnerId = :userId AND p.type = 'Favorite'")
     List<Integer> getFavoriteSongIds(int userId);
+    @Insert
+    long insert(Playlist playlist);
 
 
 

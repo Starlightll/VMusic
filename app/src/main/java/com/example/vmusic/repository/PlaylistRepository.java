@@ -37,6 +37,9 @@ public class PlaylistRepository {
         executorService.execute(() -> playlistDao.Insert(playlist));
     }
 
+    public long insertPlaylist(Playlist playlist) {
+        return playlistDao.insert(playlist);
+    }
 
     // ✅ Cập nhật playlist
     public void update(Playlist playlist) {
