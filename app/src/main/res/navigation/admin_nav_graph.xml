@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/admin_nav_graph"
+    app:startDestination="@id/adminDashboardFragment">
+
+    <!-- Điểm bắt đầu của luồng Admin là màn hình Dashboard -->
+    <fragment
+        android:id="@+id/adminDashboardFragment"
+        android:name="com.example.vmusic.ui.fragment.AdminDashboardFragment"
+        android:label="Bảng điều khiển Admin"
+        tools:layout="@layout/fragment_admin_dashboard">
+        <action
+            android:id="@+id/action_adminDashboardFragment_to_adminSongListFragment"
+            app:destination="@id/adminSongListFragment" />
+        <action
+            android:id="@+id/action_adminDashboardFragment_to_adminArtistListFragment"
+            app:destination="@id/adminArtistListFragment" />
+    </fragment>
+
+    <!-- Màn hình Quản lý Bài hát -->
+    <fragment
+        android:id="@+id/adminSongListFragment"
+        android:name="com.example.vmusic.ui.fragment.AdminSongListFragment"
+        android:label="Quản lý bài hát"
+        tools:layout="@layout/fragment_admin_song_list">
+        <action
+            android:id="@+id/action_adminSongListFragment_to_songDetailsFragment"
+            app:destination="@id/songDetailsFragment" />
+    </fragment>
+
+    <!-- Màn hình Chi tiết Bài hát -->
+    <fragment
+        android:id="@+id/songDetailsFragment"
+        android:name="com.example.vmusic.ui.fragment.SongDetailsFragment"
+        android:label="Chi tiết bài hát"
+        tools:layout="@layout/fragment_song_details">
+        <argument
+            android:name="songId"
+            app:argType="integer"
+            android:defaultValue="-1" />
+    </fragment>
+
+    <!-- Màn hình Quản lý Nghệ sĩ -->
+    <fragment
+        android:id="@+id/adminArtistListFragment"
+        android:name="com.example.vmusic.ui.fragment.AdminArtistListFragment"
+        android:label="Quản lý nghệ sĩ"
+        tools:layout="@layout/fragment_admin_artist_list">
+        <action
+            android:id="@+id/action_adminArtistListFragment_to_artistDetailsFragment"
+            app:destination="@id/artistDetailsFragment" />
+    </fragment>
+
+    <!-- Màn hình Chi tiết Nghệ sĩ -->
+    <fragment
+        android:id="@+id/artistDetailsFragment"
+        android:name="com.example.vmusic.ui.fragment.ArtistDetailsFragment"
+        android:label="Chi tiết nghệ sĩ"
+        tools:layout="@layout/fragment_artist_details">
+        <argument
+            android:name="artistId"
+            app:argType="integer"
+            android:defaultValue="-1" />
+    </fragment>
+
+
+</navigation>
