@@ -15,13 +15,13 @@ import com.example.vmusic.entity.Song;
                         entity = Song.class,
                         parentColumns = "songId",
                         childColumns = "songId",
-                        onDelete = CASCADE // Tự động xóa khi bài hát bị xóa
+                        onDelete = CASCADE
                 ),
                 @ForeignKey(
                         entity = Artist.class,
                         parentColumns = "artistId",
                         childColumns = "artistId",
-                        onDelete = CASCADE // Tự động xóa khi nghệ sĩ bị xóa
+                        onDelete = CASCADE
                 )
         }
 )
