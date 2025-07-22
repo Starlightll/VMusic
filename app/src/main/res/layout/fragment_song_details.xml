@@ -5,7 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_gray"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    tools:context=".ui.fragment.SongDetailsFragment"
+    >
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout_details"
         android:layout_width="0dp"
@@ -58,9 +60,9 @@
                 android:textColorHint="@color/gray_hint"
                 android:paddingStart="12dp"
                 android:inputType="textCapSentences|textMultiLine"
-                 />
+                />
 
-            <!-- Additional Artists -->
+            <!-- Artist (Single) -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -70,25 +72,20 @@
                 android:textColor="@color/white"
                 android:textSize="16sp" />
 
-            <!-- Ô tìm kiếm nghệ sĩ -->
+            <!-- Ô tìm kiếm nghệ sĩ (hiển thị nghệ sĩ đã chọn) -->
             <AutoCompleteTextView
                 android:id="@+id/autocomplete_artist"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:hint="Tìm kiếm và thêm nghệ sĩ..."
+                android:hint="Tìm kiếm và chọn một nghệ sĩ..."
                 android:background="@color/dark_gray"
                 android:textColor="@color/white"
                 android:textColorHint="@color/gray_hint"
                 android:paddingStart="12dp"
                 android:inputType="text" />
 
-            <!-- Khu vực hiển thị các nghệ sĩ đã chọn -->
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chipgroup_artists"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                app:chipSpacingVertical="4dp"/>
+            <!-- XÓA BỎ CHIPGROUP TẠI ĐÂY -->
+
             <!-- Cover Image -->
             <TextView
                 android:layout_width="match_parent"

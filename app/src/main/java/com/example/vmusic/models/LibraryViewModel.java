@@ -3,6 +3,8 @@ package com.example.vmusic.models;
 import static androidx.core.content.ContentProviderCompat.requireContext;
 
 import android.app.Application;
+import android.content.Context;
+import android.widget.Toast;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -79,5 +81,33 @@ public class LibraryViewModel extends AndroidViewModel {
         playlistRepository.addSongToPlaylist(songId, playlistId);
 
 
+    }
+
+    public LiveData<Boolean> toggleSongInPlaylist(int songId, int playlistId) {
+        MutableLiveData<Boolean> result = new MutableLiveData<>();
+
+        isSongInPlaylist(songId, playlistId).observeForever(isIn -> {
+            if (Boolean.TRUE.equals(isIn)) {
+                removeSongFromPlaylist(songId, playlistId);
+                result.postValue(false); // removed
+            } else {
+                addSongToPlaylist(songId, playlistId);
+                result.postValue(true); // added
+            }
+        });
+
+        return result;
+    }
+
+    private void removeSongFromPlaylist(int songId, int playlistId) {
+        playlistRepository.removeFromPlaylist(songId, playlistId);
+    }
+
+    public LiveData<Boolean> isSongFavorite(int songId, int userId) {
+        return playlistRepository.isSongFavorite(songId, userId);
+    }
+
+    public LiveData<Boolean> isSongInPlaylist(int songId, int playlistId) {
+        return playlistRepository.isSongInPlaylistLive(songId, playlistId);
     }
 }

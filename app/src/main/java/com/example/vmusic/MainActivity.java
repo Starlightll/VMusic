@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
                 NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
                 if (navHostFragment != null) {
                     NavController navController = navHostFragment.getNavController();
-                    navController.navigate(R.id.action_loginFragment_to_adminDashboardFragment);
+                    navController.navigate(R.id.action_loginFragment_to_admin_nav_graph2);
                 }
             } else {
                 NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);

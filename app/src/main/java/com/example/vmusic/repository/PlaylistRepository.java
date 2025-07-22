@@ -98,7 +98,14 @@ public class PlaylistRepository {
             }
         });
     }
-
+    public void removeFromPlaylist(int songId, int userId) {
+        executorService.execute(() -> {
+            Playlist favorite = playlistDao.getPlaylistByTypeAndUser("playlist", userId);
+            if (favorite != null) {
+                playlistDao.deleteSongFromPlaylist(favorite.playListId, songId);
+            }
+        });
+    }
     public void getFavoriteSongIds(int userId, Consumer<List<Integer>> callback) {
         Executors.newSingleThreadExecutor().execute(() -> {
             List<Integer> result = playlistDao.getFavoriteSongIds(userId);
@@ -117,4 +124,11 @@ public class PlaylistRepository {
         return playlistDao.getSongsInPlaylist(playlistId);
     }
 
+    public LiveData<Boolean> isSongFavorite(int songId, int userId) {
+        return playlistDao.isSongFavorite(songId, userId);
+    }
+
+    public LiveData<Boolean> isSongInPlaylistLive( int songId , int playlistId) {
+        return playlistDao.isSongInPlaylistLive(songId , playlistId );
+    }
 }
