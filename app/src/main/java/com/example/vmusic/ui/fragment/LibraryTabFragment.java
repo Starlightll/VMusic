@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -22,6 +23,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.vmusic.R;
 import com.example.vmusic.databinding.FragmentLibraryTabBinding;
 import com.example.vmusic.entity.Genre;
@@ -44,6 +46,7 @@ public class LibraryTabFragment extends Fragment {
     private LibraryViewModel viewModel;
     private SongAdapter songAdapter;
     private PlaylistAdapter playlistAdapter;
+    private ImageView btnSetting;
 
     private EditText searchEditText;
     private Spinner genreSpinner, sortSpinner;
@@ -56,6 +59,13 @@ public class LibraryTabFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentLibraryTabBinding.inflate(inflater, container, false);
+
+        btnSetting = binding.btnSetting;
+        SessionManager sessionManager = new SessionManager(requireContext());
+        Glide.with(this)
+                .load(sessionManager.getUserAvatar())
+                .placeholder(R.drawable.ic_launcher_background)
+                .into(btnSetting);
 
         // Khởi tạo RecyclerView
         RecyclerView songRecyclerView = binding.songRecyclerView;

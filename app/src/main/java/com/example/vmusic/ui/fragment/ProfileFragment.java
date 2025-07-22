@@ -21,6 +21,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.palette.graphics.Palette;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.transition.Transition;
 import com.example.vmusic.R;
 import com.example.vmusic.databinding.FragmentProfileBinding;
 import com.example.vmusic.databinding.FragmentSettingsBinding;
@@ -32,6 +34,7 @@ public class ProfileFragment extends Fragment {
 
     private ProfileViewModel mViewModel;
     private FragmentProfileBinding binding;
+    private ImageView avatarImageView;
 
     public static ProfileFragment newInstance() {
         return new ProfileFragment();
@@ -49,9 +52,13 @@ public class ProfileFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         binding = com.example.vmusic.databinding.FragmentProfileBinding.inflate(inflater, container, false);
         TextView tvUserName = binding.tvUsername;
+        avatarImageView = binding.avatar;
         SessionManager sessionManager = new SessionManager(requireContext());
         tvUserName.setText(sessionManager.getUsername() != null ? sessionManager.getUsername() : "Guest");
-
+        Glide.with(this)
+                .load(sessionManager.getUserAvatar())
+                .placeholder(R.drawable.ic_launcher_background)
+                .into(avatarImageView);
         return binding.getRoot();
     }
 
@@ -71,9 +78,38 @@ public class ProfileFragment extends Fragment {
         binding.btnBackToSettings.setOnClickListener(v -> {
             navController.navigateUp();
         });
+        LinearLayout headerLayout = binding.headerLayout;
+
+//        if (avatarImageView != null) {
+//            Glide.with(this)
+//                    .asBitmap()
+//                    .load(avatarImageView)
+//                    .into(new com.bumptech.glide.request.target.SimpleTarget<Bitmap>() {
+//                        @Override
+//                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+//                            Palette.from(resource).generate(palette -> {
+//                                if (palette != null) {
+//                                    int vibrantColor = palette.getVibrantColor(Color.BLACK);
+//                                    int darkVibrantColor = palette.getDarkVibrantColor(Color.BLACK);
+//                                    int[] colors = new int[]{
+//                                            darkVibrantColor,
+//                                            Color.TRANSPARENT
+//                                    };
+//
+//                                    GradientDrawable gradientDrawable = new GradientDrawable(
+//                                            GradientDrawable.Orientation.TOP_BOTTOM,
+//                                            colors
+//                                    );
+//                                    headerLayout.setBackground(gradientDrawable);
+//                                    headerLayout.setBackground(gradientDrawable);
+//                                }
+//                            });
+//                        }
+//                    });
+//        }
 
         ImageView avatarImageView = binding.avatar;
-        LinearLayout headerLayout = binding.headerLayout;
+
 
         Drawable drawable = avatarImageView.getDrawable();
         if (drawable instanceof BitmapDrawable) {

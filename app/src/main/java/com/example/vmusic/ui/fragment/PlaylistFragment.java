@@ -1,5 +1,7 @@
 package com.example.vmusic.ui.fragment;
 
+import android.graphics.RenderEffect;
+import android.graphics.Shader;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -14,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -29,6 +32,7 @@ import com.example.vmusic.ui.adapter.PlaylistSongAdapter;
 import com.example.vmusic.viewmodel.FavoriteViewModel;
 import com.example.vmusic.viewmodel.PlayerViewModel;
 import com.example.vmusic.viewmodel.PlaylistViewModel;
+import com.example.vmusic.viewmodel.SongViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,9 +48,11 @@ public class PlaylistFragment extends Fragment {
     private RecyclerView recyclerView;
     private PlaylistSongAdapter playlistSongAdapter;
     private PlayerViewModel playerVM;
+    private SongViewModel songViewModel;
     private ImageView backButton;
     private TextView tvSongCount, songListenTime, playlistTitle;
     private ImageButton btnPlayAll;
+    private EditText searchEditText;
     private Button addSongButton;
     private int userId;
 
@@ -108,6 +114,7 @@ public class PlaylistFragment extends Fragment {
         songListenTime = view.findViewById(R.id.songListenTime);
         playlistTitle = view.findViewById(R.id.playlistTitle);
         btnPlayAll = view.findViewById(R.id.playAllButton);
+        searchEditText = view.findViewById(R.id.searchEditText);
         addSongButton = view.findViewById(R.id.addSongButton);
         return view;
     }
@@ -115,6 +122,10 @@ public class PlaylistFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        userId = getCurrentUserId();
+        songViewModel = new ViewModelProvider(requireActivity()).get(SongViewModel.class);
+
         playlistSongAdapter = new PlaylistSongAdapter(new PlaylistSongAdapter.OnItemClickListener() {
             @Override
             public void onSongClick(SongWithArtists song) {
@@ -135,9 +146,11 @@ public class PlaylistFragment extends Fragment {
 
             @Override
             public void onUnlikeClick(SongWithArtists song) {
-                // Xóa bài hát khỏi danh sách yêu thích
+                SongOptionsBottomSheetFragment bottomSheet = SongOptionsBottomSheetFragment.newInstance(song);
+                bottomSheet.show(getChildFragmentManager(), bottomSheet.getTag());
             }
         });
+
         backButton = view.findViewById(R.id.backArrow);
         backButton.setOnClickListener(v -> {
             NavController navController = NavHostFragment.findNavController(PlaylistFragment.this);
@@ -198,6 +211,41 @@ public class PlaylistFragment extends Fragment {
             playerVM.setCurrentSong(firstSong);
             playerVM.setIsPlaying(true);
             playerVM.play();
+        });
+
+        searchEditText.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                List<SongWithArtists> playlistSongs = playlistVM.getPlaylistSongs().getValue();
+                if (playlistSongs == null) {
+                    playlistSongs = new ArrayList<>();
+                }
+                String query = s.toString().trim();
+                if (!query.isEmpty()) {
+                    List<SongWithArtists> filteredSongs = new ArrayList<>();
+                    for (SongWithArtists song : playlistSongs) {
+                        if (song.song.getName().toLowerCase().contains(query.toLowerCase())) {
+                            filteredSongs.add(song);
+                        }
+                    }
+                    playlistSongAdapter.setSongs(filteredSongs);
+                    TextView noResultsTextView = view.findViewById(R.id.tvMessage);
+                    if (filteredSongs.isEmpty()) {
+                        noResultsTextView.setVisibility(View.VISIBLE);
+                        noResultsTextView.setText("Không tìm thấy bài hát nào");
+                    } else {
+                        noResultsTextView.setVisibility(View.GONE);
+                    }
+                } else {
+                    playlistSongAdapter.setSongs(playlistVM.getPlaylistSongs().getValue());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(android.text.Editable s) { }
         });
 
         addSongButton.setOnClickListener(v -> {

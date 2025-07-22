@@ -69,6 +69,7 @@ public class SearchSongsBottomSheetFragment  extends BottomSheetDialogFragment {
         if (songs != null) {
             currentSongsInPlaylist = songs;
         }
+        setStyle(STYLE_NORMAL, R.style.CustomBottomSearchSheetDialogTheme);
     }
 
 

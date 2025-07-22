@@ -10,7 +10,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.vmusic.database.AppDatabase;
+import com.example.vmusic.entity.Playlist;
 import com.example.vmusic.entity.Song;
+import com.example.vmusic.models.PlaylistWithSongs;
 import com.example.vmusic.models.SongWithArtists;
 import com.example.vmusic.models.SongWithGenres;
 import com.example.vmusic.models.SongWithPlaylists;
@@ -83,6 +85,10 @@ public class SongViewModel extends AndroidViewModel{
     }
     public LiveData<List<Song>> getSongsByArtistId(int artistId) {
         return repository.getSongsByArtistId(artistId);
+    }
+
+    public LiveData<List<PlaylistWithSongs>> getPlaylistsByTypeAndUser(String type, int userId) {
+        return playlistRepository.getPlaylistsByTypeAndUser(type, userId);
     }
 
 
@@ -194,5 +200,9 @@ public class SongViewModel extends AndroidViewModel{
             });
         }
         selectedSongs.setValue(new ArrayList<>());
+    }
+
+    public LiveData<Boolean> isSongIsInFavorite(int songId, int userId) {
+        return playlistRepository.isFavorite(songId, userId);
     }
 }

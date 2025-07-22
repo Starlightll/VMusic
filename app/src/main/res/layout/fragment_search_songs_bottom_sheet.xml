@@ -6,13 +6,12 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="@drawable/bottom_sheet_background"
     tools:context=".ui.fragment.SearchSongsBottomSheetFragment">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Tìm và Thêm Bài hát"
+        android:text="@string/t_m_v_th_m_b_i_h_t"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="@android:color/black"
@@ -22,7 +21,7 @@
         android:id="@+id/bottomSheetSearchEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Nhập tên bài hát hoặc nghệ sĩ"
+        android:hint="@string/nh_p_t_n_b_i_h_t_ho_c_ngh_s"
         android:drawableStart="@drawable/ic_search"
         android:drawablePadding="8dp"
         android:padding="12dp"
@@ -43,7 +42,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="16dp"
-    android:text="Xác nhận"
+    android:text="@string/x_c_nh_n"
     android:background="@drawable/btn_primary"
     android:textColor="@android:color/white"/>
 

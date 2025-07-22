@@ -5,6 +5,7 @@
     android:id="@+id/mini_player"
     android:layout_width="match_parent"
     android:layout_height="60dp"
+    android:background="?attr/miniplayer"
     tools:context=".ui.fragment.MiniPlayerFragment">
 
     <!-- Ảnh bài hát -->

@@ -6,6 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.example.vmusic.entity.Playlist;
+import com.example.vmusic.models.PlaylistWithSongs;
 import com.example.vmusic.models.SongWithArtists;
 import com.example.vmusic.repository.PlaylistRepository;
 import com.example.vmusic.repository.SongRepository;
@@ -31,5 +33,9 @@ public class PlaylistViewModel extends AndroidViewModel {
     public LiveData<List<SongWithArtists>> getPlaylistSongs(int playlistId) {
         playlistSongs = repo.getPlaylistSongs(playlistId);
         return playlistSongs;
+    }
+
+    public LiveData<List<PlaylistWithSongs>> getAllPlaylistsByTypeAndUserId(String type, int userId) {
+        return repo.getPlaylistsByTypeAndUser(type, userId);
     }
 }

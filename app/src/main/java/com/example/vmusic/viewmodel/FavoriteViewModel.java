@@ -34,5 +34,9 @@ public class FavoriteViewModel extends ViewModel {
         return favoriteSongs;
     }
 
+    public void removeSongFromFavorite(int songId, int userId) {
+        repo.removeFromFavorite(songId, userId);
+    }
+
 
 }

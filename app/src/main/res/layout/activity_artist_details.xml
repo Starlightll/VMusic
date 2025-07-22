@@ -52,14 +52,14 @@
                 android:id="@+id/btn_choose_artist_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Chọn ảnh"
+                android:text="@string/ch_n_nh"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="16dp"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tên nghệ sĩ*"
+                android:text="@string/atistname"
                 android:textColor="@color/white"
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="8dp"/>
@@ -68,7 +68,7 @@
                 android:id="@+id/edit_artist_name"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:hint="Nhập tên nghệ sĩ"
+                android:hint="@string/input_artist_name_txt"
                 android:background="@color/dark_gray"
                 android:textColor="@color/white"
                 android:paddingStart="12dp"
@@ -85,7 +85,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Các bài hát của nghệ sĩ"
+                    android:text="@string/artist_songs"
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     android:textStyle="bold"
@@ -109,7 +109,7 @@
         android:id="@+id/btn_save_artist"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Lưu nghệ sĩ"
+        android:text="@string/l_u_ngh_s"
         android:layout_margin="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
