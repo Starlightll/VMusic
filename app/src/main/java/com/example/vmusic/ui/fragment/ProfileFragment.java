@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -35,6 +36,10 @@ public class ProfileFragment extends Fragment {
     private ProfileViewModel mViewModel;
     private FragmentProfileBinding binding;
     private ImageView avatarImageView;
+    private Button btnEditProfile;
+    private String username;
+    private String avatarUrl;
+    private int userId;
 
     public static ProfileFragment newInstance() {
         return new ProfileFragment();
@@ -52,7 +57,10 @@ public class ProfileFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         binding = com.example.vmusic.databinding.FragmentProfileBinding.inflate(inflater, container, false);
         TextView tvUserName = binding.tvUsername;
+        btnEditProfile = binding.btnEditProfile;
         avatarImageView = binding.avatar;
+        username = getUsername();
+        avatarUrl = getAvatarUrl();
         SessionManager sessionManager = new SessionManager(requireContext());
         tvUserName.setText(sessionManager.getUsername() != null ? sessionManager.getUsername() : "Guest");
         Glide.with(this)
@@ -79,6 +87,19 @@ public class ProfileFragment extends Fragment {
             navController.navigateUp();
         });
         LinearLayout headerLayout = binding.headerLayout;
+
+        btnEditProfile.setOnClickListener(v -> {
+            UpdateProfileBottomSheetFragment bottomSheet = UpdateProfileBottomSheetFragment.newInstance(username, avatarUrl);
+            bottomSheet.show(getChildFragmentManager(), bottomSheet.getTag());
+        });
+
+        userId = getCurrentUserId();
+        if (userId == -1) {
+            btnEditProfile.setVisibility(View.GONE);
+            return;
+        }else{
+            btnEditProfile.setVisibility(View.VISIBLE);
+        }
 
 //        if (avatarImageView != null) {
 //            Glide.with(this)
@@ -149,5 +170,24 @@ public class ProfileFragment extends Fragment {
         }else {
             headerLayout.setBackgroundResource(R.drawable.green_gradient);
         }
+    }
+
+    private int getCurrentUserId() {
+        SessionManager sessionManager = new SessionManager(requireContext());
+        if (sessionManager.isLoggedIn()) {
+            return sessionManager.getUserId();
+        } else {
+            return -1;
+        }
+    }
+
+    private String getUsername() {
+        SessionManager sessionManager = new SessionManager(requireContext());
+        return sessionManager.getUsername() != null ? sessionManager.getUsername() : "Guest";
+    }
+
+    private String getAvatarUrl() {
+        SessionManager sessionManager = new SessionManager(requireContext());
+        return sessionManager.getUserAvatar() != null ? sessionManager.getUserAvatar() : "";
     }
 }

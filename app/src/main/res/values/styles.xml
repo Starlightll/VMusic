@@ -35,12 +35,22 @@
         <item name="android:backgroundDimAmount">0.6</item>
     </style>
 
+    <style name="CustomBottomUpdateProfileSheetDialogTheme" parent="Theme.Design.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/BottomSheetUpdateProfileStyle</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimAmount">0.6</item>
+    </style>
+
     <style name="BottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@drawable/bottom_sheet_background</item>
     </style>
 
     <style name="BottomSheetWhiteStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@drawable/bottom_sheet_white_background</item>
+    </style>
+
+    <style name="BottomSheetUpdateProfileStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/bottom_sheet_update_profile_background</item>
     </style>
 
 </resources>
