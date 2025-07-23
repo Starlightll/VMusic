@@ -55,7 +55,7 @@ public class UpdateProfileBottomSheetFragment extends BottomSheetDialogFragment 
     private String avatarUrl;
 
     private EditText usernameEditText;
-    private CircleImageView avatarImageView;
+    private ImageView avatarImageView;
     private TextView btnChangeAvatar, btnCancel, btnSave;
 
     private Uri tempAvatarUri;
@@ -87,7 +87,7 @@ public class UpdateProfileBottomSheetFragment extends BottomSheetDialogFragment 
             avatarUrl = getArguments().getString(ARG_PARAM2);
             userProfile = new UserProfile();
             userProfile.setUsername(username);
-            userProfile.setAvatarUrl(getArguments().getString(avatarUrl, ""));
+            userProfile.setAvatarUrl(avatarUrl);
         } else {
             userProfile = new UserProfile();
         }

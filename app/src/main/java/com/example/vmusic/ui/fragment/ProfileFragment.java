@@ -17,6 +17,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -27,18 +28,23 @@ import com.bumptech.glide.request.transition.Transition;
 import com.example.vmusic.R;
 import com.example.vmusic.databinding.FragmentProfileBinding;
 import com.example.vmusic.databinding.FragmentSettingsBinding;
+import com.example.vmusic.entity.User;
 import com.example.vmusic.helper.SessionManager;
+import com.example.vmusic.models.UserProfile;
 import com.example.vmusic.viewmodel.ProfileViewModel;
+import com.example.vmusic.viewmodel.UserProfileViewModel;
 
 
 public class ProfileFragment extends Fragment {
 
     private ProfileViewModel mViewModel;
     private FragmentProfileBinding binding;
+    private UserProfileViewModel userProfileViewModel;
     private ImageView avatarImageView;
     private Button btnEditProfile;
     private String username;
     private String avatarUrl;
+    private LiveData<UserProfile> user;
     private int userId;
 
     public static ProfileFragment newInstance() {
@@ -49,7 +55,7 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        userProfileViewModel = new ViewModelProvider(requireActivity()).get(UserProfileViewModel.class);
     }
 
     @Override
@@ -59,6 +65,7 @@ public class ProfileFragment extends Fragment {
         TextView tvUserName = binding.tvUsername;
         btnEditProfile = binding.btnEditProfile;
         avatarImageView = binding.avatar;
+        user = userProfileViewModel.getCurrentUser();
         username = getUsername();
         avatarUrl = getAvatarUrl();
         SessionManager sessionManager = new SessionManager(requireContext());

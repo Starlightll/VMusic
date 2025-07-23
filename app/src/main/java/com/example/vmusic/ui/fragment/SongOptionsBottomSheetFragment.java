@@ -99,7 +99,6 @@ public class SongOptionsBottomSheetFragment extends BottomSheetDialogFragment {
 
         songViewModel = new ViewModelProvider(requireActivity()).get(SongViewModel.class);
         userId = getCurrentUserId();
-        // Kiểm tra bài hát có trong danh sách yêu thích không
         songViewModel.isSongIsInFavorite(currentSong.song.songId, userId).observe(getViewLifecycleOwner(), isFavorite -> {
             isLiked = isFavorite;
             if (isLiked) {
@@ -108,7 +107,7 @@ public class SongOptionsBottomSheetFragment extends BottomSheetDialogFragment {
                 optionLikedText.setText("Đã thích");
                 optionLikedText.setTextColor(getResources().getColor(R.color.primary));
             } else {
-                optionLikedIcon.setImageResource(R.drawable.ic_favorite); // Icon trái tim rỗng
+                optionLikedIcon.setImageResource(R.drawable.ic_favorite);
                 optionLikedIcon.setColorFilter(getResources().getColor(android.R.color.white));
                 optionLikedText.setText("Thêm vào yêu thích");
                 optionLikedText.setTextColor(getResources().getColor(android.R.color.white));
@@ -118,13 +117,11 @@ public class SongOptionsBottomSheetFragment extends BottomSheetDialogFragment {
 
         if (currentSong != null) {
             songTitle.setText(currentSong.song.getName());
-            // Tải ảnh album art bằng Glide (cần thêm dependency Glide vào build.gradle)
             Glide.with(this)
                     .load(currentSong.song.getImage())
                     .placeholder(R.drawable.ic_launcher_background)
                     .into(albumArt);
             LinearLayout headerLayout = view.findViewById(R.id.song_info_container);
-            //Palette để lấy màu chủ đạo từ ảnh
             if (currentSong.song.getImage() != null) {
                 Glide.with(this)
                         .asBitmap()
@@ -155,7 +152,6 @@ public class SongOptionsBottomSheetFragment extends BottomSheetDialogFragment {
 
             optionLiked.setOnClickListener(v -> {
                 if (!isLiked) {
-                    // Người dùng đang muốn like
                     isLiked = true;
                     songViewModel.addToFavorite(currentSong.song.getSongId(), userId);
                     optionLikedIcon.setImageResource(R.drawable.ic_favorite_full);
@@ -163,7 +159,6 @@ public class SongOptionsBottomSheetFragment extends BottomSheetDialogFragment {
                     optionLikedText.setText("Đã thích");
                     optionLikedText.setTextColor(getResources().getColor(R.color.primary));
                 } else {
-                    // Người dùng đang muốn unlike → cần xác nhận
                     Context context = getContext();
                     LayoutInflater inflaterDialog = LayoutInflater.from(context);
                     View customView = inflaterDialog.inflate(R.layout.custom_delete_dialog, null);
@@ -183,7 +178,7 @@ public class SongOptionsBottomSheetFragment extends BottomSheetDialogFragment {
                             .create();
 
                     buttonDelete.setOnClickListener(v1 -> {
-                        isLiked = false; // Cập nhật trạng thái sau khi xác nhận
+                        isLiked = false;
                         songViewModel.removeFromFavorite(currentSong.song.getSongId(), userId);
                         Toast.makeText(context, "Đã xóa \"" + currentSong.song.getName() + "\" khỏi danh sách yêu thích.", Toast.LENGTH_SHORT).show();
                         optionLikedIcon.setImageResource(R.drawable.ic_favorite);
@@ -221,7 +216,6 @@ public class SongOptionsBottomSheetFragment extends BottomSheetDialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // Thiết lập tiêu đề cho BottomSheetDialog
         if (getDialog() != null && getDialog().getWindow() != null) {
             getDialog().getWindow().setTitle("Tùy chọn bài hát");
         }
@@ -238,7 +232,6 @@ public class SongOptionsBottomSheetFragment extends BottomSheetDialogFragment {
             BottomSheetDialog bottomSheetDialog = (BottomSheetDialog) dialogInterface;
             View bottomSheet = bottomSheetDialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
             if (bottomSheet != null) {
-                // Đảm bảo bottom sheet mở ra hoàn toàn
                 BottomSheetBehavior.from(bottomSheet).setState(BottomSheetBehavior.STATE_EXPANDED);
 
             }
