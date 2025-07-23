@@ -12,6 +12,7 @@ public class SessionManager {
     private static final String KEY_USERNAME = "username";
     private static final String KEY_ROLE = "role";
     private static final String KEY_USER_ID = "user_id";
+    private static final String KEY_USER_AVATAR = "avatar_url";
 
     private final SharedPreferences prefs;
     private final SharedPreferences.Editor editor;
@@ -26,6 +27,7 @@ public class SessionManager {
         editor.putString(KEY_EMAIL, user.getEmail());
         editor.putString(KEY_USERNAME, user.getUserName());
         editor.putString(KEY_ROLE, user.getRole());
+        editor.putString(KEY_USER_AVATAR, user.getAvatarUrl());
         editor.apply();
     }
 
@@ -46,6 +48,10 @@ public class SessionManager {
 
     public boolean isLoggedIn() {
         return getEmail() != null;
+    }
+
+    public String getUserAvatar() {
+        return prefs.getString(KEY_USER_AVATAR, null);
     }
 
 

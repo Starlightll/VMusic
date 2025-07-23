@@ -4,5 +4,8 @@
         <attr name="fullscreenTextColor" format="color" />
         <attr name="iconColor" format="color" />
         <attr name="onSurfaceIconColor" format="color" />
+        <attr name="miniplayer" format="color" />
+        <attr name="navHeader" format="color" />
+        <attr name="navBottom" format="color" />
     </declare-styleable>
 </resources>

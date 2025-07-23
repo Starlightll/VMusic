@@ -54,12 +54,14 @@
         android:visibility="gone" />
 
 
-
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?android:attr/windowBackground"
+        android:background="@drawable/black_gradient_bottomtop"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        app:backgroundTint="#00000000"
         app:menu="@menu/bottom_nav_menu" />
 
 

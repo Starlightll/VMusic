@@ -48,15 +48,20 @@ public interface PlaylistDao {
     @Query("SELECT * FROM playlists WHERE type = :type AND userOwnerId = :userOwnerId LIMIT 1")
     Playlist getPlaylistByTypeAndUser(String type, int userOwnerId);
 
+    @Query("SELECT * FROM playlists WHERE type = :type AND userOwnerId = :userOwnerId")
+    LiveData<List<PlaylistWithSongs>> getAllPlaylistsWithSongsByTypeAndUser(String type, int userOwnerId);
+
+
     @Query("SELECT * FROM playlists WHERE userOwnerId = :userOwnerId")
     LiveData<List<Playlist>> getAllPlaylistsByUser(int userOwnerId);
+
 
     @Query("SELECT EXISTS(" +
             "SELECT 1 FROM PlaylistSongCrossRef ps " +
             "INNER JOIN playlists p ON p.playListId = ps.playListId " +
             "WHERE ps.songId = :songId AND p.userOwnerId = :userId AND p.type = 'Favorite'" +
             ")")
-    boolean isFavorite(int songId, int userId);
+    LiveData<Boolean> isFavorite(int songId, int userId);
     //Delete song from playlist
     @Query("DELETE FROM PlaylistSongCrossRef WHERE playListId = :playlistId AND songId = :songId")
     void deleteSongFromPlaylist(int playlistId, int songId);
@@ -66,6 +71,8 @@ public interface PlaylistDao {
             "INNER JOIN playlists p ON p.playListId = ps.playListId " +
             "WHERE p.userOwnerId = :userId AND p.type = 'Favorite'")
     List<Integer> getFavoriteSongIds(int userId);
+    @Insert
+    long insert(Playlist playlist);
 
 
 
@@ -79,5 +86,23 @@ public interface PlaylistDao {
             "GROUP BY s.songId")
     LiveData<List<SongWithArtists>> getSongsInFavoritePlaylist(int userId);
 
+    @Query("SELECT * FROM songs s " +
+            "INNER JOIN PlaylistSongCrossRef ps ON s.songId = ps.songId " +
+            "INNER JOIN playlists p ON ps.playListId = p.playListId " +
+            "INNER JOIN SongArtistCrossRef sa ON s.songId = sa.songId " +
+            "INNER JOIN artists a ON sa.artistId = a.artistId " +
+            "WHERE p.playListId = :playlistId AND p.type == 'playlist' ")
+    LiveData<List<SongWithArtists>> getSongsInPlaylist(int playlistId);
+
+
+    @Query("SELECT EXISTS(" +
+            "SELECT 1 FROM PlaylistSongCrossRef ps " +
+            "INNER JOIN playlists p ON p.playListId = ps.playListId " +
+            "WHERE ps.songId = :songId AND p.userOwnerId = :userId AND p.type = 'Favorite'" +
+            ")")
+    LiveData<Boolean> isSongFavorite(int songId, int userId);
+    
+    @Query("SELECT EXISTS(SELECT 1 FROM PlaylistSongCrossRef WHERE playListId = :playlistId AND songId = :songId)")
+    LiveData<Boolean> isSongInPlaylistLive(int songId , int playlistId);
 
 }

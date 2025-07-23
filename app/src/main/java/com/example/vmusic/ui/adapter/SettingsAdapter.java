@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,6 +15,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.vmusic.MainActivity;
 import com.example.vmusic.R;
 import com.example.vmusic.helper.SessionManager;
@@ -54,6 +56,12 @@ public class SettingsAdapter  extends RecyclerView.Adapter<SettingsAdapter.ViewH
         if (holder instanceof ItemViewHolder) {
             ((ItemViewHolder) holder).textSetting.setText(items.get(position - 1)); // -1 vì header chiếm vị trí 0
         } else if (holder instanceof HeaderViewHolder) {
+            ImageView avatarImageView = holder.itemView.findViewById(R.id.avatar);
+            SessionManager sessionManager = new SessionManager(holder.itemView.getContext());
+             Glide.with(holder.itemView.getContext())
+                     .load(sessionManager.getUserAvatar())
+                     .placeholder(R.drawable.ic_launcher_background)
+                     .into(avatarImageView);
             holder.itemView.findViewById(R.id.item_settings_profile).setOnClickListener(v -> {
                 Toast.makeText(holder.itemView.getContext(), "Chỉnh sửa thông tin cá nhân", Toast.LENGTH_SHORT).show();
                 navController.navigate(R.id.action_settingsFragment_to_profileFragment);

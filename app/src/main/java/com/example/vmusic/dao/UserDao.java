@@ -32,4 +32,7 @@ public interface UserDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertAll(User... users);
+
+    @Query("SELECT * FROM users WHERE userId = :userId LIMIT 1")
+    User getUserById(int userId);
 }

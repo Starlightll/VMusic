@@ -77,7 +77,7 @@ public class LoginFragment extends Fragment {
 
                 if(user.getRole().toLowerCase().equals("admin")) {
                     NavHostFragment.findNavController(this)
-                            .navigate(R.id.action_loginFragment_to_adminDashboardFragment);
+                            .navigate(R.id.action_loginFragment_to_admin_nav_graph2);
                 } else {
                     NavHostFragment.findNavController(this)
                             .navigate(R.id.action_loginFragment_to_mainFragment);

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,6 +29,7 @@ import java.util.List;
  */
 public class SettingsFragment extends Fragment {
     RecyclerView recyclerView;
+    ImageView avatarImageView;
     private FragmentSettingsBinding binding;
     List<String> settingsList = Arrays.asList(
             "Tài khoản", "Ngôn ngữ",

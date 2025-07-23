@@ -23,7 +23,6 @@ public class AdminDashboardFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // Liên kết với file layout đã tạo
         return inflater.inflate(R.layout.fragment_admin_dashboard, container, false);
     }
 
@@ -31,31 +30,35 @@ public class AdminDashboardFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Tìm CardView "Quản lý bài hát"
+        // Khởi tạo NavController một lần để tái sử dụng
+        NavController navController = NavHostFragment.findNavController(this);
+
+        // Ánh xạ các View
         MaterialCardView manageSongsCard = view.findViewById(R.id.card_manage_songs);
+        MaterialCardView manageArtistsCard = view.findViewById(R.id.card_manage_artists);
+        // MaterialCardView manageUsersCard = view.findViewById(R.id.card_manage_users); // Sẽ thêm sau
+        Button logoutButton = view.findViewById(R.id.btnLogout);
 
         // Gán sự kiện click
-        manageSongsCard.setOnClickListener(v -> {
-            // Khi nhấn vào, điều hướng đến màn hình CRUD
-            // Chúng ta sẽ tạo action này ở bước tiếp theo
-            NavHostFragment.findNavController(AdminDashboardFragment.this)
-                    .navigate(R.id.action_adminDashboardFragment_to_adminSongListFragment);
+        manageSongsCard.setOnClickListener(v ->
+                navController.navigate(R.id.action_adminDashboardFragment_to_adminSongListFragment)
+        );
 
-        });
-        MaterialCardView manageArtistsCard = view.findViewById(R.id.card_manage_artists);
-        manageArtistsCard.setOnClickListener(v -> {
-            NavController navController = NavHostFragment.findNavController(this);
-            navController.navigate(R.id.action_adminDashboardFragment_to_adminArtistListFragment);
-        });
+        manageArtistsCard.setOnClickListener(v ->
+                navController.navigate(R.id.action_adminDashboardFragment_to_adminArtistListFragment)
+        );
 
-        Button logoutButton = view.findViewById(R.id.btnLogout);
+        // manageUsersCard.setOnClickListener(v ->
+        //     navController.navigate(R.id.action_adminDashboardFragment_to_adminUserListFragment)
+        // );
+
         logoutButton.setOnClickListener(v -> {
+            // Xử lý đăng xuất
             SessionManager session = new SessionManager(requireContext());
             session.logout();
-            AppCompatActivity activity = (AppCompatActivity) view.getContext();
-            if (activity instanceof MainActivity) {
-                ((MainActivity) activity).switchToAuthNavGraph();
-            }
+
+            // Quay về màn hình bắt đầu của đồ thị điều hướng chính (là LoginFragment)
+            navController.navigate(R.id.nav_graph);
         });
     }
 }
