@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 
 public class UserRepository {
     private final UserDao userDao;
+    private final MutableLiveData<User> currentUser = new MutableLiveData<>();
 
     public UserRepository(Application application) {
         AppDatabase db = AppDatabase.getInstance(application);
@@ -41,5 +42,37 @@ public class UserRepository {
 
     public User getUserByEmail(String email) {
         return userDao.getUserByEmail(email);
+    }
+
+    public User getUserById(int userId) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            User user = userDao.getUserById(userId);
+            currentUser.postValue(user);
+        });
+        return currentUser.getValue();
+    }
+
+    public void updateUser(User user) {
+        Executors.newSingleThreadExecutor().execute(() -> userDao.insertAll(user));
+    }
+
+    public void updateUserUsername(int userId, String newUsername) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            User user = userDao.getUserById(userId);
+            if (user != null) {
+                user.setUserName(newUsername);
+                userDao.insertAll(user);
+            }
+        });
+    }
+
+    public void updateUserAvatar(int userId, String newAvatarUrl) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            User user = userDao.getUserById(userId);
+            if (user != null) {
+                user.setAvatarUrl(newAvatarUrl);
+                userDao.insertAll(user);
+            }
+        });
     }
 }
