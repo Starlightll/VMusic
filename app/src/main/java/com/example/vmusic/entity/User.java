@@ -11,6 +11,15 @@ public class User {
     private String userName;
     private  String email;
     private  String role;
+    private String avatarUrl;
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
 
     public User() {
     }
@@ -21,6 +30,15 @@ public class User {
         this.userName = userName;
         this.email = email;
         this.role = role;
+    }
+
+    public User(int userId, String passwordHash, String userName, String email, String role, String avatarUrl) {
+        this.userId = userId;
+        this.passwordHash = passwordHash;
+        this.userName = userName;
+        this.email = email;
+        this.role = role;
+        this.avatarUrl = avatarUrl;
     }
 
     public int getUserId() {

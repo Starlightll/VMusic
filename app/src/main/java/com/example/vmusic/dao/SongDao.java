@@ -47,23 +47,15 @@ public interface SongDao {
             "WHERE sa.artistId = :artistId")
     LiveData<List<Song>> getSongsByArtistId(int artistId);
 
-
-    // Phương thức insert một mối quan hệ
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertSongGenreCrossRef(SongGenreCrossRef crossRef);
     @Transaction
     default void insertSongWithGenres(Song song, List<Integer> genreIds) {
-        // 1. Insert bài hát và lấy về rowId (kiểu long)
         long rowId = insert(song);
-
-        // Chuyển đổi rowId thành songId kiểu int
         int songId = (int) rowId;
 
-        // 2. Kiểm tra xem bài hát đã được insert thành công chưa
         if (songId > 0 && genreIds != null && !genreIds.isEmpty()) {
-            // 3. Lặp qua danh sách các genre ID đã chọn
             for (Integer genreId : genreIds) {
-                // Tạo một đối tượng quan hệ với songId kiểu int
                 SongGenreCrossRef crossRef = new SongGenreCrossRef(songId, genreId);
                 insertSongGenreCrossRef(crossRef);
             }
@@ -81,7 +73,8 @@ public interface SongDao {
 
     @Query("SELECT * FROM songs WHERE songId IN (:songIds)")
     LiveData<List<Song>> getSongsByIds(List<Integer> songIds);
-
+    @Query("SELECT COUNT(*) FROM SongArtistCrossRef WHERE artistId = :artistId")
+    int getSongCountForArtist(int artistId);
     @Insert
     long insert(Song song);
 
@@ -91,7 +84,7 @@ public interface SongDao {
     void insertSongArtistCrossRef(SongArtistCrossRef crossRef);
     @Delete
     void deleteSong(Song song);
-    // PHƯƠNG THỨC MỚI: Xóa các quan hệ genre của một bài hát
+
     @Query("DELETE FROM SongGenreCrossRef WHERE songId = :songId")
     void deleteAllGenresForSong(int songId);
     @Transaction
@@ -99,16 +92,11 @@ public interface SongDao {
     LiveData<SongWithArtists> getSongWithArtists(int songId);
     @Query("DELETE FROM SongArtistCrossRef WHERE songId = :songId")
     void deleteAllArtistsForSong(int songId);
-    // PHƯƠNG THỨC MỚI QUAN TRỌNG: Gộp tất cả hành động update vào một transaction
+
     @Transaction
     default void updateSongWithGenres(Song song, List<Integer> newGenreIds) {
-        // 1. Cập nhật thông tin cơ bản của bài hát
         updateSong(song);
-
-        // 2. Xóa hết các quan hệ genre cũ
         deleteAllGenresForSong(song.getSongId());
-
-        // 3. Thêm các quan hệ genre mới
         if (newGenreIds != null) {
             for (Integer genreId : newGenreIds) {
                 SongGenreCrossRef crossRef = new SongGenreCrossRef(song.getSongId(), genreId);
@@ -118,21 +106,16 @@ public interface SongDao {
     }
     @Transaction
     default void insertSongWithRelationships(Song song, List<Integer> genreIds, List<Integer> artistIds) {
-        // 1. Chèn bài hát và lấy về ID của nó
-        long songId = insert(song); // Giả sử bạn có phương thức insert(Song) trả về long
+        long songId = insert(song);
 
-        // 2. Chèn các mối quan hệ với Genre
         if (genreIds != null) {
             for (Integer genreId : genreIds) {
-                // Giả sử bạn có phương thức insertSongGenreCrossRef
                 insertSongGenreCrossRef(new SongGenreCrossRef((int)songId, genreId));
             }
         }
 
-        // 3. Chèn các mối quan hệ với Artist
         if (artistIds != null) {
             for (Integer artistId : artistIds) {
-                // Giả sử bạn có phương thức insertSongArtistCrossRef
                 insertSongArtistCrossRef(new SongArtistCrossRef((int)songId, artistId));
             }
         }
@@ -140,22 +123,18 @@ public interface SongDao {
 
     @Transaction
     default void updateSongWithRelationships(Song song, List<Integer> genreIds, List<Integer> artistIds) {
-        // 1. Cập nhật thông tin bài hát
-        updateSong(song); // Giả sử bạn có phương thức updateSong(Song)
+        updateSong(song);
         int songId = song.getSongId();
 
-        // 2. Xóa tất cả các mối quan hệ cũ
         deleteAllGenresForSong(songId);
         deleteAllArtistsForSong(songId);
 
-        // 3. Chèn lại các mối quan hệ với Genre
         if (genreIds != null) {
             for (Integer genreId : genreIds) {
                 insertSongGenreCrossRef(new SongGenreCrossRef(songId, genreId));
             }
         }
 
-        // 4. Chèn lại các mối quan hệ với Artist
         if (artistIds != null) {
             for (Integer artistId : artistIds) {
                 insertSongArtistCrossRef(new SongArtistCrossRef(songId, artistId));
@@ -170,5 +149,13 @@ public interface SongDao {
     @Transaction
     @Query("SELECT * FROM songs WHERE songId = :songId")
     SongWithArtists getSongWithArtists(long songId);
+
+
+    @Query("SELECT * FROM songs" +
+            " INNER JOIN SongArtistCrossRef sa ON songs.songId = sa.songId" +
+            " INNER JOIN artists a ON sa.artistId = a.artistId" +
+            " WHERE songs.name LIKE '%' || :query || '%' OR a.name LIKE '%' || :query || '%'" +
+            " GROUP BY songs.songId")
+    LiveData<List<SongWithArtists>> searchSongsWithArtistsQuery(String query);
 
 }

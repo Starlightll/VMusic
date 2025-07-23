@@ -37,6 +37,9 @@ public class PlaylistRepository {
         executorService.execute(() -> playlistDao.Insert(playlist));
     }
 
+    public long insertPlaylist(Playlist playlist) {
+        return playlistDao.insert(playlist);
+    }
 
     // ✅ Cập nhật playlist
     public void update(Playlist playlist) {
@@ -49,6 +52,10 @@ public class PlaylistRepository {
     }
     public LiveData<List<Playlist>> getPlaylistsByUser(int userId) {
         return playlistDao.getAllPlaylistsByUser(userId);
+    }
+
+    public LiveData<List<PlaylistWithSongs>> getPlaylistsByTypeAndUser(String type, int userId) {
+        return playlistDao.getAllPlaylistsWithSongsByTypeAndUser(type, userId);
     }
 
     public void addSongToPlaylist(int songId, int playlistId) {
@@ -79,7 +86,7 @@ public class PlaylistRepository {
             }
         });
     }
-    public boolean isFavorite(int songId, int userId) {
+    public LiveData<Boolean> isFavorite(int songId, int userId) {
         return playlistDao.isFavorite(songId, userId);
     }
 
@@ -91,7 +98,14 @@ public class PlaylistRepository {
             }
         });
     }
-
+    public void removeFromPlaylist(int songId, int userId) {
+        executorService.execute(() -> {
+            Playlist favorite = playlistDao.getPlaylistByTypeAndUser("playlist", userId);
+            if (favorite != null) {
+                playlistDao.deleteSongFromPlaylist(favorite.playListId, songId);
+            }
+        });
+    }
     public void getFavoriteSongIds(int userId, Consumer<List<Integer>> callback) {
         Executors.newSingleThreadExecutor().execute(() -> {
             List<Integer> result = playlistDao.getFavoriteSongIds(userId);
@@ -106,4 +120,15 @@ public class PlaylistRepository {
         return playlistDao.getSongsInFavoritePlaylist(userId);
     }
 
+    public LiveData<List<SongWithArtists>> getPlaylistSongs(int playlistId) {
+        return playlistDao.getSongsInPlaylist(playlistId);
+    }
+
+    public LiveData<Boolean> isSongFavorite(int songId, int userId) {
+        return playlistDao.isSongFavorite(songId, userId);
+    }
+
+    public LiveData<Boolean> isSongInPlaylistLive( int songId , int playlistId) {
+        return playlistDao.isSongInPlaylistLive(songId , playlistId );
+    }
 }

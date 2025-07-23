@@ -132,9 +132,7 @@ public class PlaySongPanelFragment extends Fragment {
             binding.viewPlayMusic.setCurrentItem(1, false);
 
             if (player.getPlaybackState() == Player.STATE_IDLE || player.getMediaItemCount() == 0) {
-                player.setMediaItem(mediaItem);
-                player.prepare();
-                player.play();
+                playerViewModel.playSong(song);
                 playerViewModel.setIsPlaying(true);
             }
             songId = song.getSongId();
@@ -219,8 +217,10 @@ public class PlaySongPanelFragment extends Fragment {
     private void updateFavoriteIcon(Boolean isFav) {
         if (isFav != null && isFav) {
             binding.imgBtnFavorite.setImageResource(R.drawable.ic_favorite_full);
+            binding.imgBtnFavorite.setColorFilter(ContextCompat.getColor(requireContext(), R.color.primary));
         } else {
             binding.imgBtnFavorite.setImageResource(R.drawable.ic_favorite);
+            binding.imgBtnFavorite.setColorFilter(ContextCompat.getColor(requireContext(), R.color.white));
         }
     }
 

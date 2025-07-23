@@ -60,6 +60,8 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.core:core:1.13.1'
 
+    //Tric mau tu anh
+    implementation "androidx.palette:palette-ktx:1.0.0"
 
     implementation 'androidx.navigation:navigation-fragment:2.7.0'
     implementation 'androidx.navigation:navigation-ui:2.7.0'

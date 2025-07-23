@@ -22,8 +22,8 @@
             app:destination="@id/mainFragment"
             app:enterAnim="@anim/slide_in_left"/>
         <action
-            android:id="@+id/action_loginFragment_to_adminDashboardFragment"
-            app:destination="@id/adminDashboardFragment" />
+            android:id="@+id/action_loginFragment_to_admin_nav_graph2"
+            app:destination="@id/admin_nav_graph" />
     </fragment>
 
     <fragment
@@ -55,37 +55,7 @@
         android:name="com.example.vmusic.ui.fragment.MainFragment"
         android:label="Main">
     </fragment>
-    <fragment
-        android:id="@+id/adminDashboardFragment"
-        android:name="com.example.vmusic.ui.fragment.AdminDashboardFragment"
-        android:label="Admin Dashboard">
-
-        <action
-            android:id="@+id/action_adminDashboardFragment_to_adminSongListFragment"
-            app:destination="@id/adminSongListFragment" />
-        <action
-            android:id="@+id/action_adminDashboardFragment_to_adminArtistListFragment"
-            app:destination="@id/adminArtistListFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/adminSongListFragment"
-        android:name="com.example.vmusic.ui.fragment.AdminSongListFragment"
-        android:label="Admin Song List" />
-    <fragment
-        android:id="@+id/adminArtistListFragment"
-        android:name="com.example.vmusic.ui.fragment.AdminArtistListFragment"
-        android:label="fragment_admin_artist_list"
-        tools:layout="@layout/fragment_admin_artist_list" >
-        <action
-            android:id="@+id/action_adminArtistListFragment_to_artistDetailsActivity"
-            app:destination="@id/artistDetailsActivity" />
-    </fragment>
-
-    <activity
-        android:id="@+id/artistDetailsActivity"
-        android:name="com.example.vmusic.ui.activity.ArtistDetailsActivity"
-        android:label="activity_artist_details"
-        tools:layout="@layout/activity_artist_details" />
+    <include app:graph="@navigation/admin_nav_graph" />
 
 
 </navigation>

@@ -7,9 +7,10 @@ import androidx.room.Relation;
 import com.example.vmusic.entity.Artist;
 import com.example.vmusic.entity.Song;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class SongWithArtists {
+public class SongWithArtists implements Serializable {
 
     @Embedded
     public Song song;

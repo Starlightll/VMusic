@@ -7,6 +7,15 @@
     tools:context=".ui.fragment.FavoritesFragment">
 
     <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="match_parent"
+        android:layout_height="231dp"
+        android:src="@drawable/purple_gradient"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
         android:id="@+id/backArrow"
         android:layout_width="20dp"
         android:layout_height="20dp"
@@ -26,6 +35,7 @@
         android:layout_marginEnd="16dp"
         android:background="@drawable/edittext_search_background"
         android:drawableStart="@drawable/ic_search"
+        android:drawableTint="@color/white"
         android:drawablePadding="8dp"
         android:hint="Tìm trong mục Bài hát đã thích"
         android:paddingStart="12dp"
@@ -33,7 +43,7 @@
         android:paddingEnd="12dp"
         android:paddingBottom="8dp"
         android:textColor="@android:color/white"
-        android:textColorHint="#B3B3B3"
+        android:textColorHint="#F2F2F2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/backArrow" />
@@ -64,32 +74,29 @@
 
     <ImageButton
         android:id="@+id/playAllButton"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_marginTop="76dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/btn_primary"
-        android:src="@drawable/play_solid"
-        android:scaleType="centerInside"
         android:padding="19dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/play_solid"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchEditText"
+        app:layout_constraintTop_toBottomOf="@+id/songCount"
         app:tint="@color/black" />
 
     <Button
         android:id="@+id/addSongButton"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="#333333"
+        android:layout_marginTop="25dp"
+        android:background="@drawable/btn_primary"
         android:drawableStart="@drawable/ic_add"
         android:drawableTint="@android:color/white"
         android:paddingStart="16dp"
-        android:paddingTop="8dp"
         android:paddingEnd="16dp"
-        android:paddingBottom="8dp"
-        android:background="@drawable/btn_primary"
         android:text="Thêm bài hát"
         android:textColor="@android:color/white"
         app:cornerRadius="20dp"
@@ -107,5 +114,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/addSongButton"
         tools:listitem="@layout/item_song_favortite" />
+
+    <TextView
+        android:id="@+id/tvMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="91dp"
+        android:text="NO MESSAGE!"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView5" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,5 +1,6 @@
 package com.example.vmusic.ui.fragment;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -13,18 +14,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.vmusic.R;
 import com.example.vmusic.entity.Artist;
+import com.example.vmusic.entity.Playlist;
 import com.example.vmusic.entity.Song;
 import com.example.vmusic.helper.SessionManager;
 import com.example.vmusic.models.SongWithArtists;
 import com.example.vmusic.ui.adapter.FavoriteSongAdapter;
 import com.example.vmusic.viewmodel.FavoriteViewModel;
 import com.example.vmusic.viewmodel.PlayerViewModel;
+import com.example.vmusic.viewmodel.PlaylistViewModel;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,9 +47,14 @@ public class FavoritesFragment extends Fragment {
     private RecyclerView recyclerView;
     private FavoriteSongAdapter favoriteSongAdapter;
     private PlayerViewModel playerVM;
+    private PlaylistViewModel playlistVM;
     private ImageView backButton;
     private TextView tvSongCount;
+    private EditText searchEditText;
     private ImageButton btnPlayAll;
+    private Button addSongButton;
+    private int playlistId;
+    private Playlist playlist;
     private int userId;
 
     // TODO: Rename parameter arguments, choose names that match
@@ -82,6 +94,8 @@ public class FavoritesFragment extends Fragment {
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+            playlistId = getArguments().getInt("playlistId", -1);
+            playlist = (Playlist) getArguments().getSerializable("playlist");
         }
     }
 
@@ -93,8 +107,9 @@ public class FavoritesFragment extends Fragment {
         recyclerView = view.findViewById(R.id.songsRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         tvSongCount = view.findViewById(R.id.songCount);
+        searchEditText = view.findViewById(R.id.searchEditText);
         btnPlayAll = view.findViewById(R.id.playAllButton);
-
+        addSongButton = view.findViewById(R.id.addSongButton);
         return view;
     }
 
@@ -106,13 +121,59 @@ public class FavoritesFragment extends Fragment {
             @Override
             public void onSongClick(SongWithArtists song) {
                 // Play bài hát
+                List<Song> songs = new ArrayList<>();
+                List<SongWithArtists> currentFavoriteSongs = favoriteVM.getFavoritePlaylist().getValue();
+                if (currentFavoriteSongs != null) {
+                    for (SongWithArtists s : currentFavoriteSongs) {
+                        songs.add(s.song);
+                    }
+                    int songIndex = songs.indexOf(song.song);
+                    if (songIndex != -1) {
+                        playerVM.setPlaylist(songs, songIndex);
+                        playerVM.play();
+                    }
+                }
             }
 
             @Override
             public void onUnlikeClick(SongWithArtists song) {
                 // Xóa bài hát khỏi danh sách yêu thích
+                // Lấy Context từ View của Fragment/Activity
+                // (Nếu bạn đang ở trong Fragment, hãy dùng requireContext() hoặc getContext())
+                // (Nếu bạn đang ở trong Activity, hãy dùng 'this' hoặc 'YourActivity.this')
+                android.content.Context context = getContext();
+
+                LayoutInflater inflater = LayoutInflater.from(context);
+                View customView = inflater.inflate(R.layout.custom_delete_dialog, null);
+
+                ImageView dialogIcon = customView.findViewById(R.id.dialog_icon);
+                TextView dialogTitle = customView.findViewById(R.id.dialog_title);
+                TextView dialogMessage = customView.findViewById(R.id.dialog_message);
+                Button buttonCancel = customView.findViewById(R.id.button_cancel);
+                Button buttonDelete = customView.findViewById(R.id.button_delete);
+
+                dialogTitle.setText("Xác nhận xóa");
+                dialogMessage.setText("Bạn có chắc chắn muốn xóa bài hát \"" + song.song.getName() + "\" khỏi danh sách yêu thích không?");
+
+                AlertDialog dialog = new AlertDialog.Builder(context, R.style.TransparentDialogTheme)
+                        .setView(customView) // Đặt layout tùy chỉnh vào dialog
+                        .setCancelable(true) // Cho phép hủy bằng cách chạm ra ngoài hoặc nút Back
+                        .create(); // Tạo dialog
+
+                buttonDelete.setOnClickListener(v -> {
+                    favoriteVM.removeSongFromFavorite(song.song.songId, userId);
+                    Toast.makeText(context, "Đã xóa \"" + song.song.getName() + "\" khỏi danh sách yêu thích.", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                });
+
+                buttonCancel.setOnClickListener(v -> {
+                    Toast.makeText(context, "Hủy bỏ thao tác xóa.", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                });
+                dialog.show();
             }
         });
+
         backButton = view.findViewById(R.id.backArrow);
         backButton.setOnClickListener(v -> {
             NavController navController = NavHostFragment.findNavController(FavoritesFragment.this);
@@ -132,6 +193,7 @@ public class FavoritesFragment extends Fragment {
                 tvSongCount.setText(String.format("%d bài hát", playlist.size()));
             } else {
                 // Handle empty playlist case
+                tvSongCount.setText(String.format("%d bài hát", 0));
                 favoriteSongAdapter.setSongs(new ArrayList<>());
             }
         });
@@ -153,7 +215,51 @@ public class FavoritesFragment extends Fragment {
             playerVM.play();
         });
 
-        // Initialize your UI components and observe LiveData from favoriteVM here
+        searchEditText.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                List<SongWithArtists> favoriteSongs = favoriteVM.getFavoritePlaylist().getValue();
+                if (favoriteSongs == null) {
+                    favoriteSongs = new ArrayList<>();
+                }
+                String query = s.toString().trim();
+                if (!query.isEmpty()) {
+                    List<SongWithArtists> filteredSongs = new ArrayList<>();
+                    for (SongWithArtists song : favoriteSongs) {
+                        if (song.song.getName().toLowerCase().contains(query.toLowerCase())) {
+                            filteredSongs.add(song);
+                        }
+                    }
+                    favoriteSongAdapter.setSongs(filteredSongs);
+                    TextView noResultsTextView = view.findViewById(R.id.tvMessage);
+                    if (filteredSongs.isEmpty()) {
+                        noResultsTextView.setVisibility(View.VISIBLE);
+                        noResultsTextView.setText("Không tìm thấy bài hát nào");
+                    } else {
+                        noResultsTextView.setVisibility(View.GONE);
+                    }
+                } else {
+                    favoriteSongAdapter.setSongs(favoriteVM.getFavoritePlaylist().getValue());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(android.text.Editable s) { }
+        });
+
+        addSongButton.setOnClickListener(v -> {
+            int favoritePlaylistId = playlistId;
+            List<SongWithArtists> currentSongsInPlaylist = favoriteVM.getFavoritePlaylist().getValue();
+            if (currentSongsInPlaylist == null) {
+                currentSongsInPlaylist = new ArrayList<>();
+            }
+            SearchSongsBottomSheetFragment bottomSheet = SearchSongsBottomSheetFragment.newInstance(favoritePlaylistId, currentSongsInPlaylist);
+            bottomSheet.show(getChildFragmentManager(), bottomSheet.getTag()); // Sử dụng getChildFragmentManager()
+        });
+
     }
 
     private int getCurrentUserId() {
